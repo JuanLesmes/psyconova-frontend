@@ -1,0 +1,17 @@
+:root {
+  --color-bg: #f7f2eb;
+  --color-surface: #ffffff;
+  --color-text: #1f1d1b;
+  --color-text-soft: #6d665f;
+
+  --font-body: "Inter", Arial, sans-serif;
+  --font-display: "Georgia", "Times New Roman", serif;
+
+  --frame-gap: 10px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --frame-gap: 8px;
+  }
+}

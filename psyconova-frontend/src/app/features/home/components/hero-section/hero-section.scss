@@ -1,0 +1,93 @@
+.hero-cover {
+  position: relative;
+  min-height: calc(100vh - (var(--frame-gap) * 2));
+  display: grid;
+  place-items: center;
+  text-align: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(196, 210, 216, 0.42), rgba(196, 210, 216, 0.42)),
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.35), transparent 28%),
+    linear-gradient(180deg, #d5e2e7 0%, #b9ced7 50%, #d9dfdf 100%);
+}
+
+.hero-cover::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 32%;
+  background:
+    linear-gradient(to top, rgba(248, 245, 240, 0.78), rgba(248, 245, 240, 0.1)),
+    radial-gradient(circle at 50% 110%, rgba(130, 146, 156, 0.22), transparent 48%);
+  pointer-events: none;
+}
+
+.hero-cover__content {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  padding: 8rem 1.5rem 5rem;
+}
+
+.hero-cover__brand {
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.hero-cover__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  color: #ffffff;
+}
+
+.hero-cover__subtitle {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.3rem, 2.6vw, 2.3rem);
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.hero-cover__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.hero-cover__scroll::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 4px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  transform: translateX(-50%);
+}
+
+@media (max-width: 768px) {
+  .hero-cover__content {
+    padding: 7rem 1rem 4rem;
+  }
+
+  .hero-cover__title {
+    font-size: clamp(3rem, 12vw, 4.8rem);
+  }
+
+  .hero-cover__subtitle {
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+  }
+}

@@ -1,0 +1,21 @@
+.cta {
+  background: #fffaf4;
+}
+
+.cta__box {
+  max-width: 860px;
+  margin: 0 auto;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid rgba(31, 29, 27, 0.08);
+  border-radius: 32px;
+  padding: 3.5rem 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.04);
+}
+
+.cta__text {
+  max-width: 640px;
+  margin: 1.25rem auto 0;
+  color: var(--color-text-soft);
+  line-height: 1.85;
+}
