@@ -1,0 +1,131 @@
+.intro-panel {
+  background: #f4f1eb;
+}
+
+.intro-panel__grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 4rem;
+  align-items: center;
+  min-height: 78vh;
+}
+
+.intro-panel__content {
+  max-width: 460px;
+}
+
+.intro-panel__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 5rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+}
+
+.intro-panel__lead {
+  margin: 1rem 0 2rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.8rem;
+  color: var(--color-text-soft);
+}
+
+.intro-panel__media {
+  position: relative;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-panel__visual {
+  width: min(100%, 440px);
+  height: 540px;
+  border-radius: 220px 220px 22px 22px;
+  padding: 0.75rem;
+  background: linear-gradient(160deg, #d7c7b6 0%, #b69b83 100%);
+  box-shadow: 0 24px 60px rgba(69, 53, 38, 0.12);
+}
+
+.intro-panel__visual-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 205px 205px 18px 18px;
+  background:
+    linear-gradient(rgba(70, 54, 39, 0.08), rgba(70, 54, 39, 0.08)),
+    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.28), transparent 24%),
+    linear-gradient(135deg, #9a7b60 0%, #7b624e 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 1.5rem;
+}
+
+.intro-panel__visual-inner span {
+  font-family: var(--font-display);
+  color: #fff;
+  letter-spacing: 0.18em;
+  font-size: 1rem;
+}
+
+.intro-panel__badge {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(31, 29, 27, 0.08);
+  border-radius: 16px;
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.intro-panel__badge--top {
+  top: 90px;
+  left: 10px;
+}
+
+.intro-panel__badge--bottom {
+  bottom: 70px;
+  right: 10px;
+}
+
+@media (max-width: 1100px) {
+  .intro-panel__grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .intro-panel__content {
+    max-width: 100%;
+  }
+
+  .intro-panel__media {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .intro-panel__lead {
+    font-size: 1.35rem;
+  }
+
+  .intro-panel__visual {
+    width: min(100%, 320px);
+    height: 400px;
+    border-radius: 160px 160px 20px 20px;
+  }
+
+  .intro-panel__visual-inner {
+    border-radius: 148px 148px 16px 16px;
+  }
+
+  .intro-panel__badge {
+    position: static;
+    margin-top: 0.8rem;
+    display: inline-block;
+  }
+
+  .intro-panel__media {
+    display: block;
+  }
+}

@@ -1,0 +1,18 @@
+.site-frame {
+  position: relative;
+  min-height: 100vh;
+  padding: var(--frame-gap);
+}
+
+.site-frame__border {
+  position: fixed;
+  inset: var(--frame-gap);
+  border: 1.5px solid rgba(31, 29, 27, 0.16);
+  pointer-events: none;
+  z-index: 40;
+}
+
+.main-layout {
+  position: relative;
+  z-index: 1;
+}

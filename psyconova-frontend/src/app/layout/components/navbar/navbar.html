@@ -1,0 +1,47 @@
+<header
+  class="navbar"
+  [class.navbar--menu-open]="menuOpen"
+  [class.navbar--hidden]="!isNavbarVisible"
+>
+
+  <a
+    class="navbar__brand"
+    routerLink="/"
+    fragment="home"
+    (click)="closeMenu()"
+    aria-label="Ir al inicio"
+  >
+    <span class="navbar__logo-mark"></span>
+    <span class="navbar__logo-text">PSYCONOVA</span>
+  </a>
+
+  <div class="navbar__languages">
+    <button
+      *ngFor="let language of languages"
+      type="button"
+      class="navbar__language"
+      [class.is-active]="activeLanguage === language"
+      (click)="setLanguage(language)"
+    >
+      {{ language }}
+    </button>
+  </div>
+</header>
+
+<div class="menu-overlay" [class.is-open]="menuOpen">
+  <button
+    class="menu-overlay__back"
+    type="button"
+    aria-label="Cerrar menú"
+    (click)="closeMenu()"
+  >
+    ←
+  </button>
+
+  <nav class="menu-overlay__nav">
+    <a routerLink="/" fragment="home" (click)="closeMenu()">Inicio</a>
+    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
+    <a routerLink="/" fragment="services" (click)="closeMenu()">Servicios</a>
+    <a routerLink="/" fragment="contact" (click)="closeMenu()">Contacto</a>
+  </nav>
+</div>
