@@ -3,6 +3,17 @@
   [class.navbar--menu-open]="menuOpen"
   [class.navbar--hidden]="!isNavbarVisible"
 >
+  <button
+    class="navbar__toggle"
+    type="button"
+    aria-label="Abrir menú"
+    [attr.aria-expanded]="menuOpen"
+    (click)="toggleMenu()"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 
   <a
     class="navbar__brand"
@@ -11,8 +22,11 @@
     (click)="closeMenu()"
     aria-label="Ir al inicio"
   >
-    <span class="navbar__logo-mark"></span>
-    <span class="navbar__logo-text">PSYCONOVA</span>
+    <img
+      src="assets/images/branding/logoClaroConLetrasSinFondo.png"
+      alt="PSYCONOVA"
+      class="navbar__brand-image"
+    >
   </a>
 
   <div class="navbar__languages">

@@ -16,7 +16,7 @@ export class Navbar {
   activeLanguage: Language = 'ES';
   languages: Language[] = ['ES', 'FR', 'IT', 'EN'];
 
-  isNavbarVisible = true;
+  isNavbarVisible = false;
   private lastScrollY = 0;
 
   toggleMenu(): void {
@@ -34,7 +34,8 @@ export class Navbar {
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
-    const currentScrollY = window.scrollY || 0;
+    const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    const hero = document.getElementById('home');
 
     if (this.menuOpen) {
       this.isNavbarVisible = true;
@@ -42,30 +43,27 @@ export class Navbar {
       return;
     }
 
-    const hero = document.getElementById('home');
-    const heroHeight = hero ? hero.offsetHeight : 700;
-
-    if (currentScrollY <= 20) {
+    if (!hero) {
       this.isNavbarVisible = true;
       this.lastScrollY = currentScrollY;
       return;
     }
 
-    if (currentScrollY < heroHeight - 120) {
-      this.isNavbarVisible = true;
-      this.lastScrollY = currentScrollY;
-      return;
-    }
+    const heroRect = hero.getBoundingClientRect();
+    const isInsideHero = heroRect.bottom > 0;
 
-    const scrollDifference = currentScrollY - this.lastScrollY;
-
-    if (Math.abs(scrollDifference) < 4) {
-      return;
-    }
-
-    if (scrollDifference > 0) {
+    if (isInsideHero) {
       this.isNavbarVisible = false;
-    } else {
+      this.lastScrollY = currentScrollY;
+      return;
+    }
+
+    const scrollingDown = currentScrollY > this.lastScrollY + 4;
+    const scrollingUp = currentScrollY < this.lastScrollY - 4;
+
+    if (scrollingDown) {
+      this.isNavbarVisible = false;
+    } else if (scrollingUp) {
       this.isNavbarVisible = true;
     }
 

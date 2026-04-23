@@ -1,5 +1,6 @@
 .services {
-  background: #f4eee7;
+  background:
+    linear-gradient(180deg, #f5f3f0 0%, #eef8f7 100%);
 }
 
 .services__head {
@@ -14,25 +15,28 @@
 }
 
 .service-card {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(31, 29, 27, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(22, 32, 90, 0.08);
   border-radius: 24px;
   padding: 2rem;
   min-height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 18px 40px rgba(22, 32, 90, 0.04);
 }
 
 .service-card h3 {
   font-family: var(--font-display);
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  color: var(--color-primary-dark);
 }
 
 .service-card p {
   color: var(--color-text-soft);
   line-height: 1.8;
+  font-family: var(--font-body);
 }
 
 @media (max-width: 900px) {
