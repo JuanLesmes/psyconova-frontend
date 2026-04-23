@@ -1,7 +1,48 @@
 <section class="hero-cover" id="home">
+  <div class="hero-cover__topbar" [class.hero-cover__topbar--hidden]="menuOpen">
+    <button
+      class="hero-cover__toggle"
+      type="button"
+      aria-label="Abrir menú"
+      [attr.aria-expanded]="menuOpen"
+      (click)="toggleMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <a
+      class="hero-cover__brand"
+      routerLink="/"
+      fragment="home"
+      aria-label="Ir al inicio"
+    >
+      <img
+        src="assets/images/branding/logoClaroConLetrasSinFondo.png"
+        alt="PSYCONOVA"
+        class="hero-cover__brand-image"
+      >
+    </a>
+
+    <div class="hero-cover__languages">
+      <button
+        *ngFor="let language of languages"
+        type="button"
+        class="hero-cover__language"
+        [class.is-active]="activeLanguage === language"
+        (click)="setLanguage(language)"
+      >
+        {{ language }}
+      </button>
+    </div>
+  </div>
+
   <div class="hero-cover__content">
-    <p class="hero-cover__brand">PSYCONOVA</p>
-    <h1 class="hero-cover__title">Una nueva mirada para la salud mental.</h1>
+    <p class="hero-cover__brand-line">PSYCONOVA</p>
+    <h1 class="hero-cover__title">
+      Una nueva <span class="hero-cover__title-accent">mirada</span> para la salud mental.
+    </h1>
     <p class="hero-cover__subtitle">
       Innovación, sensibilidad y una presencia digital más humana.
     </p>
@@ -14,3 +55,21 @@
     aria-label="Ir a la siguiente sección"
   ></a>
 </section>
+
+<div class="hero-menu-overlay" [class.is-open]="menuOpen">
+  <button
+    class="hero-menu-overlay__back"
+    type="button"
+    aria-label="Cerrar menú"
+    (click)="closeMenu()"
+  >
+    ←
+  </button>
+
+  <nav class="hero-menu-overlay__nav">
+    <a routerLink="/" fragment="home" (click)="closeMenu()">Inicio</a>
+    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
+    <a routerLink="/" fragment="services" (click)="closeMenu()">Servicios</a>
+    <a routerLink="/" fragment="contact" (click)="closeMenu()">Contacto</a>
+  </nav>
+</div>

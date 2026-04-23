@@ -1,5 +1,5 @@
 .intro-panel {
-  background: #f4f1eb;
+  background: #f7f5f2;
 }
 
 .intro-panel__grid {
@@ -17,16 +17,16 @@
 .intro-panel__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 5vw, 5rem);
+  font-size: clamp(3rem, 5vw, 4.8rem);
   line-height: 0.96;
   letter-spacing: -0.04em;
+  color: var(--color-primary-dark);
 }
 
 .intro-panel__lead {
   margin: 1rem 0 2rem;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.8rem;
+  font-family: var(--font-body);
+  font-size: 1.35rem;
   color: var(--color-text-soft);
 }
 
@@ -43,8 +43,8 @@
   height: 540px;
   border-radius: 220px 220px 22px 22px;
   padding: 0.75rem;
-  background: linear-gradient(160deg, #d7c7b6 0%, #b69b83 100%);
-  box-shadow: 0 24px 60px rgba(69, 53, 38, 0.12);
+  background: linear-gradient(160deg, var(--color-accent) 0%, var(--color-accent-soft) 100%);
+  box-shadow: 0 24px 60px rgba(22, 32, 90, 0.1);
 }
 
 .intro-panel__visual-inner {
@@ -52,9 +52,9 @@
   height: 100%;
   border-radius: 205px 205px 18px 18px;
   background:
-    linear-gradient(rgba(70, 54, 39, 0.08), rgba(70, 54, 39, 0.08)),
+    linear-gradient(rgba(22, 32, 90, 0.1), rgba(22, 32, 90, 0.1)),
     radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.28), transparent 24%),
-    linear-gradient(135deg, #9a7b60 0%, #7b624e 100%);
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -70,13 +70,15 @@
 
 .intro-panel__badge {
   position: absolute;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(31, 29, 27, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(22, 32, 90, 0.08);
   border-radius: 16px;
   padding: 0.85rem 1.15rem;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 14px 34px rgba(22, 32, 90, 0.06);
   font-size: 0.9rem;
   white-space: nowrap;
+  color: var(--color-primary-dark);
+  font-family: var(--font-body);
 }
 
 .intro-panel__badge--top {
@@ -106,7 +108,7 @@
 
 @media (max-width: 640px) {
   .intro-panel__lead {
-    font-size: 1.35rem;
+    font-size: 1.1rem;
   }
 
   .intro-panel__visual {

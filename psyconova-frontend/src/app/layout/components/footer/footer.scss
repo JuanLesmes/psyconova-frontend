@@ -1,7 +1,9 @@
 .footer {
   padding: 4rem 0 2.5rem;
-  background: #efe8df;
-  border-top: 1px solid rgba(31, 29, 27, 0.08);
+  background:
+    linear-gradient(135deg, rgba(103, 229, 191, 0.08), rgba(187, 153, 231, 0.08)),
+    #f5f3f0;
+  border-top: 1px solid rgba(22, 32, 90, 0.12);
 }
 
 .footer__inner {
@@ -15,12 +17,14 @@
   font-size: 1.1rem;
   letter-spacing: 0.16em;
   margin-bottom: 0.75rem;
+  color: var(--color-primary-dark);
 }
 
 .footer__text,
 .footer__meta p {
   color: var(--color-text-soft);
   line-height: 1.7;
+  font-family: var(--font-body);
 }
 
 .footer__meta {
