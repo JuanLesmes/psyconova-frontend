@@ -1,31 +1,85 @@
-<section class="services section" id="services">
-  <div class="container">
-    <div class="services__head">
-      <p class="section-tag">Áreas destacadas</p>
-      <h2 class="section-title">Una landing clara, visual y preparada para crecer.</h2>
+<section class="svc" id="services">
+  <div class="svc-shell">
+
+    <!-- ── Header ───────────────────────────────────── -->
+    <div class="svc-header">
+      <div class="svc-header__left">
+        <span class="svc-badge">Nuestros Servicios</span>
+        <h2 class="svc-title">
+          Realidad virtual<br>para el bienestar
+        </h2>
+      </div>
+      <div class="svc-header__right">
+        <p class="svc-intro">
+          PSYCONOVA ofrece un servicio basado en realidad virtual que permite
+          a los usuarios vivir experiencias inmersivas diseñadas para el
+          cuidado emocional — desde cualquier lugar, sin conocimiento previo
+          y en el tiempo que cada persona decida.
+        </p>
+      </div>
     </div>
 
-    <div class="services__grid">
-      <article class="service-card">
-        <h3>Comunicación humana</h3>
-        <p>
-          Una narrativa cercana y profesional para transmitir confianza desde el primer vistazo.
-        </p>
-      </article>
+    <!-- ── Feature pills ─────────────────────────────── -->
+    <ul class="svc-features">
+      <li class="svc-feature" *ngFor="let f of features; let i = index">
+        <span class="svc-feature__num">0{{ i + 1 }}</span>
+        <p class="svc-feature__text">{{ f }}</p>
+      </li>
+    </ul>
 
-      <article class="service-card">
-        <h3>Diseño contemporáneo</h3>
-        <p>
-          Espacios amplios, composición limpia y una estética editorial con presencia.
-        </p>
-      </article>
-
-      <article class="service-card">
-        <h3>Estructura escalable</h3>
-        <p>
-          Base sólida en Angular para seguir creciendo sin convertir el proyecto en desorden.
-        </p>
+    <!-- ── Service cards ─────────────────────────────── -->
+    <div class="svc-cards">
+      <article
+        class="svc-card"
+        *ngFor="let s of services"
+        [attr.data-accent]="s.accent"
+      >
+        <span class="svc-card__bg-num" aria-hidden="true">{{ s.num }}</span>
+        <div class="svc-card__body">
+          <span class="svc-card__label">{{ s.label }}</span>
+          <h3 class="svc-card__title">{{ s.title }}</h3>
+          <p class="svc-card__desc">{{ s.desc }}</p>
+        </div>
+        <div class="svc-card__footer">
+          <span class="svc-card__num">{{ s.num }}</span>
+          <div class="svc-card__line"></div>
+        </div>
       </article>
     </div>
+
+    <!-- ── VR Gallery ──────────────────────────────────── -->
+    <div class="svc-gallery">
+      <div class="svc-gallery__header">
+        <h3 class="svc-gallery__title">Entornos VR</h3>
+        <p class="svc-gallery__sub">
+          Escenarios diseñados para inducir calma, asombro y presencia plena.
+        </p>
+      </div>
+
+      <div class="svc-gallery__grid">
+        <div
+          class="svc-env"
+          *ngFor="let env of environments"
+        >
+          <div class="svc-env__frame">
+            <img
+              *ngIf="env.img"
+              class="svc-env__img"
+              [src]="env.img"
+              [alt]="env.label"
+            />
+            <div class="svc-env__placeholder" *ngIf="!env.img">
+              <span class="svc-env__placeholder-icon">◎</span>
+              <span class="svc-env__placeholder-text">Imagen próximamente</span>
+            </div>
+          </div>
+          <div class="svc-env__meta">
+            <span class="svc-env__num">{{ env.num }}</span>
+            <span class="svc-env__label">{{ env.label }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
