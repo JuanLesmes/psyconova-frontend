@@ -54,8 +54,9 @@
 
   <nav class="menu-overlay__nav">
     <a routerLink="/" fragment="home" (click)="closeMenu()">Inicio</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
+    <a (click)="scrollTo('nosotros')">¿Qué es PSYCONOVA?</a>
     <a routerLink="/" fragment="services" (click)="closeMenu()">Servicios</a>
+    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
     <a routerLink="/" fragment="contact" (click)="closeMenu()">Contacto</a>
   </nav>
 </div>

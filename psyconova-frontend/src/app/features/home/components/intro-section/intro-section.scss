@@ -1,133 +1,524 @@
-.intro-panel {
-  background: #f7f5f2;
+:host {
+  display: block;
 }
 
-.intro-panel__grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 4rem;
-  align-items: center;
-  min-height: 78vh;
-}
-
-.intro-panel__content {
-  max-width: 460px;
-}
-
-.intro-panel__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 5vw, 4.8rem);
-  line-height: 0.96;
-  letter-spacing: -0.04em;
-  color: var(--color-primary-dark);
-}
-
-.intro-panel__lead {
-  margin: 1rem 0 2rem;
-  font-family: var(--font-body);
-  font-size: 1.35rem;
-  color: var(--color-text-soft);
-}
-
-.intro-panel__media {
+.intro {
   position: relative;
-  min-height: 620px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 7rem 2rem 6rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(114, 223, 209, 0.16), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(200, 178, 247, 0.28), transparent 30%),
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbfaff 34%,
+      #f5f0ff 68%,
+      #ede3ff 100%
+    );
 }
 
-.intro-panel__visual {
-  width: min(100%, 440px);
-  height: 540px;
-  border-radius: 220px 220px 22px 22px;
-  padding: 0.75rem;
-  background: linear-gradient(160deg, var(--color-accent) 0%, var(--color-accent-soft) 100%);
-  box-shadow: 0 24px 60px rgba(22, 32, 90, 0.1);
+.intro::before,
+.intro::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(54px);
+  pointer-events: none;
+  opacity: 0.42;
 }
 
-.intro-panel__visual-inner {
+.intro::before {
+  width: 360px;
+  height: 360px;
+  top: -90px;
+  left: -120px;
+  background: rgba(114, 223, 209, 0.18);
+}
+
+.intro::after {
+  width: 420px;
+  height: 420px;
+  right: -120px;
+  bottom: -20px;
+  background: rgba(172, 132, 255, 0.22);
+}
+
+.intro-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1800px);
+  margin: 0 auto;
+}
+
+.intro-header {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  margin-bottom: 3.2rem;
+  text-align: center;
+}
+
+.intro-title {
+  margin: 0;
+  width: min(100%, 1320px);
+  font-size: clamp(3.2rem, 4.7vw, 5.4rem);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: #19206d;
+  text-wrap: balance;
+}
+
+.intro-description {
+  margin: 0;
+  width: min(100%, 1120px);
+  font-size: 1.08rem;
+  line-height: 1.9;
+  color: #5f677e;
+  text-wrap: pretty;
+}
+
+/* ── Stage ─────────────────────────────────────────── */
+
+.synapse-stage {
+  position: relative;
+  min-height: 1080px;
+  width: 100%;
+  overflow: visible;
+}
+
+.synapse-stage::before {
+  content: '';
+  position: absolute;
+  inset: 8% 10%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgba(25, 32, 109, 0.03) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ── SVG synapse lines ──────────────────────────────── */
+
+.synapse-lines {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 205px 205px 18px 18px;
-  background:
-    linear-gradient(rgba(22, 32, 90, 0.1), rgba(22, 32, 90, 0.1)),
-    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.28), transparent 24%),
-    linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 1.5rem;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.intro-panel__visual-inner span {
-  font-family: var(--font-display);
-  color: #fff;
-  letter-spacing: 0.18em;
-  font-size: 1rem;
+.synapse-center-dot {
+  fill: #19206d;
+  opacity: 0.7;
 }
 
-.intro-panel__badge {
+/* Always-visible dim connection to every node — stroke/opacity set as HTML attributes */
+.resting-connection {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 5 12;
+  transition: stroke-opacity 0.4s ease;
+}
+
+.resting-connection.is-active {
+  stroke-opacity: 0.1 !important;
+}
+
+/* Resting dot at each node position */
+.synapse-dot {
+  fill: rgba(25, 32, 109, 0.22);
+  transition: fill 0.3s ease;
+}
+
+.synapse-dot--active {
+  fill: #7b69e7;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+/* Active highlighted connection */
+.active-connection {
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  opacity: 0.55;
+  animation:
+    drawConnection 0.65s ease forwards,
+    connectionPulse 3.2s ease-in-out infinite 0.65s;
+}
+
+/* Traveling neuron pulse */
+.neuron-pulse {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 42 900;
+  stroke-dashoffset: 0;
+  animation: neuronTravel 1.9s cubic-bezier(0.3, 0, 0.7, 1) infinite;
+}
+
+.neuron-pulse--one {
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 3.5;
+  animation-delay: 0.7s;
+}
+
+.neuron-pulse--two {
+  stroke: rgba(114, 223, 209, 0.85);
+  stroke-width: 2.5;
+  animation-delay: 1.45s;
+}
+
+/* ── Central portal ─────────────────────────────────── */
+
+.intro-core {
   position: absolute;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(22, 32, 90, 0.08);
-  border-radius: 16px;
-  padding: 0.85rem 1.15rem;
-  box-shadow: 0 14px 34px rgba(22, 32, 90, 0.06);
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.intro-core__glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(24px);
+}
+
+.intro-core__glow--one {
+  width: 160px;
+  height: 160px;
+  top: -48px;
+  left: -52px;
+  background: rgba(114, 223, 209, 0.32);
+}
+
+.intro-core__glow--two {
+  width: 160px;
+  height: 160px;
+  right: -52px;
+  bottom: -8px;
+  background: rgba(200, 178, 247, 0.36);
+}
+
+/* Outer frame — gives the "window/door" border */
+.intro-core__portal-wrap {
+  position: relative;
+  padding: 16px 16px 20px;
+  border-radius: 184px 184px 22px 22px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.76) 0%,
+    rgba(114, 223, 209, 0.38) 38%,
+    rgba(200, 178, 247, 0.46) 68%,
+    rgba(25, 32, 109, 0.3) 100%
+  );
+  box-shadow:
+    0 32px 72px rgba(17, 24, 39, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 0 0 1px rgba(255, 255, 255, 0.24);
+}
+
+/* Inner decorative pane line */
+.intro-core__portal-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 22px 22px 26px;
+  border-radius: 164px 164px 8px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Small arch keystone accent */
+.intro-core__arch-accent {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(200, 178, 247, 0.55);
+  box-shadow: 0 2px 12px rgba(114, 223, 209, 0.5);
+  z-index: 11;
+}
+
+/* Arch-shaped portal that clips the image */
+.intro-core__portal {
+  position: relative;
+  width: 336px;
+  height: 460px;
+  border-radius: 168px 168px 10px 10px;
+  overflow: hidden;
+  background: #19206d;
+}
+
+.intro-core__media {
+  position: absolute;
+  inset: 0;
+}
+
+.intro-core__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.intro-core__image--current {
+  z-index: 2;
+  animation: imageFadeIn 0.92s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intro-core__image--previous {
+  z-index: 1;
+  animation: imageFadeOut 0.92s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ── Nodes ──────────────────────────────────────────── */
+
+.intro-node {
+  position: absolute;
+  z-index: 3;
+  width: 186px;
+  height: 186px;
+  padding: 1rem;
+  border: 1px solid rgba(25, 32, 109, 0.08);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 42px rgba(17, 24, 39, 0.07);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.38s ease,
+    height 0.38s ease,
+    transform 0.38s ease,
+    box-shadow 0.38s ease,
+    border-color 0.38s ease,
+    background 0.38s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.intro-node::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(125, 107, 232, 0.1);
+  pointer-events: none;
+}
+
+.intro-node:hover,
+.intro-node.is-active {
+  width: 330px;
+  height: 330px;
+  z-index: 8;
+  transform: translate(-50%, -50%);
+  border-color: rgba(25, 32, 109, 0.16);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 30px 70px rgba(17, 24, 39, 0.14);
+}
+
+.intro-node__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.42rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(114, 223, 209, 0.12);
+  border: 1px solid rgba(114, 223, 209, 0.16);
+  color: #0f8f84;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.intro-node__title {
+  display: block;
+  max-width: 11ch;
+  color: #19206d;
+  font-size: 1rem;
+  line-height: 1.14;
+  font-weight: 800;
+  transition:
+    font-size 0.28s ease,
+    max-width 0.28s ease;
+}
+
+.intro-node__detail {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  max-width: 19ch;
+  color: #5f677e;
   font-size: 0.9rem;
-  white-space: nowrap;
-  color: var(--color-primary-dark);
-  font-family: var(--font-body);
+  line-height: 1.45;
+  transition:
+    opacity 0.3s ease,
+    max-height 0.3s ease,
+    margin-top 0.3s ease;
 }
 
-.intro-panel__badge--top {
-  top: 90px;
-  left: 10px;
+.intro-node:hover .intro-node__title,
+.intro-node.is-active .intro-node__title {
+  max-width: 14ch;
+  font-size: 1.22rem;
 }
 
-.intro-panel__badge--bottom {
-  bottom: 70px;
-  right: 10px;
+.intro-node:hover .intro-node__detail,
+.intro-node.is-active .intro-node__detail {
+  opacity: 1;
+  max-height: 160px;
+  margin-top: 0.45rem;
 }
 
-@media (max-width: 1100px) {
-  .intro-panel__grid {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
+/* ── Keyframes ──────────────────────────────────────── */
 
-  .intro-panel__content {
-    max-width: 100%;
+@keyframes imageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.06) translateY(6px);
+    filter: blur(10px) brightness(1.1);
   }
-
-  .intro-panel__media {
-    min-height: auto;
+  55% {
+    filter: blur(3px) brightness(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0) brightness(1);
   }
 }
 
-@media (max-width: 640px) {
-  .intro-panel__lead {
-    font-size: 1.1rem;
+@keyframes imageFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0) brightness(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(-6px);
+    filter: blur(12px) brightness(0.9);
+  }
+}
+
+@keyframes drawConnection {
+  from {
+    stroke-dashoffset: 1200;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes connectionPulse {
+  0%, 100% {
+    opacity: 0.55;
+    stroke-width: 1.8;
+  }
+  50% {
+    opacity: 0.32;
+    stroke-width: 1.4;
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 0.78;
+  }
+}
+
+@keyframes neuronTravel {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -520;
+  }
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 1440px) {
+  .intro {
+    padding: 6.5rem 1.5rem 5.5rem;
   }
 
-  .intro-panel__visual {
-    width: min(100%, 320px);
-    height: 400px;
-    border-radius: 160px 160px 20px 20px;
+  .intro-shell {
+    width: min(100%, 1680px);
   }
 
-  .intro-panel__visual-inner {
-    border-radius: 148px 148px 16px 16px;
+  .intro-title {
+    width: min(100%, 1160px);
   }
 
-  .intro-panel__badge {
-    position: static;
-    margin-top: 0.8rem;
-    display: inline-block;
+  .intro-description {
+    width: min(100%, 980px);
   }
 
-  .intro-panel__media {
-    display: block;
+  .synapse-stage {
+    min-height: 1000px;
+  }
+
+  .intro-core__portal {
+    width: 286px;
+    height: 392px;
+    border-radius: 143px 143px 9px 9px;
+  }
+
+  .intro-core__portal-wrap {
+    border-radius: 159px 159px 20px 20px;
+  }
+
+  .intro-core__portal-wrap::after {
+    border-radius: 140px 140px 7px 7px;
+  }
+
+  .intro-node {
+    width: 172px;
+    height: 172px;
+  }
+
+  .intro-node:hover,
+  .intro-node.is-active {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .intro-header {
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .intro-title,
+  .intro-description {
+    width: 100%;
   }
 }

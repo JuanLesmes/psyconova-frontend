@@ -1,27 +1,171 @@
-<section class="intro-panel section" id="intro">
-  <div class="container intro-panel__grid">
-    <div class="intro-panel__content">
-      <p class="section-tag">Sobre nosotros</p>
-      <h2 class="intro-panel__title">Descubre PSYCONOVA</h2>
-      <p class="intro-panel__lead">El bienestar debe sentirse cercano.</p>
+<section class="intro" id="nosotros">
+  <div class="intro-shell">
+    <div class="intro-header">
+      <h2 class="intro-title">
+        {{ title }}
+      </h2>
 
-      <a routerLink="/" fragment="services" class="btn btn--primary">
-        Sobre nosotros
-      </a>
+      <p class="intro-description">
+        {{ description }}
+      </p>
     </div>
 
-    <div class="intro-panel__media">
-      <div class="intro-panel__badge intro-panel__badge--top">Enfoque humano</div>
+    <div class="synapse-stage" (mouseleave)="clearActive()">
+      <svg
+        class="synapse-lines"
+        viewBox="0 0 1000 760"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <!--
+            gradientUnits="userSpaceOnUse" fixes invisible lines on perfectly
+            horizontal or vertical paths (objectBoundingBox has zero dimension).
+          -->
+          <linearGradient
+            id="synapseGradient"
+            gradientUnits="userSpaceOnUse"
+            x1="50" y1="50"
+            x2="950" y2="710"
+          >
+            <stop offset="0%" stop-color="#72dfd1" />
+            <stop offset="50%" stop-color="#c8b2f7" />
+            <stop offset="100%" stop-color="#19206d" />
+          </linearGradient>
 
-      <div class="intro-panel__visual">
-        <div class="intro-panel__visual-inner">
-          <span>PSYCONOVA</span>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="neuronGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="glow" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Resting connections — solid color avoids gradient bbox issues on H/V lines -->
+        <line
+          *ngFor="let node of nodes"
+          class="resting-connection"
+          [class.is-active]="node.id === activeId"
+          x1="500"
+          y1="380"
+          [attr.x2]="node.lineX"
+          [attr.y2]="node.lineY"
+          stroke="#a89be0"
+          stroke-opacity="0.38"
+        ></line>
+
+        <!-- Resting dots at each node position -->
+        <circle
+          *ngFor="let node of nodes"
+          class="synapse-dot"
+          [class.synapse-dot--active]="node.id === activeId"
+          [attr.cx]="node.lineX"
+          [attr.cy]="node.lineY"
+          r="6"
+        ></circle>
+
+        <circle cx="500" cy="380" r="7" class="synapse-center-dot"></circle>
+
+        <!-- Active connection highlight + traveling neuron pulses -->
+        <ng-container *ngIf="activeNode">
+          <line
+            class="active-connection"
+            x1="500"
+            y1="380"
+            [attr.x2]="activeNode.lineX"
+            [attr.y2]="activeNode.lineY"
+            stroke="url(#synapseGradient)"
+            filter="url(#softGlow)"
+          ></line>
+
+          <line
+            class="neuron-pulse neuron-pulse--one"
+            x1="500"
+            y1="380"
+            [attr.x2]="activeNode.lineX"
+            [attr.y2]="activeNode.lineY"
+            filter="url(#neuronGlow)"
+          ></line>
+
+          <line
+            class="neuron-pulse neuron-pulse--two"
+            x1="500"
+            y1="380"
+            [attr.x2]="activeNode.lineX"
+            [attr.y2]="activeNode.lineY"
+            filter="url(#neuronGlow)"
+          ></line>
+        </ng-container>
+      </svg>
+
+      <article class="intro-core">
+        <div class="intro-core__glow intro-core__glow--one"></div>
+        <div class="intro-core__glow intro-core__glow--two"></div>
+
+        <div class="intro-core__portal-wrap">
+          <div class="intro-core__arch-accent"></div>
+
+          <div class="intro-core__portal">
+            <div class="intro-core__media">
+              <ng-container *ngIf="!activeNode; else hoveredImage">
+                <img
+                  *ngIf="previousLoopImage"
+                  class="intro-core__image intro-core__image--previous"
+                  [src]="previousLoopImage.image"
+                  [alt]="previousLoopImage.alt"
+                />
+
+                <img
+                  class="intro-core__image intro-core__image--current"
+                  [src]="currentLoopImage.image"
+                  [alt]="currentLoopImage.alt"
+                />
+              </ng-container>
+
+              <ng-template #hoveredImage>
+                <img
+                  class="intro-core__image intro-core__image--current"
+                  [src]="displayImage"
+                  [alt]="displayAlt"
+                />
+              </ng-template>
+            </div>
+          </div>
         </div>
-      </div>
+      </article>
 
-      <div class="intro-panel__badge intro-panel__badge--bottom">
-        Diseño limpio y cercano
-      </div>
+      <button
+        *ngFor="let node of nodes"
+        type="button"
+        class="intro-node"
+        [class.is-active]="node.id === activeId"
+        [style.left.%]="node.x"
+        [style.top.%]="node.y"
+        (mouseenter)="setActive(node.id)"
+        (mouseleave)="clearActiveDelayed()"
+        (focus)="setActive(node.id)"
+        (click)="setActive(node.id)"
+      >
+        <span class="intro-node__tag">{{ node.tag }}</span>
+
+        <strong class="intro-node__title">
+          {{ node.title }}
+        </strong>
+
+        <span class="intro-node__detail">
+          {{ node.detail }}
+        </span>
+      </button>
     </div>
   </div>
 </section>

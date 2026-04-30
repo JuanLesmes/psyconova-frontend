@@ -171,6 +171,7 @@
   font-size: clamp(2.8rem, 6vw, 5.2rem);
   line-height: 0.95;
   color: var(--color-primary-dark);
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
