@@ -24,6 +24,13 @@ export class HeroSection {
     this.menuOpen = false;
   }
 
+  scrollTo(id: string): void {
+    this.menuOpen = false;
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
   setLanguage(language: Language): void {
     this.activeLanguage = language;
   }

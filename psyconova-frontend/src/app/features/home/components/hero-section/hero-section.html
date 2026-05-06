@@ -48,12 +48,12 @@
     </p>
   </div>
 
-  <a
+  <button
     class="hero-cover__scroll"
-    routerLink="/"
-    fragment="intro"
+    type="button"
     aria-label="Ir a la siguiente sección"
-  ></a>
+    (click)="scrollTo('nosotros')"
+  ></button>
 </section>
 
 <div class="hero-menu-overlay" [class.is-open]="menuOpen">
@@ -68,8 +68,9 @@
 
   <nav class="hero-menu-overlay__nav">
     <a routerLink="/" fragment="home" (click)="closeMenu()">Inicio</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
+    <a (click)="scrollTo('nosotros')">¿Qué es PSYCONOVA?</a>
     <a routerLink="/" fragment="services" (click)="closeMenu()">Servicios</a>
+    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
     <a routerLink="/" fragment="contact" (click)="closeMenu()">Contacto</a>
   </nav>
 </div>

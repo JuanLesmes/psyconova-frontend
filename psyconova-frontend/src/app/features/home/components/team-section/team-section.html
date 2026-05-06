@@ -1,0 +1,124 @@
+<section class="team" id="equipo">
+  <div class="team-shell">
+
+    <!-- ── Header ────────────────────────────────────── -->
+    <div class="team-header" reveal revealType="up">
+      <span class="team-badge">Nuestro Equipo</span>
+      <h2 class="team-title">Las personas detrás<br>de PSYCONOVA</h2>
+      <p class="team-subtitle">
+        Un equipo interdisciplinario unido por la misión de hacer el bienestar
+        emocional más accesible, humano e innovador.
+      </p>
+    </div>
+
+    <!-- ── Lead card (Psicóloga) ─────────────────────── -->
+    <div class="team-lead" reveal revealType="up" [revealDelay]="100">
+
+      <!-- Decorative corner lines -->
+      <div class="team-lead__corner team-lead__corner--tl" aria-hidden="true"></div>
+      <div class="team-lead__corner team-lead__corner--br" aria-hidden="true"></div>
+
+      <!-- Photo -->
+      <div class="team-lead__photo-wrap">
+        <div class="team-lead__arch">
+          <div class="team-lead__photo" *ngIf="lead.photo">
+            <img [src]="lead.photo" [alt]="lead.name" />
+          </div>
+          <div class="team-lead__photo-placeholder" *ngIf="!lead.photo">
+            <svg viewBox="0 0 80 80" aria-hidden="true">
+              <circle cx="40" cy="30" r="18" />
+              <ellipse cx="40" cy="72" rx="28" ry="20" />
+            </svg>
+          </div>
+        </div>
+        <!-- Floating badge -->
+        <div class="team-lead__badge">
+          <span class="team-lead__badge-dot"></span>
+          Disponible para consultas
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="team-lead__content">
+        <div class="team-lead__meta">
+          <span class="team-lead__role">{{ lead.role }}</span>
+          <span class="team-lead__credentials">{{ lead.credentials }}</span>
+        </div>
+
+        <h3 class="team-lead__name">{{ lead.name }}</h3>
+
+        <p class="team-lead__bio">{{ lead.bio }}</p>
+
+        <div class="team-lead__specialties">
+          <span
+            class="team-lead__chip"
+            *ngFor="let s of lead.specialties"
+          >{{ s }}</span>
+        </div>
+
+        <!-- Decorative stat strip -->
+        <div class="team-lead__stats">
+          <div class="team-lead__stat">
+            <span class="team-lead__stat-num">VR</span>
+            <span class="team-lead__stat-label">Pionera en terapia</span>
+          </div>
+          <div class="team-lead__stat-divider"></div>
+          <div class="team-lead__stat">
+            <span class="team-lead__stat-num">100%</span>
+            <span class="team-lead__stat-label">Enfoque humano</span>
+          </div>
+          <div class="team-lead__stat-divider"></div>
+          <div class="team-lead__stat">
+            <span class="team-lead__stat-num">+5</span>
+            <span class="team-lead__stat-label">Años de experiencia</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Team grid ──────────────────────────────────── -->
+    <div class="team-label" reveal revealType="fade">
+      <div class="team-label__line"></div>
+      <span>Equipo interdisciplinario</span>
+      <div class="team-label__line"></div>
+    </div>
+
+    <div class="team-grid">
+      <article
+        class="team-card"
+        *ngFor="let member of team; let i = index"
+        [attr.data-accent]="member.accent"
+        reveal
+        revealType="up"
+        [revealDelay]="i * 130"
+      >
+        <!-- Accent top line -->
+        <div class="team-card__top-line"></div>
+
+        <!-- Photo -->
+        <div class="team-card__photo-wrap">
+          <div class="team-card__photo" *ngIf="member.photo">
+            <img [src]="member.photo" [alt]="member.name" />
+          </div>
+          <div class="team-card__photo-placeholder" *ngIf="!member.photo">
+            <svg viewBox="0 0 60 60" aria-hidden="true">
+              <circle cx="30" cy="22" r="13" />
+              <ellipse cx="30" cy="54" rx="21" ry="15" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="team-card__info">
+          <span class="team-card__area">{{ member.area }}</span>
+          <h4 class="team-card__name">{{ member.name }}</h4>
+          <span class="team-card__role">{{ member.role }}</span>
+          <p class="team-card__bio">{{ member.bio }}</p>
+        </div>
+
+      </article>
+    </div>
+
+  </div>
+</section>

@@ -2,7 +2,7 @@
   <div class="svc-shell">
 
     <!-- ── Header ───────────────────────────────────── -->
-    <div class="svc-header">
+    <div class="svc-header" reveal>
       <div class="svc-header__left">
         <span class="svc-badge">Nuestros Servicios</span>
         <h2 class="svc-title">
@@ -21,7 +21,12 @@
 
     <!-- ── Feature pills ─────────────────────────────── -->
     <ul class="svc-features">
-      <li class="svc-feature" *ngFor="let f of features; let i = index">
+      <li
+        class="svc-feature"
+        *ngFor="let f of features; let i = index"
+        reveal
+        [revealDelay]="i * 100"
+      >
         <span class="svc-feature__num">0{{ i + 1 }}</span>
         <p class="svc-feature__text">{{ f }}</p>
       </li>
@@ -31,8 +36,11 @@
     <div class="svc-cards">
       <article
         class="svc-card"
-        *ngFor="let s of services"
+        *ngFor="let s of services; let i = index"
         [attr.data-accent]="s.accent"
+        reveal
+        revealType="up"
+        [revealDelay]="i * 150"
       >
         <span class="svc-card__bg-num" aria-hidden="true">{{ s.num }}</span>
         <div class="svc-card__body">
@@ -49,7 +57,7 @@
 
     <!-- ── VR Gallery ──────────────────────────────────── -->
     <div class="svc-gallery">
-      <div class="svc-gallery__header">
+      <div class="svc-gallery__header" reveal revealType="fade">
         <h3 class="svc-gallery__title">Entornos VR</h3>
         <p class="svc-gallery__sub">
           Escenarios diseñados para inducir calma, asombro y presencia plena.
@@ -59,7 +67,10 @@
       <div class="svc-gallery__grid">
         <div
           class="svc-env"
-          *ngFor="let env of environments"
+          *ngFor="let env of environments; let i = index"
+          reveal
+          revealType="scale"
+          [revealDelay]="i * 120"
         >
           <div class="svc-env__frame">
             <img

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 
 interface IntroNode {
   id: string;
@@ -22,7 +23,7 @@ interface LoopImage {
 @Component({
   selector: 'app-intro-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RevealDirective],
   templateUrl: './intro-section.html',
   styleUrl: './intro-section.scss'
 })
