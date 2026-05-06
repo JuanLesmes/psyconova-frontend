@@ -1,13 +1,196 @@
-<section class="cta section">
-  <div class="container">
-    <div class="cta__box">
-      <p class="section-tag">Siguiente etapa</p>
-      <h2 class="section-title">Ya tenemos la base correcta para seguir refinando la landing.</h2>
-      <p class="cta__text">
-        El siguiente paso será reemplazar estos bloques provisionales por contenido real, imágenes y
-        una composición todavía más cercana a la referencia visual.
+<section class="ctc" id="contact">
+
+  <!-- Background decorative rings -->
+  <div class="ctc-ring ctc-ring--one" aria-hidden="true"></div>
+  <div class="ctc-ring ctc-ring--two" aria-hidden="true"></div>
+
+  <div class="ctc-shell">
+
+    <!-- ── Header ──────────────────────────────────── -->
+    <div class="ctc-header" reveal revealType="up">
+      <span class="ctc-badge">Contacto</span>
+      <h2 class="ctc-title">Hablemos de tu bienestar</h2>
+      <p class="ctc-subtitle">
+        Cuéntanos qué necesitas y nuestro equipo te contactará para agendar tu primera experiencia.
       </p>
-      <a href="#home" class="btn btn--primary">Volver arriba</a>
+    </div>
+
+    <!-- ── Body: form + info ────────────────────────── -->
+    <div class="ctc-body">
+
+      <!-- Form -->
+      <div class="ctc-form-wrap" reveal revealType="left" [revealDelay]="150">
+        <div *ngIf="submitted" class="ctc-success">
+          <svg viewBox="0 0 24 24" class="ctc-success__icon" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12.5l2.5 2.5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>¡Consulta enviada! Nos pondremos en contacto pronto.</p>
+        </div>
+
+        <form class="ctc-form" (ngSubmit)="onSubmit()" *ngIf="!submitted" #f="ngForm">
+
+          <div class="ctc-row">
+            <!-- Nombre -->
+            <div class="ctc-field">
+              <input
+                class="ctc-input"
+                type="text"
+                id="nombre"
+                name="nombre"
+                [(ngModel)]="form.nombre"
+                placeholder=" "
+                required
+              />
+              <label class="ctc-label" for="nombre">Nombre</label>
+              <div class="ctc-line"></div>
+            </div>
+
+            <!-- Apellido -->
+            <div class="ctc-field">
+              <input
+                class="ctc-input"
+                type="text"
+                id="apellido"
+                name="apellido"
+                [(ngModel)]="form.apellido"
+                placeholder=" "
+                required
+              />
+              <label class="ctc-label" for="apellido">Apellido</label>
+              <div class="ctc-line"></div>
+            </div>
+          </div>
+
+          <!-- Celular -->
+          <div class="ctc-field">
+            <input
+              class="ctc-input"
+              type="tel"
+              id="celular"
+              name="celular"
+              [(ngModel)]="form.celular"
+              placeholder=" "
+              required
+            />
+            <label class="ctc-label" for="celular">Número de celular</label>
+            <div class="ctc-line"></div>
+          </div>
+
+          <!-- Correo -->
+          <div class="ctc-field">
+            <input
+              class="ctc-input"
+              type="email"
+              id="correo"
+              name="correo"
+              [(ngModel)]="form.correo"
+              placeholder=" "
+              required
+            />
+            <label class="ctc-label" for="correo">Correo electrónico</label>
+            <div class="ctc-line"></div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="ctc-field ctc-field--area">
+            <textarea
+              class="ctc-input ctc-textarea"
+              id="descripcion"
+              name="descripcion"
+              [(ngModel)]="form.descripcion"
+              placeholder=" "
+              rows="4"
+              required
+            ></textarea>
+            <label class="ctc-label" for="descripcion">
+              Describe brevemente tu consulta
+            </label>
+            <div class="ctc-line"></div>
+          </div>
+
+          <button class="ctc-submit" type="submit">
+            <span class="ctc-submit__text">Generar consulta</span>
+            <svg class="ctc-submit__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="ctc-submit__shimmer"></div>
+          </button>
+
+        </form>
+      </div>
+
+      <!-- Info cards -->
+      <div class="ctc-info-wrap">
+
+        <!-- Decorative blob -->
+        <div class="ctc-info-blob" aria-hidden="true"></div>
+
+        <div class="ctc-info-stack">
+
+          <!-- WhatsApp -->
+          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="200">
+            <div class="ctc-info-card__icon ctc-info-card__icon--teal">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.954 9.954 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+              </svg>
+            </div>
+            <div class="ctc-info-card__content">
+              <span class="ctc-info-card__label">WhatsApp</span>
+              <a href="https://wa.me/573000000000" target="_blank" class="ctc-info-card__value">
+                +57 300 000 0000
+              </a>
+            </div>
+          </div>
+
+          <!-- Ubicación -->
+          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="300">
+            <div class="ctc-info-card__icon ctc-info-card__icon--purple">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+            </div>
+            <div class="ctc-info-card__content">
+              <span class="ctc-info-card__label">Ubicación</span>
+              <span class="ctc-info-card__value">Colombia</span>
+            </div>
+          </div>
+
+          <!-- Correo -->
+          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="400">
+            <div class="ctc-info-card__icon ctc-info-card__icon--indigo">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="3"/>
+                <path d="M2 8l10 6 10-6"/>
+              </svg>
+            </div>
+            <div class="ctc-info-card__content">
+              <span class="ctc-info-card__label">Correo</span>
+              <a href="mailto:contacto@psyconova.com" class="ctc-info-card__value">
+                contacto@psyconova.com
+              </a>
+            </div>
+          </div>
+
+          <!-- Horario -->
+          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="500">
+            <div class="ctc-info-card__icon ctc-info-card__icon--teal">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 7v5l3.5 3.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="ctc-info-card__content">
+              <span class="ctc-info-card__label">Horario de atención</span>
+              <span class="ctc-info-card__value">Lun – Vie · 8:00 am – 6:00 pm</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

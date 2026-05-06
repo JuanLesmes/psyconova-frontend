@@ -1,0 +1,152 @@
+.ls {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(114, 223, 209, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(200, 178, 247, 0.14) 0%, transparent 50%),
+    linear-gradient(145deg, #0d1340 0%, #19206d 50%, #0a0826 100%);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ls--hiding {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* ── Neural rings ─────────────────────────────────── */
+
+.ls-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ls-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(114, 223, 209, 0.5);
+  animation: ringExpand 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.ls-ring--1 {
+  width: 200px;
+  height: 200px;
+  animation-delay: 0s;
+}
+
+.ls-ring--2 {
+  width: 200px;
+  height: 200px;
+  border-color: rgba(200, 178, 247, 0.4);
+  animation-delay: 0.8s;
+}
+
+.ls-ring--3 {
+  width: 200px;
+  height: 200px;
+  border-color: rgba(123, 105, 231, 0.3);
+  animation-delay: 1.6s;
+}
+
+@keyframes ringExpand {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* ── Center dot ───────────────────────────────────── */
+
+.ls-center {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #72dfd1;
+  box-shadow: 0 0 20px rgba(114, 223, 209, 0.8), 0 0 40px rgba(114, 223, 209, 0.4);
+  animation: dotGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes dotGlow {
+  from { box-shadow: 0 0 16px rgba(114, 223, 209, 0.6), 0 0 32px rgba(114, 223, 209, 0.3); }
+  to   { box-shadow: 0 0 28px rgba(114, 223, 209, 1),   0 0 56px rgba(114, 223, 209, 0.6); }
+}
+
+/* ── Logo ─────────────────────────────────────────── */
+
+.ls-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: logoReveal 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+.ls-logo {
+  display: block;
+  height: 72px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+.ls-tagline {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(114, 223, 209, 0.7);
+  font-weight: 600;
+}
+
+@keyframes logoReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: brightness(0) invert(1) blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: brightness(0) invert(1) blur(0);
+  }
+}
+
+/* ── Progress bar ─────────────────────────────────── */
+
+.ls-progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ls-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #72dfd1, #c8b2f7, #7b69e7);
+  animation: progressFill 2.4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes progressFill {
+  0%   { width: 0%; }
+  60%  { width: 80%; }
+  90%  { width: 95%; }
+  100% { width: 100%; }
+}

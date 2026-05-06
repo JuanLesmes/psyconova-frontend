@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 
 interface Service {
   num: string;
@@ -18,7 +19,7 @@ interface VrEnv {
 @Component({
   selector: 'app-services-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RevealDirective],
   templateUrl: './services-section.html',
   styleUrl: './services-section.scss',
 })

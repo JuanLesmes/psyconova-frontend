@@ -139,16 +139,28 @@
 }
 
 .hero-cover__title-accent {
+  display: inline-block;
   background: linear-gradient(
     90deg,
-    #16205A 0%,
-    #67E5BF 28%,
-    #67CECF 62%,
-    #BB99E7 100%
+    #72dfd1,
+    #c8b2f7,
+    #7b69e7,
+    #19206d,
+    #72dfd1,
+    #c8b2f7,
+    #7b69e7
   );
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: waveColor 5s ease-in-out infinite;
+}
+
+@keyframes waveColor {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .hero-cover__scroll {
@@ -160,6 +172,10 @@
   height: 40px;
   border: 2px solid rgba(255, 255, 255, 0.95);
   border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  appearance: none;
+  cursor: pointer;
   z-index: 2;
 }
 
