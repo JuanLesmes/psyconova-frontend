@@ -2,7 +2,7 @@
 
 .ctc {
   position: relative;
-  padding: 8rem 2rem;
+  padding: 4.5rem 2rem 5rem;
   overflow: hidden;
   background:
     radial-gradient(ellipse at 5% 50%, rgba(114, 223, 209, 0.12) 0%, transparent 40%),
@@ -40,7 +40,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 2.5rem;
 }
 
 /* ── Header ─────────────────────────────────────────── */
@@ -90,7 +90,7 @@
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: 4rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* ── Form wrap ───────────────────────────────────────── */
@@ -218,6 +218,17 @@
   transform: translateY(0);
 }
 
+.ctc-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ctc-submit:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .ctc-submit__icon {
   width: 18px;
   height: 18px;
@@ -250,6 +261,64 @@
   100% { left: 160%; }
 }
 
+/* ── Consentimiento de datos ─────────────────────────── */
+
+.ctc-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+}
+
+.ctc-consent__box {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.15rem;
+  accent-color: #7b69e7;
+  cursor: pointer;
+}
+
+.ctc-consent__text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(95, 103, 126, 0.95);
+}
+
+.ctc-consent__text label {
+  cursor: pointer;
+}
+
+.ctc-consent__link {
+  color: #7b69e7;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ctc-consent__link:hover {
+  color: #19206d;
+}
+
+/* ── Error de envío ──────────────────────────────────── */
+
+.ctc-error {
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(214, 69, 87, 0.28);
+  background: rgba(214, 69, 87, 0.07);
+  color: #a5364a;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ctc-error a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 /* ── Success message ─────────────────────────────────── */
 
 .ctc-success {
@@ -279,6 +348,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   padding-top: 0.5rem;
 }
 
@@ -417,6 +487,310 @@ a.ctc-info-card__value:hover {
   }
 
   .ctc-info-stack {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Subtítulo de la tarjeta de ubicación ────────────── */
+
+.ctc-info-card__sub {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(95, 103, 126, 0.9);
+}
+
+/* ── Mapa (OpenStreetMap) ────────────────────────────── */
+
+.ctc-map {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  min-height: 210px;
+}
+
+.ctc-map__frame {
+  position: relative;
+  flex: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(25, 32, 109, 0.1);
+  box-shadow: 0 4px 20px rgba(25, 32, 109, 0.06);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.ctc-map__embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Enlace a indicaciones, dentro de la tarjeta de dirección */
+.ctc-map__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #7b69e7;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ctc-map__link:hover {
+  color: #19206d;
+  border-bottom-color: #19206d;
+}
+
+.ctc-map__link:focus-visible {
+  outline: 2px solid #7b69e7;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.ctc-map__link svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  /* En una sola columna el mapa ya no tiene alto que rellenar. */
+  .ctc-map {
+    min-height: 0;
+  }
+
+  .ctc-map__frame {
+    /* flex:none dentro de un contenedor en fila deja el ancho en 0: hay que fijarlo. */
+    flex: none;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ── Aviso previo del mapa (consentimiento) ──────────── */
+
+.ctc-map__gate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 2rem 1.6rem;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(123, 105, 231, 0.07) 0%, transparent 65%),
+    rgba(255, 255, 255, 0.92);
+}
+
+.ctc-map__gate-icon {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: #7b69e7;
+  stroke-width: 1.5;
+  margin-bottom: 0.2rem;
+}
+
+.ctc-map__gate-title {
+  margin: 0;
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #19206d;
+}
+
+.ctc-map__gate-text {
+  margin: 0;
+  max-width: 30ch;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: rgba(95, 103, 126, 0.95);
+}
+
+.ctc-map__gate-btn {
+  margin-top: 0.6rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #19206d 0%, #7b69e7 100%);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(25, 32, 109, 0.22);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.ctc-map__gate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(25, 32, 109, 0.3);
+}
+
+.ctc-map__gate-btn:focus-visible {
+  outline: 2px solid #19206d;
+  outline-offset: 3px;
+}
+
+.ctc-map__gate-alt {
+  font-size: 0.78rem;
+  color: rgba(95, 103, 126, 0.9);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ctc-map__gate-alt:hover {
+  color: #19206d;
+}
+
+.ctc-map__gate-alt:focus-visible {
+  outline: 2px solid #7b69e7;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ── Campo trampa para bots ──────────────────────────── */
+
+/*
+  Fuera de la vista pero presente en el DOM. No se usa display:none ni
+  visibility:hidden a propósito: muchos bots saltan esos campos, y la gracia
+  es justamente que los llenen.
+*/
+.ctc-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ── Aviso de líneas de crisis ───────────────────────── */
+
+/*
+  Color ámbar a propósito, no rojo: el rojo dispara alarma, y a alguien que
+  llega en un momento difícil hay que darle claridad, no sobresalto.
+*/
+.ctc-crisis {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 20px;
+  border: 1px solid rgba(176, 122, 24, 0.3);
+  background: rgba(232, 180, 74, 0.11);
+}
+
+.ctc-crisis__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.ctc-crisis__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: #8d6110;
+  stroke-width: 1.7;
+  color: #8d6110;
+}
+
+.ctc-crisis__title {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #19206d;
+}
+
+.ctc-crisis__text {
+  margin: 0;
+  max-width: 74ch;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(95, 103, 126, 0.98);
+}
+
+.ctc-crisis__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.7rem 1.4rem;
+}
+
+.ctc-crisis__lines li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Enlace tel: para que en el celular sea un toque y ya. */
+.ctc-crisis__num {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #19206d;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(25, 32, 109, 0.25);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ctc-crisis__num:hover {
+  color: #7b69e7;
+  border-bottom-color: #7b69e7;
+}
+
+.ctc-crisis__num:focus-visible {
+  outline: 2px solid #7b69e7;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.ctc-crisis__desc {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(95, 103, 126, 0.95);
+}
+
+.ctc-crisis__wa {
+  margin: 0;
+  font-size: 0.84rem;
+  color: rgba(95, 103, 126, 0.95);
+}
+
+.ctc-crisis__wa a {
+  color: #19206d;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .ctc-crisis {
+    padding: 1.2rem 1.1rem;
+  }
+
+  .ctc-crisis__lines {
     grid-template-columns: 1fr;
   }
 }

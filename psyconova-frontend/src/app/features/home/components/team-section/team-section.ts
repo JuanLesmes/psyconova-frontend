@@ -1,71 +1,52 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 
-interface TeamMember {
-  name: string;
-  role: string;
-  area: string;
-  bio: string;
-  photo: string;
-  accent: 'teal' | 'purple' | 'indigo';
-}
-
+/**
+ * Los textos viven en assets/i18n/<idioma>.json bajo `team.lead`.
+ * Aquí sólo queda lo que no se traduce: la foto y las claves de especialidad.
+ */
 interface Lead {
-  name: string;
-  role: string;
-  credentials: string;
-  bio: string;
   photo: string;
+  /** Claves de traducción de las especialidades. */
   specialties: string[];
 }
+
+// --- Oculto temporalmente junto con el bloque "Equipo interdisciplinario" del template ---
+// interface TeamMember {
+//   key: string;
+//   photo: string;
+//   accent: 'teal' | 'purple' | 'indigo';
+// }
 
 @Component({
   selector: 'app-team-section',
   standalone: true,
-  imports: [CommonModule, RevealDirective],
+  imports: [CommonModule, RevealDirective, TranslatePipe],
   templateUrl: './team-section.html',
   styleUrl: './team-section.scss',
 })
 export class TeamSection {
   lead: Lead = {
-    name: 'Nombre de la Psicóloga',
-    role: 'Fundadora & Directora Clínica',
-    credentials: 'Psicóloga Clínica · Esp. en Ciberpsicología',
-    bio: 'Con formación en psicología clínica y una especialización en el uso de tecnología aplicada al bienestar emocional, lidera el desarrollo científico y terapéutico de PSYCONOVA. Su trayectoria combina la práctica clínica tradicional con la investigación en realidad virtual como herramienta de intervención, construyendo un puente entre la psicología moderna y la innovación tecnológica con un enfoque profundamente humano.',
-    photo: '',
+    // Generada por `npm run optimize:images` desde design/source-images/team/
+    photo: 'assets/images/team/laura.webp',
     specialties: [
-      'Terapia Cognitivo-Conductual',
-      'Realidad Virtual Terapéutica',
-      'Regulación Emocional',
-      'Ciberpsicología',
+      'team.lead.specialties.cbt',
+      'team.lead.specialties.act',
+      'team.lead.specialties.dbt',
+      'team.lead.specialties.vr',
+      'team.lead.specialties.regulation',
+      'team.lead.specialties.mindfulness',
+      'team.lead.specialties.cyberpsychology',
     ],
   };
 
-  team: TeamMember[] = [
-    {
-      name: 'Nombre del Líder',
-      role: 'Líder de Tecnología',
-      area: 'Tecnología',
-      bio: 'Responsable de la arquitectura técnica, el desarrollo de los entornos VR y la integración de la plataforma con los protocolos clínicos.',
-      photo: '',
-      accent: 'teal',
-    },
-    {
-      name: 'Nombre del Asesor',
-      role: 'Asesor Legal',
-      area: 'Legal',
-      bio: 'Garantiza el cumplimiento normativo en protección de datos, privacidad clínica y el marco legal para el uso de tecnología en salud mental.',
-      photo: '',
-      accent: 'purple',
-    },
-    {
-      name: 'Nombre del Estratega',
-      role: 'Estratega de Marketing',
-      area: 'Marketing',
-      bio: 'Define la voz de marca, la estrategia de comunicación y los canales para conectar a PSYCONOVA con las personas que más lo necesitan.',
-      photo: '',
-      accent: 'indigo',
-    },
-  ];
+  // --- Oculto temporalmente: ver bloque "Equipo interdisciplinario" comentado en team-section.html ---
+  // Los textos de cada integrante siguen en assets/i18n/*.json bajo `team.members`.
+  // team: TeamMember[] = [
+  //   { key: 'tech', photo: '', accent: 'teal' },
+  //   { key: 'legal', photo: '', accent: 'purple' },
+  //   { key: 'marketing', photo: '', accent: 'indigo' },
+  // ];
 }

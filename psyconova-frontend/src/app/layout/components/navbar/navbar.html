@@ -6,7 +6,7 @@
   <button
     class="navbar__toggle"
     type="button"
-    aria-label="Abrir menú"
+    [attr.aria-label]="'nav.openMenu' | translate"
     [attr.aria-expanded]="menuOpen"
     (click)="toggleMenu()"
   >
@@ -20,10 +20,10 @@
     routerLink="/"
     fragment="home"
     (click)="closeMenu()"
-    aria-label="Ir al inicio"
+    [attr.aria-label]="'nav.goHome' | translate"
   >
     <img
-      src="assets/images/branding/logoClaroConLetrasSinFondo.png"
+      src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
       alt="PSYCONOVA"
       class="navbar__brand-image"
     >
@@ -34,7 +34,7 @@
       *ngFor="let language of languages"
       type="button"
       class="navbar__language"
-      [class.is-active]="activeLanguage === language"
+      [class.is-active]="activeLanguage() === language"
       (click)="setLanguage(language)"
     >
       {{ language }}
@@ -46,17 +46,17 @@
   <button
     class="menu-overlay__back"
     type="button"
-    aria-label="Cerrar menú"
+    [attr.aria-label]="'nav.closeMenu' | translate"
     (click)="closeMenu()"
   >
     ←
   </button>
 
   <nav class="menu-overlay__nav">
-    <a routerLink="/" fragment="home" (click)="closeMenu()">Inicio</a>
-    <a (click)="scrollTo('nosotros')">¿Qué es PSYCONOVA?</a>
-    <a routerLink="/" fragment="services" (click)="closeMenu()">Servicios</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">Nosotros</a>
-    <a routerLink="/" fragment="contact" (click)="closeMenu()">Contacto</a>
+    <a routerLink="/" fragment="home" (click)="closeMenu()">{{ 'nav.home' | translate }}</a>
+    <a (click)="scrollTo('nosotros')">{{ 'nav.what' | translate }}</a>
+    <a routerLink="/" fragment="services" (click)="closeMenu()">{{ 'nav.services' | translate }}</a>
+    <a routerLink="/" fragment="intro" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
+    <a routerLink="/" fragment="contact" (click)="closeMenu()">{{ 'nav.contact' | translate }}</a>
   </nav>
 </div>

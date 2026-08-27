@@ -1,0 +1,414 @@
+/* ── Section shell ──────────────────────────────────── */
+
+.story {
+  position: relative;
+  padding: 4.5rem 2rem 5rem;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 15% 5%, rgba(114, 223, 209, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 90%, rgba(200, 178, 247, 0.16) 0%, transparent 45%),
+    linear-gradient(180deg, #0e0a2e 0%, #161c58 55%, #0d1340 100%);
+}
+
+.story::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* ── Decorative glows ───────────────────────────────── */
+
+.story-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+.story-glow--one {
+  top: -10%;
+  right: -6%;
+  width: 26rem;
+  height: 26rem;
+  background: rgba(114, 223, 209, 0.16);
+}
+
+.story-glow--two {
+  bottom: -14%;
+  left: -8%;
+  width: 30rem;
+  height: 30rem;
+  background: rgba(200, 178, 247, 0.16);
+}
+
+.story-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1400px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+
+.story-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+.story-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 178, 247, 0.35);
+  background: rgba(200, 178, 247, 0.1);
+  color: #c8b2f7;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.4rem;
+}
+
+.story-title {
+  margin: 0;
+  font-size: clamp(2.6rem, 4.2vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+}
+
+.story-subtitle {
+  margin: 1.4rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Ficha del cuento ────────────────────────────────── */
+
+.tale {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 2.5rem;
+  align-items: stretch;
+  padding: 1.6rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+/* ── Portada ─────────────────────────────────────────── */
+
+.tale__preview {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #3a342c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.tale__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/*
+  Capa que bloquea la interacción con el cuento. Transparente a propósito:
+  la portada se sigue viendo y animando debajo, sólo no responde al toque.
+*/
+.tale__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(180deg, transparent 55%, rgba(14, 10, 46, 0.55) 100%);
+  cursor: not-allowed;
+}
+
+.tale__lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: rgba(14, 10, 46, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.tale__lock svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+}
+
+/* ── Ficha ───────────────────────────────────────────── */
+
+.tale__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.4rem 0.4rem 0.4rem 0;
+}
+
+.tale__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #72dfd1;
+}
+
+.tale__title {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tale__desc {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.tale__desc--soft {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tale__meta {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tale__meta li {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 178, 247, 0.3);
+  background: rgba(200, 178, 247, 0.08);
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.tale__author {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Palabra clave ───────────────────────────────────── */
+
+.tale__gate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tale__gate-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tale__gate-row {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.tale__gate-input {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.tale__gate-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.tale__gate-input:focus {
+  outline: none;
+  border-color: #72dfd1;
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.tale__gate-input.has-error {
+  border-color: #f2897b;
+}
+
+.tale__gate-btn {
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #72dfd1 0%, #c8b2f7 100%);
+  color: #0e0a2e;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 6px 20px rgba(114, 223, 209, 0.22);
+}
+
+.tale__gate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(114, 223, 209, 0.3);
+}
+
+.tale__gate-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.tale__gate-btn:focus-visible,
+.tale__open-btn:focus-visible {
+  outline: 2px solid #c8b2f7;
+  outline-offset: 3px;
+}
+
+.tale__gate-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.tale__gate-error {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f2897b;
+}
+
+/* ── Desbloqueado ────────────────────────────────────── */
+
+.tale__open {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tale__open-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #72dfd1;
+}
+
+.tale__open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #72dfd1 0%, #c8b2f7 100%);
+  color: #0e0a2e;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 20px rgba(114, 223, 209, 0.22);
+}
+
+.tale__open-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(114, 223, 209, 0.3);
+}
+
+.tale__open-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 980px) {
+  .tale {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .tale__info {
+    padding: 0 0.3rem 0.3rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .story {
+    padding: 3.5rem 1.5rem 4rem;
+  }
+
+  .story-shell {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .tale {
+    padding: 1rem;
+  }
+
+  .tale__preview {
+    aspect-ratio: 4 / 3;
+  }
+
+  .tale__gate-btn {
+    width: 100%;
+  }
+}

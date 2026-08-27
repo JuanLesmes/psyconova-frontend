@@ -1,0 +1,1195 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Las Manadas — un cuento para jugar</title>
+<style>
+:root{
+  --salvia:#9CAF88; --salvia2:#7A9471; --terra:#C4744A; --crema:#FBF6E9;
+  --miel:#E8B44A; --tinta:#4A3F38; --hand:'Chalkboard SE','Comic Sans MS','Comic Neue',cursive;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--hand);background:#3A342C;overflow:hidden;touch-action:manipulation}
+#book{position:fixed;inset:0}
+.page{position:absolute;inset:0;opacity:0;pointer-events:none;background:var(--crema);
+  transition:opacity .55s ease,transform .6s cubic-bezier(.22,1.2,.36,1);transform:scale(1.05)}
+.page.on{opacity:1;pointer-events:auto;transform:scale(1)}
+.art{position:absolute;inset:0}
+.art svg{width:100%;height:100%;display:block}
+.tap{cursor:pointer}
+
+/* franja inferior de texto */
+.band{position:absolute;left:0;right:0;bottom:0;z-index:10;background:rgba(251,246,233,.94);
+  padding:14px 92px 16px;border-radius:26px 26px 0 0;text-align:center;
+  border-top:3px solid rgba(196,116,74,.3);box-shadow:0 -8px 26px rgba(90,60,30,.16);max-height:44%;overflow:auto}
+.story{font-size:clamp(15px,2.55vmin,23px);color:var(--tinta);line-height:1.42}
+.play{margin-top:7px;font-size:clamp(12px,1.95vmin,17px);color:#8A6A4F}
+
+/* portada */
+.coverTitle{position:absolute;top:6.5%;width:100%;text-align:center;z-index:5;pointer-events:none}
+.coverTitle h1{font-size:clamp(38px,9vmin,84px);letter-spacing:.05em;color:var(--terra);
+  text-shadow:0 3px 0 var(--crema),0 -2px 0 var(--crema),3px 0 0 var(--crema),-3px 0 0 var(--crema),0 8px 18px rgba(90,50,20,.35)}
+.coverTitle p{font-size:clamp(17px,3vmin,28px);color:#6B5B43;margin-top:4px;
+  text-shadow:0 2px 0 var(--crema),0 0 8px var(--crema)}
+.bandCover{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
+.bandCover label{font-size:clamp(16px,2.6vmin,24px);color:var(--tinta)}
+#kidname{font-family:var(--hand);font-size:clamp(16px,2.6vmin,24px);color:var(--terra);
+  border:none;border-bottom:3px dashed var(--terra);background:transparent;outline:none;width:min(38vw,260px);text-align:center;padding:2px 6px}
+.bigbtn{font-family:var(--hand);font-size:clamp(16px,2.6vmin,24px);background:var(--miel);color:var(--tinta);
+  border:3px solid #C08A2E;border-radius:999px;padding:8px 22px;cursor:pointer;box-shadow:0 4px 0 #C08A2E}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #C08A2E}
+@keyframes tfloatK{from{transform:translateY(-3px) rotate(-.5deg)}to{transform:translateY(4px) rotate(.5deg)}}
+.coverTitle h1{animation:tfloatK 2.8s ease-in-out infinite alternate}
+@keyframes pulseK{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+#startbtn{animation:pulseK 2s ease-in-out infinite}
+
+/* navegación */
+.nav{position:absolute;top:44%;z-index:30;width:60px;height:60px;border-radius:50%;
+  background:rgba(251,246,233,.92);border:3px solid var(--terra);color:var(--terra);
+  font-size:32px;line-height:1;cursor:pointer;box-shadow:0 3px 10px rgba(60,40,20,.25);font-family:var(--hand)}
+.nav:disabled{opacity:.25;cursor:default}
+#prev{left:12px}#next{right:12px}
+#fsbtn{position:absolute;top:10px;right:12px;z-index:30;width:44px;height:44px;border-radius:12px;
+  background:rgba(251,246,233,.8);border:2px solid rgba(196,116,74,.6);color:var(--terra);font-size:22px;cursor:pointer}
+.dots{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:30}
+.dot{width:11px;height:11px;border-radius:50%;background:rgba(74,63,56,.28);cursor:pointer;border:none;padding:0}
+.dot.on{background:var(--terra);transform:scale(1.25)}
+
+/* animaciones de escena */
+@keyframes wagK{from{transform:rotate(-11deg)}to{transform:rotate(14deg)}}
+.wag{transform-box:fill-box;transform-origin:12% 88%;animation:wagK .7s ease-in-out infinite alternate}
+@keyframes breathK{from{transform:scale(1,1)}to{transform:scale(1.014,1.032)}}
+.breath{transform-box:fill-box;transform-origin:50% 100%;animation:breathK 2.4s ease-in-out infinite alternate}
+@keyframes earsK{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-6deg)}93%{transform:rotate(4deg)}}
+.ears{transform-box:fill-box;transform-origin:50% 96%;animation:earsK 5.4s ease-in-out infinite}
+@keyframes blinkK{0%,91.5%,96.5%,100%{opacity:0}93%,95%{opacity:1}}
+.blink{opacity:0;animation:blinkK 4.7s linear infinite}
+@keyframes swayK{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
+.sway{transform-box:fill-box;transform-origin:26% 8%;animation:swayK 2.3s ease-in-out infinite alternate}
+@keyframes waddleK{from{transform:rotate(-2.6deg)}to{transform:rotate(2.6deg)}}
+.waddle{transform-box:fill-box;transform-origin:50% 100%;animation:waddleK 1.5s ease-in-out infinite alternate}
+@keyframes waveK{from{transform:rotate(-7deg)}to{transform:rotate(11deg)}}
+.wave{transform-box:fill-box;transform-origin:92% 96%;animation:waveK 1.05s ease-in-out infinite alternate}
+@keyframes flickK{0%,100%{opacity:.25}50%{opacity:1}}
+.ff{animation:flickK 2.4s ease-in-out infinite}
+@keyframes floatyK{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(11px,-19px) scale(1.18)}66%{transform:translate(-7px,-9px) scale(.92)}}
+.ffw{animation:floatyK 6.5s ease-in-out infinite}
+@keyframes twK{0%,100%{opacity:.25}50%{opacity:1}}
+.tw{animation:twK 3.2s ease-in-out infinite}
+@keyframes boingK{0%{transform:scale(1,1)}30%{transform:scale(1.13,.85)}55%{transform:scale(.93,1.09)}75%{transform:scale(1.05,.97)}100%{transform:scale(1,1)}}
+.boing{transform-box:fill-box;transform-origin:50% 100%;animation:boingK .55s cubic-bezier(.3,1.3,.5,1)}
+@keyframes shakeK{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-2deg)}40%{transform:translateX(8px) rotate(2deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.shake{animation:shakeK .5s ease !important;transition:none !important}
+@keyframes spinK{to{transform:rotate(360deg)}}
+.swirl{transform-box:fill-box;transform-origin:center;animation:spinK 10s linear infinite}
+@keyframes steamK{0%{transform:translateY(0);opacity:0}25%{opacity:.75}100%{transform:translateY(-52px);opacity:0}}
+.steam{animation:steamK 3.2s ease-out infinite}
+@keyframes ringK{0%{r:8;opacity:.95}100%{r:130;opacity:0}}
+.ring{opacity:0}
+.ring.go{animation:ringK 1.5s ease-out forwards}
+.badge{opacity:0;transform:scale(.25);transform-box:fill-box;transform-origin:center;transition:opacity .22s,transform .5s cubic-bezier(.25,1.7,.45,1)}
+.badge.on{opacity:1;transform:scale(1)}
+.face7 .selring{opacity:0;transition:opacity .25s}
+.face7.sel .selring{opacity:1}
+.n7face{transition:opacity .35s ease}
+.baby4 .selring4{opacity:0;transition:opacity .2s}
+.baby4.sel .selring4{opacity:1}
+.baby4.done{cursor:default}
+.babyin{transition:transform .95s cubic-bezier(.34,1.56,.64,1)}
+.dragme{cursor:grab;touch-action:none}
+.dragme:active{cursor:grabbing}
+.star8 .sc{transition:transform .3s,fill .3s}
+.star8.lit .sc{fill:#FFD97A;filter:url(#glow);animation:none;opacity:1;transform:scale(2.3);transform-box:fill-box;transform-origin:center}
+.jd{transition:opacity .3s}
+#skyheart.show{opacity:1;animation:drawK 2.4s ease forwards}
+@keyframes drawK{to{stroke-dashoffset:0}}
+.stkbtn{font-size:20px;padding:4px 8px;line-height:1}
+.stkbtn.on{background:var(--miel);border-color:#C08A2E}
+.tbsep{width:12px}
+
+/* burbujas y corazones (HTML flotante) */
+.saybubble{position:fixed;transform:translate(-50%,-115%);background:var(--crema);border:3px solid var(--terra);
+  border-radius:18px;padding:8px 16px;font-size:clamp(16px,2.6vmin,24px);color:var(--tinta);z-index:99;
+  font-family:var(--hand);box-shadow:0 5px 16px rgba(0,0,0,.2);pointer-events:none;animation:bubK 1.9s ease forwards;white-space:nowrap}
+@keyframes bubK{0%{transform:translate(-50%,-90%) scale(.5);opacity:0}12%{transform:translate(-50%,-118%) scale(1);opacity:1}80%{opacity:1}100%{transform:translate(-50%,-135%);opacity:0}}
+.cheerbox{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);background:var(--crema);border:4px solid var(--miel);
+  border-radius:26px;padding:18px 34px;font-size:clamp(24px,5vmin,44px);color:var(--terra);z-index:99;
+  font-family:var(--hand);box-shadow:0 10px 30px rgba(0,0,0,.28);pointer-events:none;animation:cheerK 2.4s ease forwards;text-align:center}
+@keyframes cheerK{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}14%{transform:translate(-50%,-50%) scale(1.05);opacity:1}22%{transform:translate(-50%,-50%) scale(1)}82%{opacity:1}100%{opacity:0}}
+.heart{position:fixed;font-size:30px;z-index:99;pointer-events:none;transform:translate(-50%,-50%);animation:heartK 1.9s ease-out forwards}
+@keyframes heartK{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{opacity:1}100%{transform:translate(-50%,-240px) scale(1.25);opacity:0}}
+.phraseBig{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) scale(.3);opacity:0;z-index:20;
+  width:min(80vw,900px);text-align:center;font-size:clamp(26px,5.4vmin,52px);color:var(--crema);pointer-events:none;
+  text-shadow:0 3px 0 var(--terra),0 -2px 0 var(--terra),3px 0 0 var(--terra),-3px 0 0 var(--terra),0 10px 24px rgba(0,0,0,.5);
+  transition:transform .5s cubic-bezier(.2,1.6,.4,1),opacity .4s}
+.phraseBig.show{transform:translate(-50%,-50%) scale(1);opacity:1}
+
+/* páginas de actividad */
+.act{position:absolute;inset:0;background:var(--crema);padding:14px 88px 14px;display:flex;flex-direction:column;gap:8px;overflow:auto;
+  background-image:radial-gradient(rgba(196,116,74,.07) 2px,transparent 2px);background-size:34px 34px}
+.act h2{color:var(--terra);font-size:clamp(19px,3.4vmin,30px);text-align:center}
+.act .lead{color:var(--tinta);font-size:clamp(14px,2.2vmin,19px);text-align:center;line-height:1.35}
+.frameWrap{flex:1;min-height:180px;position:relative;border:8px solid var(--miel);outline:4px dashed var(--terra);outline-offset:7px;
+  border-radius:22px;background:#FFFDF6;margin:10px 4px 6px}
+.frameWrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;border-radius:12px}
+.corner{position:absolute;font-size:22px;z-index:2;pointer-events:none}
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.swatch{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(74,63,56,.35);cursor:pointer}
+.swatch.on{box-shadow:0 0 0 4px var(--miel)}
+.toolbtn{font-family:var(--hand);font-size:15px;background:#fff;border:2px solid var(--terra);color:var(--terra);
+  border-radius:12px;padding:5px 12px;cursor:pointer}
+.toolbtn.on{background:var(--terra);color:#fff}
+.feelrow{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:4px 0 2px}
+.feelrow .q{font-size:clamp(14px,2.3vmin,20px);color:var(--tinta)}
+.facebtn{background:none;border:none;cursor:pointer;text-align:center;font-family:var(--hand);color:#8A6A4F;font-size:13px;
+  border-radius:16px;padding:4px 6px}
+.facebtn svg{display:block;margin:0 auto;width:clamp(44px,7vmin,64px);height:auto}
+.facebtn.sel{background:rgba(232,180,74,.35);outline:3px solid var(--miel)}
+.minis{display:flex;gap:14px;flex:1;min-height:150px}
+.mini{flex:1;display:flex;flex-direction:column;gap:4px}
+.mini .frameWrap{flex:1;margin:2px;outline-offset:5px;border-width:6px;min-height:120px}
+.mini .cap{text-align:center;font-size:clamp(12px,1.9vmin,16px);color:#8A6A4F}
+.ritual{background:rgba(156,175,136,.22);border:3px solid var(--salvia2);border-radius:18px;padding:8px 16px;text-align:center;
+  color:var(--tinta);font-size:clamp(13px,2.1vmin,18px);line-height:1.4}
+.famnote{font-size:clamp(11px,1.7vmin,14px);color:#8A6A4F;text-align:center;font-style:italic;line-height:1.35}
+</style>
+</head>
+<body>
+<!-- defs compartidos (gradientes/filtros usados por todas las páginas) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="glow" x="-250%" y="-250%" width="600%" height="600%">
+    <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="16"/></filter>
+  <filter id="paper" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.33  0 0 0 0 0.22  0 0 0 0.055 0"/>
+  </filter>
+  <linearGradient id="g_sunset" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFEAC2"/><stop offset=".55" stop-color="#F7C795"/><stop offset="1" stop-color="#EDA97F"/>
+  </linearGradient>
+  <linearGradient id="g_day" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FDF0CD"/><stop offset="1" stop-color="#F4D6A0"/>
+  </linearGradient>
+  <linearGradient id="g_dusk" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6B5480"/><stop offset=".6" stop-color="#C97F5E"/><stop offset="1" stop-color="#F2B98A"/>
+  </linearGradient>
+  <linearGradient id="g_night" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#232B45"/><stop offset=".65" stop-color="#4A4468"/><stop offset="1" stop-color="#6B5480"/>
+  </linearGradient>
+  <linearGradient id="g_morn" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="#F9DFA8"/>
+  </linearGradient>
+  <linearGradient id="g_water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#BFD9D4"/><stop offset="1" stop-color="#9CC0BC"/>
+  </linearGradient>
+  <radialGradient id="g_vig" cx=".5" cy=".45" r=".8">
+    <stop offset="0" stop-color="rgba(70,45,25,0)"/><stop offset=".72" stop-color="rgba(70,45,25,0)"/><stop offset="1" stop-color="rgba(70,45,25,.28)"/>
+  </radialGradient>
+  <radialGradient id="g_sun" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="rgba(255,236,180,.95)"/><stop offset=".55" stop-color="rgba(255,226,160,.45)"/><stop offset="1" stop-color="rgba(255,226,160,0)"/>
+  </radialGradient>
+</defs></svg>
+
+<div id="book"></div>
+<button class="nav" id="prev" aria-label="anterior">‹</button>
+<button class="nav" id="next" aria-label="siguiente">›</button>
+<button id="fsbtn" title="pantalla completa">⛶</button>
+<div class="dots" id="dots"></div>
+
+<script>
+'use strict';
+/* ================= utilidades ================= */
+const $=(s,el)=>(el||document).querySelector(s);
+const T=(x,y)=>`translate(${x},${y})`;
+/* El cuento NO guarda absolutamente nada en el navegador. El nombre, la
+   emoción y los dibujos viven solo mientras dura la visita, así el siguiente
+   niño que lo abra empieza en blanco y no encuentra nada del anterior. */
+const _sesion={};
+const LS={g:k=>(k in _sesion)?_sesion[k]:null,
+          s:(k,v)=>{_sesion[k]=v}};
+/* Limpia lo que guardaron versiones anteriores del cuento, para no dejar el
+   nombre ni los dibujos de otro niño en este equipo. */
+try{['name','feel','draw_main','draw_m1','draw_m2','draw_m3','emoji']
+      .forEach(k=>localStorage.removeItem('lm_'+k))}catch(e){}
+const TINTA='#4A3F38';
+
+/* --------- sonido (WebAudio, sin archivos) --------- */
+let _ac=null;
+function ac(){ if(!_ac){ try{_ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){} } if(_ac&&_ac.state==='suspended')_ac.resume(); return _ac; }
+function blip(f=600,dur=.12,type='triangle',vol=.12){const c=ac();if(!c)return;const t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);}
+function chime(){[523,659,784].forEach((f,i)=>setTimeout(()=>blip(f,.35,'sine',.1),i*130));}
+function howlSnd(mult,vol){mult=mult||1;vol=vol===undefined?.22:vol;
+  const c=ac();if(!c)return;const t=c.currentTime,o=c.createOscillator(),g=c.createGain(),v=c.createOscillator(),vg=c.createGain();
+  o.type='sine';o.frequency.setValueAtTime(240*mult,t);o.frequency.linearRampToValueAtTime(540*mult,t+.5);
+  o.frequency.setValueAtTime(540*mult,t+.95);o.frequency.linearRampToValueAtTime(320*mult,t+1.7);
+  v.type='sine';v.frequency.value=5.5;vg.gain.value=11*mult;v.connect(vg);vg.connect(o.frequency);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.18);g.gain.setValueAtTime(vol,t+1.15);g.gain.linearRampToValueAtTime(0,t+1.9);
+  o.connect(g);g.connect(c.destination);o.start(t);v.start(t);o.stop(t+2);v.stop(t+2);}
+
+/* ================= constructor de lobos =================
+   Los mismos parámetros producen SIEMPRE el mismo personaje. */
+function wolf(o){
+  o=Object.assign({x:0,y:0,s:1,flip:false,exp:'happy',wag:false,pose:'sit',ear:1,c:'#999',belly:'#ddd'},o);
+  const c=o.c,b=o.belly,dk=TINTA,inner='#CE9578',eh=40*o.ear;
+  /* cabeza (coords locales, centro 0,0, radio 40) */
+  const ears=`<path d="M -6 -30 L -37 -12 L ${-(26+16*o.ear)} ${-(18+eh)} Z" fill="${c}" stroke="${c}" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M -13 -26 L -29 -16 L ${-(22+11*o.ear)} ${-(15+eh*.55)} Z" fill="${inner}" stroke="${inner}" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 6 -30 L 37 -12 L ${26+16*o.ear} ${-(18+eh)} Z" fill="${c}" stroke="${c}" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M 13 -26 L 29 -16 L ${22+11*o.ear} ${-(15+eh*.55)} Z" fill="${inner}" stroke="${inner}" stroke-width="6" stroke-linejoin="round"/>`;
+  const st=`stroke="${dk}" stroke-width="3" fill="none" stroke-linecap="round"`;
+  const dl=((((o.x||0)*13+(o.y||0)*7)%36)/10).toFixed(1);
+  const eyesOpen=`<circle cx="-16" cy="-4" r="4.6" fill="${dk}"/><circle cx="16" cy="-4" r="4.6" fill="${dk}"/>
+    <circle cx="-14.4" cy="-5.6" r="1.5" fill="#fff"/><circle cx="17.6" cy="-5.6" r="1.5" fill="#fff"/>
+    <g class="blink" style="animation-delay:${dl}s"><circle cx="-16" cy="-4" r="7" fill="${c}"/><circle cx="16" cy="-4" r="7" fill="${c}"/></g>`;
+  const eyesClosed=`<path d="M -21 -3 Q -16 2 -11 -3" ${st}/><path d="M 11 -3 Q 16 2 21 -3" ${st}/>`;
+  const eyesJoy=`<path d="M -21 -2 Q -16 -9 -11 -2" ${st}/><path d="M 11 -2 Q 16 -9 21 -2" ${st}/>`;
+  const browsWorry=`<path d="M -24 -17 L -10 -12" ${st}/><path d="M 24 -17 L 10 -12" ${st}/>`;
+  const browsSad=`<path d="M -24 -12 L -10 -16" ${st}/><path d="M 24 -12 L 10 -16" ${st}/>`;
+  const browsAngry=`<path d="M -25 -20 L -9 -12" ${st}/><path d="M 25 -20 L 9 -12" ${st}/>`;
+  const browsConf=`<path d="M -22 -18 L -8 -15" ${st}/><path d="M 8 -25 Q 14 -30 20 -25" ${st}/>`;
+  let eyes=eyesOpen,mouth='',cheeks=true,rot=0;
+  switch(o.exp){
+    case 'happy': mouth=`<path d="M -8 19 Q 0 26 8 19" ${st}/>`; break;
+    case 'joy':   eyes=eyesJoy; mouth=`<path d="M -9 17 Q 0 31 9 17 Z" fill="${dk}"/>`; break;
+    case 'sleep': eyes=eyesClosed; mouth=`<path d="M -6 20 Q 0 24 6 20" ${st}/>`; break;
+    case 'wary':  eyes=eyesOpen+browsWorry; mouth=`<path d="M -7 21 L 7 21" ${st}/>`; cheeks=false; break;
+    case 'sad':   eyes=eyesOpen+browsSad; mouth=`<path d="M -8 24 Q 0 17 8 24" ${st}/>`; cheeks=false; break;
+    case 'bravo': eyes=eyesOpen+browsAngry; mouth=`<path d="M -8 24 Q 0 16 8 24" ${st}/>`; cheeks=false; break;
+    case 'confused': eyes=eyesOpen+browsConf; mouth=`<path d="M -12 20 q 6 -7 12 0 q 6 7 12 0" ${st}/>`; cheeks=false; break;
+    case 'curious': mouth=`<circle cy="20" r="4" fill="${dk}"/>`; break;
+    case 'howl':  eyes=eyesClosed; mouth=`<ellipse cy="20" rx="6" ry="9" fill="${dk}"/>`; rot=-22; break;
+  }
+  const cheekS=cheeks?`<ellipse cx="-27" cy="8" rx="6.5" ry="4.5" fill="#E29A78" opacity=".4"/><ellipse cx="27" cy="8" rx="6.5" ry="4.5" fill="#E29A78" opacity=".4"/>`:'';
+  const headAt=(hx,hy,sc)=>`<g transform="${T(hx,hy)} rotate(${rot}) scale(${sc||1})">
+    <g class="ears" style="animation-delay:${(+dl+1.3).toFixed(1)}s">${ears}</g>
+    <circle r="40" fill="${c}"/><ellipse cy="16" rx="17" ry="13" fill="${b}"/>
+    ${eyes}${cheekS}<ellipse cy="8" rx="6.5" ry="5" fill="${dk}"/>${mouth}</g>`;
+  let body='';
+  if(o.pose==='sit'){
+    const tail=`<g class="${o.wag?'wag':''}">
+      <path d="M 34 -40 Q 68 -46 64 -84 Q 62 -98 50 -103" stroke="${c}" stroke-width="17" fill="none" stroke-linecap="round"/>
+      <path d="M 58 -88 Q 56 -99 50 -103" stroke="${b}" stroke-width="12" fill="none" stroke-linecap="round"/></g>`;
+    body=`${tail}
+      <ellipse cy="-46" rx="46" ry="44" fill="${c}"/>
+      <ellipse cy="-40" rx="26" ry="32" fill="${b}"/>
+      <rect x="-26" y="-58" width="15" height="56" rx="7" fill="${c}"/>
+      <rect x="11" y="-58" width="15" height="56" rx="7" fill="${c}"/>
+      <ellipse cx="-18" cy="-3" rx="12" ry="6.5" fill="${c}"/>
+      <ellipse cx="18" cy="-3" rx="12" ry="6.5" fill="${c}"/>
+      ${headAt(0,-112)}`;
+  }else{ /* lie: acostado, cabeza a la izquierda */
+    body=`<g class="${o.wag?'wag':''}">
+      <path d="M 52 -28 Q 86 -36 80 -62" stroke="${c}" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <path d="M 82 -48 Q 82 -58 78 -62" stroke="${b}" stroke-width="11" fill="none" stroke-linecap="round"/></g>
+      <ellipse cx="8" cy="-30" rx="58" ry="28" fill="${c}"/>
+      <ellipse cx="8" cy="-20" rx="38" ry="14" fill="${b}"/>
+      <ellipse cx="-46" cy="-8" rx="15" ry="7" fill="${c}"/>
+      <ellipse cx="-20" cy="-8" rx="15" ry="7" fill="${c}"/>
+      ${headAt(-52,-58,.95)}`;
+  }
+  return `<g transform="${T(o.x,o.y)} scale(${o.flip?-o.s:o.s},${o.s})">
+    <ellipse cy="-1" rx="${o.pose==='sit'?55:74}" ry="9" fill="rgba(70,45,20,.14)"/>
+    <g class="breath" style="animation-delay:${dl}s">${body}</g></g>`;
+}
+/* personajes fijos */
+const C={
+  nilo :o=>wolf(Object.assign({c:'#BFC7CC',belly:'#EFEAE0',ear:1.55,wag:true},o)),
+  mama :o=>wolf(Object.assign({c:'#A9AFB4',belly:'#E3DFD6',ear:1},o)),
+  tao  :o=>wolf(Object.assign({c:'#939BA1',belly:'#DCD8CE',ear:1.1},o)),
+  papa :o=>wolf(Object.assign({c:'#666E75',belly:'#B9BDC0',ear:1},o)),
+  ambar:o=>wolf(Object.assign({c:'#D9A64E',belly:'#F4E0AE',ear:1},o)),
+  luna :o=>wolf(Object.assign({c:'#E6BE6E',belly:'#F8EAC2',ear:1.15},o)),
+};
+/* lobezno bebé (chibi) — hijo de papá y Ámbar: gris dorado */
+function babyW(o){
+  o=Object.assign({x:0,y:0,s:1,flip:false,reach:false},o);
+  const c='#C9B183',b='#EADFC4',dk=TINTA,inner='#CE9578';
+  const arm=o.reach?`<g class="wave"><path d="M -6 -34 Q -34 -60 -44 -84" stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <circle cx="-44" cy="-84" r="6.5" fill="${c}"/></g>`:'';
+  return `<g transform="${T(o.x,o.y)} scale(${o.flip?-o.s:o.s},${o.s})">
+    <ellipse cy="-1" rx="30" ry="6" fill="rgba(70,45,20,.14)"/>
+    <g class="breath" style="animation-delay:${((o.x%30)/10).toFixed(1)}s">
+    <path d="M 20 -18 Q 38 -22 36 -38" stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <ellipse cy="-20" rx="23" ry="19" fill="${c}"/>
+    <ellipse cy="-15" rx="13" ry="11" fill="${b}"/>
+    <ellipse cx="-10" cy="-3" rx="8" ry="4.5" fill="${c}"/><ellipse cx="10" cy="-3" rx="8" ry="4.5" fill="${c}"/>
+    ${arm}
+    <g transform="${T(0,-52)}">
+      <path d="M -8 -16 L -22 -8 L -18 -32 Z" fill="${c}" stroke="${c}" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M 8 -16 L 22 -8 L 18 -32 Z" fill="${c}" stroke="${c}" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M -11 -15 L -18 -11 L -16 -24 Z" fill="${inner}"/>
+      <path d="M 11 -15 L 18 -11 L 16 -24 Z" fill="${inner}"/>
+      <circle r="25" fill="${c}"/>
+      <ellipse cy="10" rx="11" ry="8" fill="${b}"/>
+      <path d="M -14 -3 Q -10 -8 -6 -3" stroke="${dk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M 6 -3 Q 10 -8 14 -3" stroke="${dk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <ellipse cy="5" rx="4" ry="3.2" fill="${dk}"/>
+      <path d="M -5 12 Q 0 17 5 12" stroke="${dk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    </g></g></g>`;
+}
+
+/* ================= otros animales ================= */
+function eleph(o){
+  o=Object.assign({x:0,y:0,s:1,flip:false},o);
+  const c='#AEB9C7',c2='#96A3B5',inn='#D8B7B0',dk=TINTA;
+  return `<g transform="${T(o.x,o.y)} scale(${o.flip?-o.s:o.s},${o.s})">
+    <ellipse cy="2" rx="66" ry="9" fill="rgba(50,45,40,.14)"/>
+    <g class="breath" style="animation-delay:${((o.x%32)/10).toFixed(1)}s">
+    <rect x="-44" y="-20" width="20" height="22" rx="9" fill="${c2}"/>
+    <rect x="12" y="-20" width="20" height="22" rx="9" fill="${c2}"/>
+    <ellipse cy="-54" rx="56" ry="43" fill="${c}"/>
+    <circle cx="52" cy="-74" r="31" fill="${c}"/>
+    <ellipse cx="34" cy="-74" rx="15" ry="22" fill="${c2}"/>
+    <ellipse cx="34" cy="-74" rx="8" ry="13" fill="${inn}"/>
+    <g class="sway" style="animation-delay:${((o.x%17)/10).toFixed(1)}s">
+    <path d="M 74 -66 q 18 12 13 36 q -3 12 -15 15" stroke="${c}" stroke-width="13" fill="none" stroke-linecap="round"/></g>
+    <circle cx="60" cy="-80" r="3.6" fill="${dk}"/>
+    <path d="M 52 -66 Q 58 -61 64 -65" stroke="${dk}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="66" cy="-70" rx="5" ry="3.5" fill="#E29A78" opacity=".45"/></g></g>`;
+}
+function lionG(o){
+  o=Object.assign({x:0,y:0,s:1,flip:false,mane:false},o);
+  const c='#D9A64E',b='#F0D9A8',mn='#A9682B',dk=TINTA;
+  return `<g transform="${T(o.x,o.y)} scale(${o.flip?-o.s:o.s},${o.s})">
+    <ellipse cy="0" rx="52" ry="8" fill="rgba(90,60,20,.15)"/>
+    <g class="breath" style="animation-delay:${((o.x%28)/10).toFixed(1)}s">
+    <path d="M 32 -36 Q 68 -30 72 -8" stroke="${c}" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="73" cy="-5" r="8" fill="${mn}"/>
+    ${o.mane?`<circle cy="-106" r="56" fill="#B47433"/><circle cy="-106" r="49" fill="${mn}"/>`:''}
+    <ellipse cy="-44" rx="44" ry="42" fill="${c}"/>
+    <ellipse cy="-38" rx="24" ry="30" fill="${b}"/>
+    <rect x="-24" y="-54" width="14" height="52" rx="7" fill="${c}"/>
+    <rect x="10" y="-54" width="14" height="52" rx="7" fill="${c}"/>
+    <g transform="${T(0,-106)}">
+      <circle cx="-27" cy="-28" r="11" fill="${c}"/><circle cx="-27" cy="-28" r="5.5" fill="#CE9578"/>
+      <circle cx="27" cy="-28" r="11" fill="${c}"/><circle cx="27" cy="-28" r="5.5" fill="#CE9578"/>
+      <circle r="36" fill="${c}"/>
+      <ellipse cy="14" rx="15" ry="11" fill="${b}"/>
+      <circle cx="-13" cy="-5" r="4.2" fill="${dk}"/><circle cx="13" cy="-5" r="4.2" fill="${dk}"/>
+      <path d="M -4 8 L 4 8 L 0 13 Z" fill="${dk}"/>
+      <path d="M -7 17 Q 0 23 7 17" stroke="${dk}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    </g></g></g>`;
+}
+function canela(x,y,s){
+  const c='#B5722F',c2='#8F5822',b='#E8C79B',dk=TINTA;
+  return `<g transform="${T(x,y)} scale(${s})">
+    <ellipse cy="0" rx="62" ry="9" fill="rgba(90,60,20,.15)"/>
+    <g class="breath" style="animation-delay:.8s">
+    <path d="M 46 -36 q 26 -8 24 -28 q -2 -14 -18 -12" stroke="${c}" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <ellipse cy="-28" rx="54" ry="28" fill="${c}"/>
+    <ellipse cy="-14" rx="26" ry="8" fill="${b}"/>
+    <ellipse cx="-56" cy="-8" rx="14" ry="7" fill="${c}"/>
+    <g transform="${T(-38,-52)}">
+      <circle r="27" fill="${c}"/>
+      <ellipse cx="-20" cy="-2" rx="11" ry="19" fill="${c2}" transform="rotate(18 -20 -2)"/>
+      <ellipse cy="12" rx="13" ry="9" fill="${b}"/>
+      <ellipse cy="6" rx="5" ry="4" fill="${dk}"/>
+      <path d="M -16 -6 Q -11 -11 -6 -6" stroke="${dk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M 6 -6 Q 11 -11 16 -6" stroke="${dk}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M -5 15 Q 0 19 5 15" stroke="${dk}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </g></g></g>`;
+}
+function kitten(x,y,s,c){
+  const dk=TINTA;
+  return `<g transform="${T(x,y)} scale(${s})">
+    <path d="M 12 -8 q 14 2 12 -10" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cy="-12" rx="14" ry="11" fill="${c}"/>
+    <g transform="${T(-8,-24)}">
+      <path d="M -8 -6 L -12 -16 L -2 -11 Z" fill="${c}"/>
+      <path d="M 8 -6 L 12 -16 L 2 -11 Z" fill="${c}"/>
+      <circle r="10" fill="${c}"/>
+      <path d="M -6 -1 Q -3.5 1.5 -1 -1" stroke="${dk}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M 1 -1 Q 3.5 1.5 6 -1" stroke="${dk}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M -2 3 L 2 3 L 0 5.5 Z" fill="#D97B6C"/>
+    </g></g>`;
+}
+function pengu(x,y,s){
+  const dk='#343A42',wh='#F7F3E8',or='#E8963E';
+  return `<g transform="${T(x,y)} scale(${s})">
+    <ellipse cy="0" rx="38" ry="7" fill="rgba(70,75,90,.16)"/>
+    <g class="waddle">
+    <path d="M -30 -70 q -15 18 -7 36" stroke="${dk}" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M 30 -70 q 15 18 7 36" stroke="${dk}" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <ellipse cy="-52" rx="32" ry="44" fill="${dk}"/>
+    <ellipse cy="-44" rx="21" ry="33" fill="${wh}"/>
+    <circle cy="-104" r="22" fill="${dk}"/>
+    <ellipse cy="-99" rx="14" ry="11" fill="${wh}"/>
+    <circle cx="-7" cy="-106" r="3.2" fill="${dk}"/><circle cx="7" cy="-106" r="3.2" fill="${dk}"/>
+    <path d="M -5 -98 L 5 -98 L 0 -90 Z" fill="${or}"/>
+    <ellipse cx="-11" cy="-2" rx="10" ry="5" fill="${or}"/>
+    <ellipse cx="11" cy="-2" rx="10" ry="5" fill="${or}"/>
+    <ellipse cy="-10" rx="15" ry="12" fill="#FBF3DF" stroke="#E0D3B4" stroke-width="2"/></g></g>`;
+}
+
+/* ================= decorados ================= */
+function tree(x,y,s,c1,c2){c1=c1||'#7A9471';c2=c2||'#5F7D5C';
+  return `<g transform="${T(x,y)} scale(${s})">
+    <rect x="-7" y="-42" width="14" height="46" rx="6" fill="#8A6A4F"/>
+    <circle cy="-72" r="38" fill="${c1}"/><circle cx="-27" cy="-54" r="26" fill="${c2}"/><circle cx="27" cy="-56" r="28" fill="${c1}"/></g>`;
+}
+function caveG(x,y,s,rock){rock=rock||'#8A7565';
+  return `<g transform="${T(x,y)} scale(${s})">
+    <path d="M -95 0 Q -88 -95 0 -100 Q 88 -95 95 0 Z" fill="${rock}"/>
+    <path d="M -70 -18 Q -40 -40 -10 -30" stroke="rgba(255,255,255,.18)" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M -48 0 Q -46 -64 0 -66 Q 46 -64 48 0 Z" fill="#4A3B30"/></g>`;
+}
+function ffly(x,y,d){
+  return `<g transform="${T(x,y)}"><g class="ffw" style="animation-delay:${d}s">
+    <circle r="4.2" fill="#FFD97A" class="ff" style="animation-delay:${(d*.63).toFixed(2)}s" filter="url(#glow)"/></g></g>`;
+}
+/* luciérnaga atrapable (página 9) */
+function ff9(x,y,d){
+  return `<g class="tap ff9" data-fx="${x}" data-fy="${y}"><g transform="${T(x,y)}"><g class="fly">
+    <g class="ffw" style="animation-delay:${d}s"><circle r="5" fill="#FFD97A" class="ff" filter="url(#glow)"/></g>
+    <circle r="22" fill="#fff" opacity="0" pointer-events="all"/></g></g></g>`;
+}
+/* estrella encendible (página 8) */
+function starTap(x,y,d){
+  return `<g class="tap star8"><g transform="${T(x,y)}">
+    <circle r="22" fill="#fff" opacity="0" pointer-events="all"/>
+    <circle class="sc tw" r="3.4" fill="#FBF3DF" style="animation-delay:${d}s"/></g></g>`;
+}
+function starsG(list){
+  return list.map(([x,y,r,d])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#FBF3DF" class="tw" style="animation-delay:${d}s"/>`).join('');
+}
+function spiral(cx,cy,r0,col,delay){
+  let p='',n=46;
+  for(let i=0;i<=n;i++){const t=i/n,r=r0*(1-t*.82),a=t*4.2*Math.PI;
+    p+=(i?'L':'M')+(r*Math.cos(a)).toFixed(1)+' '+(r*Math.sin(a)).toFixed(1)+' ';}
+  return `<g transform="${T(cx,cy)}"><g class="swirl" style="animation-delay:${delay||0}s">
+    <path d="${p}" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/></g></g>`;
+}
+function badge(x,y){
+  return `<g transform="${T(x,y)}"><g class="badge">
+    <circle r="21" fill="#E8B44A" stroke="#FBF6E9" stroke-width="4"/>
+    <text class="bt" y="9" text-anchor="middle" font-size="27" font-weight="bold" fill="${TINTA}" font-family="Chalkboard SE,Comic Sans MS,sans-serif">•</text></g></g>`;
+}
+function faceFeat(k){
+  const dk=TINTA,st=`stroke="${dk}" stroke-width="4" fill="none" stroke-linecap="round"`;
+  const eye=`<circle cx="-14" cy="-8" r="5" fill="${dk}"/><circle cx="14" cy="-8" r="5" fill="${dk}"/>`;
+  switch(k){
+    case 'feliz': return eye+`<path d="M -16 10 Q 0 26 16 10" ${st}/>`;
+    case 'tranquilo': return `<path d="M -20 -8 Q -14 -2 -8 -8" ${st}/><path d="M 8 -8 Q 14 -2 20 -8" ${st}/><path d="M -10 12 Q 0 19 10 12" ${st}/>`;
+    case 'triste': return eye+`<path d="M -14 18 Q 0 6 14 18" ${st}/><path d="M 22 4 q 7 9 0 14 q -7 -5 0 -14" fill="#7FA3C4" stroke="none"/>`;
+    case 'bravo': return eye+`<path d="M -22 -21 L -8 -15" ${st}/><path d="M 22 -21 L 8 -15" ${st}/><path d="M -12 16 Q 0 9 12 16" ${st}/>`;
+    case 'curioso': return eye+`<path d="M -20 -22 Q -14 -27 -8 -23" ${st}/><path d="M 8 -25 Q 14 -30 20 -24" ${st}/><circle cy="15" r="5.5" fill="${dk}"/>`;
+    default: /* confundido */ return eye+`<path d="M -20 -21 L -8 -17" ${st}/><path d="M 8 -25 Q 14 -29 20 -25" ${st}/><path d="M -16 15 q 8 -10 16 0 q 8 10 16 0" ${st}/>`;
+  }
+}
+function faceSVG(k){
+  return `<svg viewBox="-50 -50 100 100"><circle r="44" fill="#FBF3DF" stroke="#E8B44A" stroke-width="5"/>${faceFeat(k)}</svg>`;
+}
+const vig=`<rect width="1200" height="800" fill="url(#g_vig)" pointer-events="none"/><rect width="1200" height="800" filter="url(#paper)" pointer-events="none"/>`;
+const SVGO=`<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">`;
+
+/* ================= escenas ================= */
+/* p1 · portada */
+const art1=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_sunset)"/>
+  <circle cx="600" cy="470" r="300" fill="url(#g_sun)"/>
+  <circle cx="600" cy="470" r="95" fill="#FFE9B0" opacity=".8" filter="url(#soft)"/>
+  <ellipse cx="230" cy="700" rx="560" ry="200" fill="#A9BC93"/>
+  <ellipse cx="980" cy="710" rx="560" ry="210" fill="#96AC85"/>
+  ${tree(105,540,1.5)}${tree(230,505,1.0,'#6F8A67','#59775A')}${tree(1090,530,1.7)}${tree(975,505,1.1,'#6F8A67','#59775A')}
+  <ellipse cx="600" cy="850" rx="950" ry="270" fill="#8AA278"/>
+  <ellipse cx="600" cy="610" rx="250" ry="70" fill="#D9C9A8" opacity=".75"/>
+  ${C.nilo({x:600,y:585,s:1.35,exp:'joy'})}
+  ${ffly(390,420,0)}${ffly(470,330,1.2)}${ffly(760,370,.6)}${ffly(830,450,1.8)}${ffly(690,290,.3)}
+  ${ffly(300,520,2.1)}${ffly(900,540,1.5)}${ffly(530,470,.9)}${ffly(980,330,2.4)}${ffly(200,380,1.1)}
+  ${vig}</svg>`;
+
+/* p2 · dos cuevas */
+const art2=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_day)"/>
+  <circle cx="870" cy="160" r="150" fill="url(#g_sun)"/>
+  <g opacity=".85"><ellipse cx="310" cy="130" rx="70" ry="24" fill="#FFFDF4"/><ellipse cx="370" cy="116" rx="52" ry="20" fill="#FFFDF4"/></g>
+  <g opacity=".7"><ellipse cx="650" cy="92" rx="60" ry="20" fill="#FFFDF4"/><ellipse cx="705" cy="82" rx="42" ry="16" fill="#FFFDF4"/></g>
+  <path d="M 520 210 q 12 -10 24 0 M 562 190 q 12 -10 24 0" stroke="#8A7A5F" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="320" cy="750" rx="500" ry="390" fill="#9CAF88"/>
+  <ellipse cx="640" cy="850" rx="900" ry="230" fill="#8AA278"/>
+  <path d="M 950 340 Q 900 500 1010 640 Q 1080 730 1060 800 L 1200 800 L 1200 340 Z" fill="url(#g_water)"/>
+  <path d="M 975 420 q 20 8 40 0 M 1000 520 q 20 8 40 0 M 1035 610 q 20 8 40 0" stroke="#DCEBE8" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M 240 640 Q 420 570 570 585 Q 760 605 830 545" stroke="#D9C9A8" stroke-width="46" fill="none" stroke-linecap="round" opacity=".85"/>
+  ${tree(150,455,1.2)}${tree(490,420,.9,'#6F8A67','#59775A')}${tree(1120,560,1.4)}
+  <g class="tap" data-say="¡La cueva de la colina! 🏔️" data-tone="700">
+    ${caveG(330,400,1.5)}
+    ${C.mama({x:298,y:398,s:.48})}${C.tao({x:366,y:400,s:.42})}
+  </g>
+  <g class="tap" data-say="¡La cueva del río! 🌊" data-tone="450">
+    ${caveG(880,490,1.4,'#7C6A58')}
+    ${C.papa({x:795,y:525,s:.72})}
+  </g>
+  <g class="dragme"><circle cx="580" cy="495" r="95" fill="#fff" opacity="0" pointer-events="all"/>${C.nilo({x:580,y:565,s:.75,exp:'happy'})}</g>
+  ${ffly(660,470,.5)}${ffly(440,490,1.4)}
+  ${vig}</svg>`;
+
+/* p3 · elefantas */
+const art3=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_day)"/>
+  <circle cx="320" cy="130" r="140" fill="url(#g_sun)"/>
+  <circle cx="320" cy="130" r="55" fill="#FFE9B0" opacity=".85"/>
+  <g opacity=".85"><ellipse cx="640" cy="110" rx="70" ry="24" fill="#FFFDF4"/><ellipse cx="700" cy="98" rx="52" ry="20" fill="#FFFDF4"/></g>
+  <g opacity=".7"><ellipse cx="890" cy="170" rx="58" ry="19" fill="#FFFDF4"/><ellipse cx="940" cy="160" rx="40" ry="15" fill="#FFFDF4"/></g>
+  <ellipse cx="600" cy="330" rx="800" ry="90" fill="#8AA278"/>
+  ${tree(255,305,.85)}${tree(500,295,.65,'#6F8A67','#59775A')}${tree(945,300,.8)}${tree(700,290,.55,'#6F8A67','#59775A')}
+  <rect y="330" width="1200" height="360" fill="url(#g_water)"/>
+  <g class="tap cnt" data-cnt="ele">${eleph({x:280,y:530,s:1})}${badge(280,340)}</g>
+  <g class="tap cnt" data-cnt="ele">${eleph({x:505,y:508,s:.92,flip:true})}${badge(505,325)}</g>
+  <g class="tap cnt" data-cnt="ele">${eleph({x:730,y:530,s:1})}${badge(730,340)}</g>
+  <g class="tap cnt" data-cnt="ele">${eleph({x:940,y:508,s:.92,flip:true})}${badge(940,325)}</g>
+  <g class="tap" data-splash="1">${eleph({x:390,y:560,s:.5})}</g>
+  <g class="tap" data-splash="1">${eleph({x:625,y:568,s:.46,flip:true})}</g>
+  <g class="tap" data-splash="1">${eleph({x:850,y:560,s:.5})}</g>
+  <g class="tap" data-splash="1">
+    <rect y="545" width="1200" height="150" fill="#9CC0BC" opacity=".75"/>
+    <path d="M 120 580 q 26 10 52 0 M 330 605 q 26 10 52 0 M 585 585 q 26 10 52 0 M 840 610 q 26 10 52 0 M 1050 580 q 26 10 52 0" stroke="#DCEBE8" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/>
+  </g>
+  <g opacity=".9"><circle cx="455" cy="430" r="6" fill="#CFE4E0"/><circle cx="478" cy="405" r="5" fill="#CFE4E0"/><circle cx="500" cy="430" r="6.5" fill="#CFE4E0"/></g>
+  <ellipse cx="600" cy="740" rx="820" ry="90" fill="#8AA278"/>
+  ${vig}</svg>`;
+
+/* p4 · pingüino, Canela y leones — con juego de unir bebés */
+function chick(){
+  const dk='#343A42',or='#E8963E';
+  return `<g><ellipse cy="0" rx="20" ry="4.5" fill="rgba(70,75,90,.15)"/>
+    <ellipse cy="-20" rx="17" ry="19" fill="#6B7683"/>
+    <ellipse cy="-16" rx="11" ry="12" fill="#F7F3E8"/>
+    <circle cy="-42" r="14" fill="#6B7683"/>
+    <ellipse cy="-39" rx="9" ry="7.5" fill="#F7F3E8"/>
+    <circle cx="-4.5" cy="-43" r="2.2" fill="${dk}"/><circle cx="4.5" cy="-43" r="2.2" fill="${dk}"/>
+    <path d="M -3 -38 L 3 -38 L 0 -33 Z" fill="${or}"/>
+    <ellipse cx="-6" cy="-1" rx="6" ry="3" fill="${or}"/><ellipse cx="6" cy="-1" rx="6" ry="3" fill="${or}"/></g>`;
+}
+function baby4(id,x,y,art){
+  return `<g class="tap baby4" data-fam="${id}" data-x="${x}" data-y="${y}">
+    <g transform="${T(x,y)}">
+      <circle class="selring4" cy="-26" r="46" fill="none" stroke="#E8B44A" stroke-width="7"/>
+      <g class="babyin">${art}</g>
+    </g></g>`;
+}
+const art4=`${SVGO}
+  <rect width="1200" height="800" fill="#F7EAD3"/>
+  <rect width="430" height="800" fill="#DCE9F2"/>
+  <rect x="770" width="430" height="800" fill="#F2D9A8"/>
+  <linearGradient id="bl1" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#DCE9F2"/><stop offset="1" stop-color="#F7EAD3"/></linearGradient>
+  <linearGradient id="bl2" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#F7EAD3"/><stop offset="1" stop-color="#F2D9A8"/></linearGradient>
+  <rect x="390" width="120" height="800" fill="url(#bl1)"/>
+  <rect x="740" width="120" height="800" fill="url(#bl2)"/>
+  <ellipse cx="250" cy="640" rx="360" ry="140" fill="#F3F7FA"/>
+  <circle cx="180" cy="200" r="4" fill="#fff" class="tw"/><circle cx="265" cy="130" r="3.4" fill="#fff" class="tw" style="animation-delay:1s"/>
+  <circle cx="360" cy="230" r="4" fill="#fff" class="tw" style="animation-delay:.5s"/><circle cx="320" cy="330" r="3" fill="#fff" class="tw" style="animation-delay:1.6s"/>
+  <circle cx="225" cy="390" r="3.6" fill="#fff" class="tw" style="animation-delay:2.2s"/>
+  <g class="tap" data-famzone="pin" data-say="¡Prrr, prrr! 🐧" data-tone="820">${pengu(300,545,1.05)}</g>
+  <ellipse cx="600" cy="660" rx="330" ry="120" fill="#EAD9B8"/>
+  <ellipse cx="600" cy="590" rx="170" ry="52" fill="#D9B98C"/>
+  <g class="tap" data-famzone="can" data-say="¡Guau! ¡Miau, miau, miau! 🐕🐱" data-tone="600">
+    ${canela(590,560,1.05)}
+    ${kitten(530,575,1,'#8C8C94')}${kitten(608,585,1,'#D98E4A')}${kitten(668,570,1,'#EFE6D8')}
+  </g>
+  <ellipse cx="950" cy="670" rx="380" ry="150" fill="#E3C489"/>
+  <g class="tap" data-famzone="leo" data-say="¡Rooooar! 🦁" data-tone="300">
+    ${lionG({x:885,y:505,s:.78,mane:true})}
+    ${lionG({x:965,y:545,s:.66,flip:true})}
+    ${lionG({x:822,y:565,s:.55})}
+    ${lionG({x:912,y:585,s:.38})}
+    ${lionG({x:968,y:595,s:.34,flip:true})}
+  </g>
+  <g opacity=".92"><ellipse cx="600" cy="218" rx="245" ry="40" fill="#FFFDF4"/>
+    <ellipse cx="425" cy="208" rx="72" ry="30" fill="#FFFDF4"/><ellipse cx="775" cy="208" rx="72" ry="30" fill="#FFFDF4"/></g>
+  <text x="600" y="136" text-anchor="middle" font-size="26" fill="#8A6A4F" font-family="Chalkboard SE,Comic Sans MS,sans-serif">🐾 Bebés buscando a su manada 🐾</text>
+  ${baby4('can',470,225,kitten(0,0,1.25,'#D98E4A'))}
+  ${baby4('leo',600,230,lionG({x:0,y:0,s:.34}))}
+  ${baby4('pin',730,225,chick())}
+  ${vig}</svg>`;
+
+/* p5 · Nilo aúlla */
+const art5=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_dusk)"/>
+  <circle cx="890" cy="180" r="58" fill="#FBF3DF" opacity=".95" filter="url(#glow)"/>
+  <circle cx="872" cy="168" r="14" fill="#EDE2C4" opacity=".6"/><circle cx="905" cy="196" r="9" fill="#EDE2C4" opacity=".6"/>
+  ${starsG([[150,120,3,0],[290,80,2.5,1],[430,150,3,.4],[1050,110,3,1.5],[700,90,2.5,.8],[980,250,2.6,2],[80,260,2.6,2.6]])}
+  <ellipse cx="180" cy="600" rx="420" ry="170" fill="#5E7060" opacity=".9"/>
+  <ellipse cx="1020" cy="610" rx="420" ry="180" fill="#55684F" opacity=".9"/>
+  ${tree(120,520,1.2,'#4E6553','#415848')}
+  ${tree(1080,520,1.3,'#4E6553','#415848')}
+  <g id="p5far" opacity=".55">
+    ${eleph({x:250,y:625,s:.3})}${eleph({x:305,y:632,s:.26,flip:true})}
+    ${lionG({x:920,y:640,s:.3,mane:true})}${lionG({x:975,y:648,s:.26,flip:true})}
+    ${canela(370,645,.34)}${pengu(850,650,.3)}
+  </g>
+  <g class="tap" data-act="howl">
+    <path d="M 430 660 Q 445 470 560 435 Q 600 424 640 435 Q 755 470 770 660 Z" fill="#7A6A5C"/>
+    <path d="M 470 610 Q 520 520 600 500" stroke="rgba(255,255,255,.14)" stroke-width="9" fill="none" stroke-linecap="round"/>
+    ${C.nilo({x:600,y:445,s:1.05,exp:'howl'})}
+    <circle class="ring" cx="568" cy="300" r="8" fill="none" stroke="#FBF3DF" stroke-width="5"/>
+    <circle class="ring r2" cx="568" cy="300" r="8" fill="none" stroke="#E8B44A" stroke-width="4"/>
+  </g>
+  ${ffly(300,420,.4)}${ffly(920,430,1.3)}
+  ${vig}</svg>`;
+
+/* p6 · llegan Ámbar y Luna */
+const art6=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_sunset)"/>
+  <circle cx="250" cy="180" r="160" fill="url(#g_sun)"/>
+  <ellipse cx="600" cy="800" rx="950" ry="290" fill="#8AA278"/>
+  <path d="M 1060 340 Q 1020 520 1120 700 L 1200 700 L 1200 340 Z" fill="url(#g_water)"/>
+  ${caveG(940,470,2,'#7C6A58')}
+  ${tree(70,470,1.3)}${tree(1155,500,1.1,'#6F8A67','#59775A')}
+  <g class="tap" data-say="Es papá lobo" data-tone="380">${C.papa({x:700,y:545,s:.95})}</g>
+  <g class="tap" data-say="Ella es Ámbar ✨" data-tone="520">${C.ambar({x:838,y:552,s:.85})}</g>
+  <g class="tap" data-say="Y su lobita, Luna 🌙" data-tone="740">${C.luna({x:912,y:562,s:.52,exp:'curious'})}</g>
+  <g class="tap" data-say="Tao mira con curiosidad…" data-tone="480">${C.tao({x:255,y:555,s:.92,exp:'curious'})}</g>
+  <g class="tap" data-say="¿Cómo se quedó Nilo? 🤔" data-tone="620">${C.nilo({x:395,y:568,s:.82,exp:'wary',wag:false})}</g>
+  ${ffly(500,470,.7)}${ffly(560,420,1.6)}
+  ${vig}</svg>`;
+
+/* p7 · la panza de Nilo */
+const art7=`${SVGO}
+  <rect width="1200" height="800" fill="#3E332B"/>
+  <path d="M 0 800 L 0 160 Q 330 40 660 160 L 660 800 Z" fill="#4A3B30"/>
+  <path d="M 0 800 L 0 260 Q 300 160 600 260 L 600 800 Z" fill="#55443A"/>
+  <path d="M 40 320 Q 120 240 260 250" stroke="rgba(251,243,223,.1)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <ellipse cx="400" cy="590" rx="300" ry="60" fill="#3A2E26"/>
+  <g class="n7face" data-emo="base">${C.nilo({x:390,y:480,s:1.15,pose:'lie',exp:'wary',wag:false})}</g>
+  <g class="n7face" data-emo="curioso" opacity="0">${C.nilo({x:390,y:480,s:1.15,pose:'lie',exp:'curious',wag:false})}</g>
+  <g class="n7face" data-emo="bravo" opacity="0">${C.nilo({x:390,y:480,s:1.15,pose:'lie',exp:'bravo',wag:false})}</g>
+  <g class="n7face" data-emo="triste" opacity="0">${C.nilo({x:390,y:480,s:1.15,pose:'lie',exp:'sad',wag:false})}</g>
+  <g class="n7face" data-emo="confundido" opacity="0">${C.nilo({x:390,y:480,s:1.15,pose:'lie',exp:'confused',wag:false})}</g>
+  ${spiral(420,430,30,'#E8B44A',0)}
+  ${spiral(370,443,22,'#7FA3C4',1.2)}
+  ${spiral(462,448,24,'#C4744A',2.3)}
+  <g class="tap face7" data-toggle="1" data-emo="curioso" data-tone="660">
+    <g transform="${T(720,145)}">
+      <circle r="54" class="selring" fill="none" stroke="#E8B44A" stroke-width="8"/>
+      <circle r="44" fill="#FBF3DF" stroke="#C4744A" stroke-width="3"/>${faceFeat('curioso')}
+    </g><text x="720" y="227" text-anchor="middle" font-size="21" fill="#EFE6D2" font-family="Chalkboard SE,Comic Sans MS,sans-serif">curioso</text>
+  </g>
+  <g class="tap face7" data-toggle="1" data-emo="bravo" data-tone="500">
+    <g transform="${T(848,145)}">
+      <circle r="54" class="selring" fill="none" stroke="#E8B44A" stroke-width="8"/>
+      <circle r="44" fill="#FBF3DF" stroke="#C4744A" stroke-width="3"/>${faceFeat('bravo')}
+    </g><text x="848" y="227" text-anchor="middle" font-size="21" fill="#EFE6D2" font-family="Chalkboard SE,Comic Sans MS,sans-serif">bravo</text>
+  </g>
+  <g class="tap face7" data-toggle="1" data-emo="triste" data-tone="420">
+    <g transform="${T(720,302)}">
+      <circle r="54" class="selring" fill="none" stroke="#E8B44A" stroke-width="8"/>
+      <circle r="44" fill="#FBF3DF" stroke="#C4744A" stroke-width="3"/>${faceFeat('triste')}
+    </g><text x="720" y="384" text-anchor="middle" font-size="21" fill="#EFE6D2" font-family="Chalkboard SE,Comic Sans MS,sans-serif">triste</text>
+  </g>
+  <g class="tap face7" data-toggle="1" data-emo="confundido" data-tone="580">
+    <g transform="${T(848,302)}">
+      <circle r="54" class="selring" fill="none" stroke="#E8B44A" stroke-width="8"/>
+      <circle r="44" fill="#FBF3DF" stroke="#C4744A" stroke-width="3"/>${faceFeat('confundido')}
+    </g><text x="848" y="384" text-anchor="middle" font-size="21" fill="#EFE6D2" font-family="Chalkboard SE,Comic Sans MS,sans-serif">confundido</text>
+  </g>
+  ${vig}</svg>`;
+
+/* p8 · lo que no cambió */
+const art8=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_night)"/>
+  ${starsG([[100,90,3,0],[1100,90,3,1.4],[1160,220,2.5,2.2],[60,300,2.6,2.8],[725,65,2.4,1.9],[1050,300,2.2,.6]])}
+  ${starTap(230,120,0)}${starTap(365,75,.6)}${starTap(505,145,1.2)}${starTap(645,105,.3)}
+  ${starTap(755,205,1.7)}${starTap(305,255,.9)}${starTap(455,235,2.1)}${starTap(645,265,1.5)}
+  <path id="skyheart" d="M 490 330 C 410 260 400 205 445 185 C 475 172 490 195 490 220 C 490 195 505 172 535 185 C 580 205 570 260 490 330 Z" stroke="#FFD97A" stroke-width="5" fill="none" stroke-linecap="round" opacity="0" stroke-dasharray="700" stroke-dashoffset="700" pointer-events="none"/>
+  <circle cx="890" cy="165" r="150" fill="url(#g_sun)" pointer-events="none"/>
+  <circle cx="890" cy="165" r="72" fill="#FBF3DF" filter="url(#glow)" pointer-events="none"/>
+  <circle cx="868" cy="150" r="16" fill="#EDE2C4" opacity=".55" pointer-events="none"/><circle cx="908" cy="185" r="11" fill="#EDE2C4" opacity=".55" pointer-events="none"/>
+  <ellipse cx="600" cy="820" rx="950" ry="280" fill="#55684F"/>
+  <ellipse cx="255" cy="470" rx="300" ry="150" fill="#4E6050"/>
+  ${caveG(255,420,.85,'#6B5B4C')}
+  <circle cx="255" cy="392" r="7" fill="#FFD97A" filter="url(#glow)" class="ff"/>
+  ${tree(420,435,.9,'#4E6553','#415848')}${tree(1090,520,1.2,'#4E6553','#415848')}
+  ${C.papa({x:660,y:575,s:1.35,pose:'lie',exp:'sleep'})}
+  ${C.nilo({x:472,y:590,s:.82,pose:'lie',exp:'sleep',wag:false,flip:true})}
+  <path d="M 560 430 c 0 -14 22 -14 22 0 c 0 12 -22 20 -22 28 c 0 -8 -22 -16 -22 -28 c 0 -14 22 -14 22 0 Z" fill="#C4744A" opacity=".9" class="tw"/>
+  ${ffly(380,470,.8)}${ffly(820,480,1.9)}
+  ${vig}</svg>`;
+
+/* p9 · un lugar para cada uno */
+const art9=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_dusk)"/>
+  <ellipse cx="300" cy="800" rx="620" ry="300" fill="#66795E"/>
+  <rect x="620" width="580" height="800" fill="#55443A" opacity=".92"/>
+  <linearGradient id="bl3" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="rgba(85,68,58,0)"/><stop offset="1" stop-color="#55443A"/></linearGradient>
+  <rect x="500" width="140" height="800" fill="url(#bl3)"/>
+  ${tree(80,470,1.2,'#4E6553','#415848')}
+  ${C.nilo({x:322,y:500,s:.85,exp:'joy'})}
+  <g id="luna9">${C.luna({x:495,y:515,s:.55,exp:'curious'})}</g>
+  <g class="tap" data-act="jar">
+    <rect x="393" y="438" width="64" height="74" rx="16" fill="#EAF2EF" opacity=".55" stroke="#B9CCC6" stroke-width="3"/>
+    <rect x="401" y="430" width="48" height="12" rx="5" fill="#8A6A4F"/>
+    <g class="jarff">
+      <circle class="jd" cx="413" cy="472" r="4" fill="#FFD97A" opacity="0" filter="url(#glow)"/>
+      <circle class="jd" cx="433" cy="488" r="4" fill="#FFD97A" opacity="0" filter="url(#glow)"/>
+      <circle class="jd" cx="425" cy="456" r="3.5" fill="#FFD97A" opacity="0" filter="url(#glow)"/>
+      <circle class="jd" cx="410" cy="492" r="3.5" fill="#FFD97A" opacity="0" filter="url(#glow)"/>
+      <circle class="jd" cx="441" cy="466" r="3.5" fill="#FFD97A" opacity="0" filter="url(#glow)"/>
+    </g>
+  </g>
+  ${ff9(215,390,.2)}${ff9(300,348,1.1)}${ff9(448,398,.6)}${ff9(250,452,1.7)}${ff9(395,325,.9)}
+  <path d="M 700 800 L 700 300 Q 900 210 1100 300 L 1100 800" fill="#4A3B30" opacity=".65"/>
+  <g class="tap" data-say="¡La sopa de Ámbar! Mmm… 🍲" data-tone="540">
+    <ellipse cx="885" cy="520" rx="74" ry="14" fill="#3A2E26"/>
+    <path d="M 821 464 Q 821 520 885 520 Q 949 520 949 464 Z" fill="#6B5747"/>
+    <ellipse cx="885" cy="464" rx="64" ry="12" fill="#8A6A4F"/>
+    <ellipse cx="885" cy="464" rx="52" ry="8" fill="#D9A64E"/>
+    <g transform="${T(863,430)}"><path class="steam" d="M 0 0 q -8 -12 0 -24 q 8 -12 0 -24" stroke="#EFE6D2" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/></g>
+    <g transform="${T(907,430)}"><path class="steam" style="animation-delay:1.4s" d="M 0 0 q 8 -12 0 -24 q -8 -12 0 -24" stroke="#EFE6D2" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/></g>
+  </g>
+  ${C.ambar({x:762,y:512,s:.88})}
+  ${vig}</svg>`;
+
+/* p10 · el lobezno nuevo */
+const art10=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_morn)"/>
+  <circle cx="600" cy="180" r="220" fill="url(#g_sun)"/>
+  <ellipse cx="600" cy="830" rx="960" ry="300" fill="#9CAF88"/>
+  ${tree(90,480,1.3)}${tree(1110,470,1.4)}${tree(215,440,.9,'#6F8A67','#59775A')}
+  <ellipse cx="580" cy="565" rx="330" ry="55" fill="#B9C8A2" opacity=".7"/>
+  <g class="tap cnt" data-cnt="rio">${C.tao({x:285,y:490,s:.85,exp:'happy'})}${badge(285,285)}</g>
+  <g class="tap cnt" data-cnt="rio">${C.papa({x:800,y:475,s:1.0,exp:'happy'})}${badge(800,235)}</g>
+  <g class="tap cnt" data-cnt="rio">${C.ambar({x:940,y:498,s:.88})}${badge(940,282)}</g>
+  <g class="tap cnt" data-cnt="rio">${C.luna({x:735,y:552,s:.55,exp:'joy'})}${badge(735,430)}</g>
+  <g class="tap cnt" data-cnt="rio">${C.nilo({x:610,y:540,s:1.05,pose:'lie',exp:'joy'})}${badge(610,388)}</g>
+  <g class="tap cnt" data-cnt="rio">${babyW({x:462,y:548,s:1.05,flip:true,reach:true})}${badge(462,440)}</g>
+  ${ffly(400,420,.5)}${ffly(760,400,1.4)}
+  ${vig}</svg>`;
+
+/* p11 · lo que aprendió Nilo */
+const art11=`${SVGO}
+  <rect width="1200" height="800" fill="url(#g_night)"/>
+  ${starsG([[90,80,3,0],[200,150,2.5,1.2],[330,60,3,.4],[470,130,2.5,2],[600,70,3.2,.9],[730,140,2.6,.1],[860,80,3,1.5],[1000,160,2.5,2.3],[1120,90,3,.6],[1170,240,2.4,1.8],[50,240,2.6,2.7],[280,250,2.3,.8],[540,220,2.2,1.4],[940,260,2.4,2.9],[690,250,2.2,2.1]])}
+  <circle cx="600" cy="130" r="120" fill="url(#g_sun)"/>
+  <circle cx="600" cy="130" r="52" fill="#FBF3DF" filter="url(#glow)"/>
+  <ellipse cx="600" cy="830" rx="960" ry="280" fill="#4E6050"/>
+  <ellipse cx="160" cy="500" rx="310" ry="150" fill="#55684F"/>
+  <path d="M 1080 380 Q 1040 520 1130 680 L 1200 680 L 1200 380 Z" fill="#7FA3A0" opacity=".8"/>
+  <g class="tap" data-say="La manada de la colina 💛" data-tone="700">
+    ${caveG(338,442,.95,'#6B5B4C')}
+    ${C.mama({x:302,y:428,s:.4})}${C.tao({x:372,y:432,s:.36})}
+  </g>
+  <g class="tap" data-say="La manada del río 💛" data-tone="460">
+    ${caveG(878,455,.95,'#6B5B4C')}
+    ${C.papa({x:786,y:478,s:.42})}${C.ambar({x:840,y:484,s:.38})}${C.luna({x:876,y:490,s:.26})}${babyW({x:902,y:492,s:.5})}
+  </g>
+  <path d="M 210 545 Q 430 575 600 570 Q 790 565 1010 530" stroke="#D9C9A8" stroke-width="40" fill="none" stroke-linecap="round" opacity=".5"/>
+  <g class="tap" data-act="phrase">${C.nilo({x:600,y:535,s:.95,exp:'joy'})}</g>
+  ${ffly(370,430,.3)}${ffly(830,420,1.2)}${ffly(500,480,2)}${ffly(700,470,.8)}
+  ${vig}</svg>`;
+
+/* ================= páginas de actividad (12 y 13) ================= */
+const COLORS=['#4A3F38','#C4744A','#7A9471','#E8B44A','#5B7FA6','#C46A8A'];
+const STICKERS=['🐺','🦁','🐘','🐧','🐱','❤️','⭐','🌳'];
+function toolbarHTML(){
+  return `<div class="toolbar">
+    ${COLORS.map((c,i)=>`<button class="swatch${i===0?' on':''}" data-color="${c}" style="background:${c}" aria-label="color"></button>`).join('')}
+    <button class="toolbtn szbtn" data-size="4">✏️ fino</button>
+    <button class="toolbtn szbtn on" data-size="8">🖍️ medio</button>
+    <button class="toolbtn szbtn" data-size="16">🖌️ grueso</button>
+    <button class="toolbtn" id="eraser">🩹 borrador</button>
+    <span class="tbsep"></span>
+    ${STICKERS.map(s=>`<button class="toolbtn stkbtn" data-stk="${s}" title="sticker">${s}</button>`).join('')}
+  </div>`;
+}
+const act12=`<div class="act">
+  <h2>🐾 Inventa tu propia manada 🐾</h2>
+  <p class="lead">Con los animales que tú quieras: dibuja con los colores o toca un sticker y estámpalo en el marco. ¿Cómo se llama tu manada? ¿Quién cuida a quién? ¿Qué hacen juntos para divertirse?</p>
+  <div class="frameWrap" id="fw12">
+    <span class="corner" style="top:-30px;left:8px">🐾</span><span class="corner" style="top:-30px;right:8px">✨</span>
+    <span class="corner" style="bottom:-30px;left:8px">✨</span><span class="corner" style="bottom:-30px;right:8px">🐾</span>
+    <canvas id="cv12" data-key="draw_main"></canvas>
+  </div>
+  ${toolbarHTML()}
+  <div class="feelrow">
+    <span class="q">¿Cómo te sentiste con este cuento?</span>
+    <button class="facebtn" data-feel="feliz">${faceSVG('feliz')}feliz</button>
+    <button class="facebtn" data-feel="tranquilo">${faceSVG('tranquilo')}tranquilo</button>
+    <button class="facebtn" data-feel="triste">${faceSVG('triste')}triste</button>
+    <button class="facebtn" data-feel="bravo">${faceSVG('bravo')}bravo</button>
+  </div>
+</div>`;
+const act13=`<div class="act">
+  <h2>🔍 Misión: explorador de manadas 🐾</h2>
+  <p class="lead">Para la semana: dibuja (o pega) 3 manadas que encuentres — en la calle, en la tele o en los cuentos.</p>
+  <div class="minis">
+    <div class="mini"><div class="frameWrap"><canvas data-key="draw_m1"></canvas></div><div class="cap">1 · en la calle</div></div>
+    <div class="mini"><div class="frameWrap"><canvas data-key="draw_m2"></canvas></div><div class="cap">2 · en la tele</div></div>
+    <div class="mini"><div class="frameWrap"><canvas data-key="draw_m3"></canvas></div><div class="cap">3 · en los cuentos</div></div>
+  </div>
+  ${toolbarHTML()}
+  <div class="ritual">🌙 <b>Ritual de la noche:</b> cada noche, antes de dormir, digan juntos <b>tres cosas buenas de su manada</b>.<br>1️⃣ ______________ &nbsp; 2️⃣ ______________ &nbsp; 3️⃣ ______________</div>
+  <p class="famnote">Para la familia: acompañen sin corregir — no hay respuestas buenas ni malas. Si el niño habla de su propia familia, escuchen y validen.
+  La familia puede cambiar de forma y sigue siendo familia: el amor no cambia. · <b>Laura Lesmes, Psicóloga Clínica</b></p>
+</div>`;
+
+/* ================= definición de páginas ================= */
+const PAGES=[
+ {art:art1,cover:true},
+ {art:art2,story:'Este es Nilo, un lobito de orejas grandes y cola inquieta. Nilo vive con su mamá loba y su hermano mayor, Tao, en una cueva en la colina. Y algunos días se va con su papá lobo, que vive en una cueva junto al río. Dos cuevas. Una manada en cada una. Y en las dos lo cuidan y lo quieren.',
+  play:'Lleva a Nilo con tu dedo por el sendero: ¡visita la cueva de la colina y la del río! Y toca cada cueva para saber cuál es cuál.'},
+ {art:art3,story:'En el bosque hay manadas de todas las formas. Las elefantas crían juntas a sus elefantitos: mamás, abuelas y tías, ¡todas cuidan a todos!',
+  play:'¿Cuántas elefantas grandes ves? Cuéntalas tocándolas. Luego toca el agua y a los elefantitos: ¡splash! 💦'},
+ {art:art4,story:'El papá pingüino cuida solito su huevo hasta que nace su pingüinito. La perra Canela encontró tres gatitos sin mamá... ¡y los crió como suyos! Y los leones viven en una manada grandota, con tíos, primos y abuelos por todas partes.',
+  play:'Tres bebés se perdieron: toca un bebé y luego a su familia para llevarlo con su manada. Después, ¡haz el sonido de cada una!'},
+ {art:art5,story:'Entonces Nilo entendió algo: no hay una sola forma de manada. Manada es donde te cuidan, te protegen y te quieren. Grandes, pequeñas, de una cueva o de dos... ¡todas son manadas de verdad!',
+  play:'Toca a Nilo y aúlla con él: ¡auuuuu! Y espera un momento… ¡las otras manadas responden!'},
+ {art:art6,story:'Un día, en la cueva del río, papá lobo les presentó a alguien. “Ella es Ámbar”, dijo, “y esta es su lobita, Luna. Desde ahora vamos a caminar juntos y a compartir la cueva.” La manada del río estaba cambiando de forma.',
+  play:'Mira la cara de Nilo. ¿Cómo crees que se quedó? Toca a cada lobo para conocerlo.'},
+ {art:art7,story:'Esa noche Nilo sintió muchas cosas juntas, todas revueltas en la panza. Un poquito de curiosidad. Un poquito de rabia. Un poquito de tristeza. Y muchas preguntas: “¿Y ahora Ámbar me va a mandar a mí?” “¿Y si a papá se le olvida jugar conmigo?” “¿Y mi mamá?” Todos los lobitos sienten cosas revueltas cuando su manada cambia de forma. Está bien sentirlas.',
+  play:'Señala las caritas que sintió Nilo, puedes señalar varias… ¡y mira cómo cambia su carita!'},
+ {art:art8,story:'Papá lobo le dijo al oído: “Nilo, escucha bien: Ámbar no es tu mamá. Tu mamá es tu mamá, siempre, en su cueva de la colina. Ámbar es alguien nuevo que también te va a cuidar. En esta manada nadie se quita... se agregan. Y yo voy a seguir siendo tu papá todos los días, aunque la cueva cambie de forma.”',
+  play:'Pon tu mano en el corazón, como Nilo. Y enciende 7 estrellas tocándolas: el cielo te mostrará eso que no cambia. 💫'},
+ {art:art9,story:'Al principio fue raro. Luna usaba su piedra favorita. Ámbar hacía la sopa distinto a como la hacía mamá. Pero poco a poco, cada uno encontró su lugar: Nilo le enseñó a Luna a atrapar luciérnagas, y Ámbar aprendió que a Nilo le gusta que le avisen las cosas con tiempo. Las manadas nuevas necesitan tiempo. No hay que apurarse.',
+  play:'¡Atrapa las 5 luciérnagas tocándolas para llenar el frasco de Luna! ¿Qué le enseñarías tú a un lobito nuevo de tu manada?'},
+ {art:art10,story:'Y una mañana llegó la sorpresa: un lobezno bebé, chiquito y peludo. “Es hijo de papá y de Ámbar”, le explicó Tao, “así que es nuestro hermano pequeño. Vino a agregarse, no a quitarnos nada.” Nilo lo olfateó con cuidado... y el lobezno le agarró la oreja. ¡A Nilo le dio risa! Ahora Nilo es hermano mayor en una cueva y sigue siendo Nilo en las dos.',
+  play:'¿Cuántos son ahora en la cueva del río? Cuéntalos tocándolos uno a uno.'},
+ {art:art11,story:'Las manadas pueden cambiar de forma: se juntan con otras, llega alguien nuevo, viven en una cueva o en dos. Pero cuando una manada cambia de forma, no deja de ser manada. Y el cariño de mamá y de papá por sus lobitos no cambia de forma nunca.',
+  play:'Toca a Nilo y repite con él, bien fuerte: ¡Hay muchas formas de manada, y la mía es una de ellas!'},
+ {act:act12},
+ {act:act13},
+];
+
+/* ================= render ================= */
+const book=$('#book'),dots=$('#dots');
+PAGES.forEach((p,i)=>{
+  const sec=document.createElement('section');
+  sec.className='page';sec.dataset.i=i;
+  if(p.act){ sec.innerHTML=p.act; }
+  else{
+    let band='';
+    if(p.cover){
+      band=`<div class="coverTitle"><h1>LAS MANADAS</h1><p>· un cuento para jugar ·</p></div>
+      <div class="band bandCover">
+        <label for="kidname">🐾 Este cuento es de:</label>
+        <input id="kidname" autocomplete="off" placeholder="tu nombre">
+        <button class="bigbtn" id="startbtn">¡Empezar! →</button>
+      </div>`;
+    }else{
+      band=`<div class="band"><p class="story">${p.story}</p><p class="play">🐾 ${p.play}</p></div>`;
+    }
+    sec.innerHTML=`<div class="art">${p.art}</div>${band}`;
+  }
+  book.appendChild(sec);
+  const d=document.createElement('button');
+  d.className='dot';d.title='página '+(i+1);
+  d.addEventListener('click',()=>go(i));
+  dots.appendChild(d);
+});
+if(PAGES.length){/* frase grande de la página 11 */
+  const p11=book.children[10];
+  const ph=document.createElement('div');
+  ph.className='phraseBig';ph.id='phraseBig';
+  ph.textContent='¡Hay muchas formas de manada, y la mía es una de ellas!';
+  p11.appendChild(ph);
+}
+
+let cur=0;
+function go(i){
+  if(i<0||i>=PAGES.length)return;
+  cur=i;
+  [...book.children].forEach((s,j)=>s.classList.toggle('on',j===i));
+  [...dots.children].forEach((d,j)=>d.classList.toggle('on',j===i));
+  $('#prev').disabled=(i===0);
+  $('#next').disabled=(i===PAGES.length-1);
+  /* preparar lienzos cuando la página es visible */
+  requestAnimationFrame(()=>{[...book.children[i].querySelectorAll('canvas')].forEach(initCanvas)});
+}
+$('#prev').addEventListener('click',()=>{blip(430,.09,'sine',.06);go(cur-1)});
+$('#next').addEventListener('click',()=>{blip(520,.09,'sine',.06);go(cur+1)});
+$('#fsbtn').addEventListener('click',()=>{
+  if(document.fullscreenElement)document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(()=>{});
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight'||e.key===' ')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+/* deslizar con el dedo (solo sobre la ilustración) */
+let sw=null;
+book.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.dragme')){sw=null;return;}
+  if(e.target.closest('.art'))sw={x:e.clientX,y:e.clientY};
+});
+book.addEventListener('pointerup',e=>{
+  if(!sw)return;
+  const dx=e.clientX-sw.x,dy=e.clientY-sw.y;sw=null;
+  if(Math.abs(dx)>120&&Math.abs(dx)>2*Math.abs(dy))go(cur+(dx<0?1:-1));
+});
+
+/* ================= interacciones del cuento ================= */
+function bubble(x,y,txt){
+  const d=document.createElement('div');
+  d.className='saybubble';d.textContent=txt;
+  d.style.left=Math.min(Math.max(x,130),innerWidth-130)+'px';
+  d.style.top=Math.max(y,90)+'px';
+  document.body.appendChild(d);setTimeout(()=>d.remove(),1900);
+}
+function burst(x,y,ems){
+  ems=ems||['✨','⭐','🌟'];
+  for(let i=0;i<6;i++){
+    const s=document.createElement('div');s.className='heart';s.textContent=ems[i%ems.length];
+    s.style.left=(x+(i-2.5)*24)+'px';s.style.top=(y-(i%3)*16)+'px';s.style.animationDelay=(i*.07)+'s';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),2100);
+  }
+}
+function cheer(txt){
+  const d=document.createElement('div');
+  d.className='cheerbox';d.textContent=txt;
+  document.body.appendChild(d);chime();
+  burst(innerWidth/2,innerHeight*.42,['✨','🐾','⭐']);
+  setTimeout(()=>d.remove(),2400);
+}
+function heartsAt(x,y){
+  for(let i=0;i<5;i++){
+    const h=document.createElement('div');h.className='heart';h.textContent=['❤️','🧡','💛'][i%3];
+    h.style.left=(x+(i-2)*26)+'px';h.style.top=(y-i*8)+'px';h.style.animationDelay=(i*.12)+'s';
+    document.body.appendChild(h);setTimeout(()=>h.remove(),2200);
+  }
+  blip(700,.25,'sine',.08);setTimeout(()=>blip(880,.3,'sine',.07),140);
+}
+const counts={ele:{n:0,total:4,done:'¡Cuatro elefantas! 🐘✨'},rio:{n:0,total:6,done:'¡Son 6 en la manada del río! 🐺💛'}};
+const emoStack=[]; /* caritas elegidas en la página 7 */
+const fam4={pin:{x:262,y:590},can:{x:668,y:585},leo:{x:768,y:588}}; /* destino de cada bebé */
+const matched4=new Set();
+let ff9n=0,star8n=0,howlEcho=null;
+function doBoing(el){el.classList.remove('boing');void el.getBoundingClientRect();el.classList.add('boing');}
+book.addEventListener('click',e=>{
+  const t=e.target.closest('.tap');
+  ac(); /* desbloquear audio con el primer toque */
+  /* corazones: página 8 responde en cualquier parte de la ilustración (menos las estrellas) */
+  if(cur===7&&e.target.closest('.art')&&!e.target.closest('.star8')){heartsAt(e.clientX,e.clientY);}
+  if(!t)return;
+  t.classList.remove('boing');void t.getBBox&&t.getBBox();t.classList.add('boing');
+  const tone=+t.dataset.tone||0;
+  if(t.classList.contains('ff9')){ /* atrapar luciérnagas (página 9) */
+    if(!t.dataset.done){
+      t.dataset.done='1';ff9n++;
+      const fly=t.querySelector('.fly');
+      const dx=425-(+t.dataset.fx),dy=468-(+t.dataset.fy);
+      fly.style.transition='transform .65s cubic-bezier(.45,.15,.55,1),opacity .25s .5s';
+      fly.style.transform=`translate(${dx}px,${dy}px) scale(.45)`;
+      fly.style.opacity='0';
+      blip(520+ff9n*70,.14,'sine',.12);
+      const dots=t.closest('.page').querySelectorAll('.jd'),n=ff9n;
+      setTimeout(()=>{if(dots[n-1])dots[n-1].style.opacity='1';blip(900,.1,'sine',.08);},620);
+      if(ff9n===5)setTimeout(()=>{cheer('¡5 luciérnagas para Luna! ✨');const l=document.getElementById('luna9');if(l)doBoing(l);},900);
+    }
+    return;
+  }
+  if(t.classList.contains('star8')){ /* encender estrellas (página 8) */
+    if(!t.classList.contains('lit')){
+      t.classList.add('lit');star8n++;
+      blip(480+star8n*60,.16,'sine',.12);
+      if(star8n===7)setTimeout(()=>{
+        const h=document.getElementById('skyheart');if(h)h.classList.add('show');
+        chime();setTimeout(()=>cheer('El amor no cambia 💛'),1900);
+      },400);
+    }
+    return;
+  }
+  if(t.dataset.splash){ /* splash de los elefantitos (página 3) */
+    burst(e.clientX,e.clientY,['💦','💧','✨']);
+    blip(850,.08,'sine',.1);setTimeout(()=>blip(480,.12,'sine',.1),90);
+    return;
+  }
+  if(t.classList.contains('baby4')){ /* elegir un bebé (página 4) */
+    if(t.classList.contains('done')){blip(660,.1,'sine',.08);return;}
+    document.querySelectorAll('.baby4.sel').forEach(x=>{if(x!==t)x.classList.remove('sel')});
+    t.classList.toggle('sel');
+    blip(t.classList.contains('sel')?760:400,.12,'sine',.12);
+    return;
+  }
+  const fz=t.dataset.famzone;
+  if(fz){ /* soltar al bebé con la familia tocada */
+    const selB=document.querySelector('.baby4.sel');
+    if(selB){
+      if(selB.dataset.fam===fz){
+        selB.classList.remove('sel');selB.classList.add('done');
+        const dx=fam4[fz].x-(+selB.dataset.x),dy=fam4[fz].y-(+selB.dataset.y);
+        selB.querySelector('.babyin').style.transform=`translate(${dx}px,${dy}px)`;
+        chime();burst(e.clientX,e.clientY,['✨','⭐','💛']);
+        matched4.add(fz);
+        if(matched4.size===3)setTimeout(()=>cheer('¡Cada bebé con su manada! 💛'),950);
+      }else{
+        const bi=selB.querySelector('.babyin');
+        bi.classList.remove('shake');void bi.getBoundingClientRect();bi.classList.add('shake');
+        setTimeout(()=>bi.classList.remove('shake'),550);
+        blip(210,.28,'sine',.12);
+        bubble(e.clientX,e.clientY,'¡Uy! Esa no es su manada 🙈');
+      }
+      return;
+    }
+  }
+  if(t.dataset.toggle){ /* caritas de la página 7 → se reflejan en la cara de Nilo */
+    t.classList.toggle('sel');
+    const emo=t.dataset.emo;
+    if(t.classList.contains('sel')){emoStack.push(emo);blip(tone||600,.18,'sine',.12);}
+    else{const i=emoStack.indexOf(emo);if(i>-1)emoStack.splice(i,1);blip(300,.12,'sine',.08);}
+    const show=emoStack[emoStack.length-1]||'base';
+    t.closest('.page').querySelectorAll('.n7face').forEach(f=>{f.style.opacity=(f.dataset.emo===show?'1':'0')});
+    return;
+  }
+  if(t.dataset.cnt){ /* contar tocando */
+    const g=counts[t.dataset.cnt];
+    if(!t.dataset.counted){
+      t.dataset.counted='1';g.n++;
+      const b=t.querySelector('.badge');
+      if(b){b.querySelector('.bt').textContent=g.n;b.classList.add('on');}
+      blip(420+g.n*90,.16,'triangle',.14);
+      if(g.n===g.total)setTimeout(()=>cheer(g.done),450);
+    }else{blip(tone||500,.1,'sine',.06);}
+    return;
+  }
+  const act=t.dataset.act;
+  if(act==='howl'){
+    howlSnd();
+    t.querySelectorAll('.ring').forEach((r,i)=>{
+      r.classList.remove('go');void r.getBoundingClientRect();
+      setTimeout(()=>r.classList.add('go'),i*260);
+    });
+    clearTimeout(howlEcho);
+    howlEcho=setTimeout(()=>{ /* las manadas lejanas responden */
+      const far=document.getElementById('p5far');
+      if(far)doBoing(far);
+      howlSnd(1.6,.05);setTimeout(()=>howlSnd(.75,.05),500);
+      bubble(innerWidth/2,innerHeight*.34,'¡Las otras manadas responden! ¡Auuu! 💫');
+    },2100);
+    return;
+  }
+  if(act==='jar'){
+    blip(760,.14,'sine',.12);
+    bubble(e.clientX,e.clientY,ff9n>0?ff9n+(ff9n===1?' luciérnaga adentro ✨':' luciérnagas adentro ✨'):'El frasco de Luna 🫙 ¡Atrápalas!');
+    return;
+  }
+  if(act==='phrase'){
+    const ph=$('#phraseBig');
+    ph.classList.remove('show');void ph.offsetWidth;ph.classList.add('show');
+    chime();setTimeout(()=>ph.classList.remove('show'),5200);
+    return;
+  }
+  if(t.dataset.say){ blip(tone||560,.12,'triangle',.1); bubble(e.clientX,e.clientY,t.dataset.say); }
+});
+
+/* ================= dibujo (páginas 12 y 13) ================= */
+const ink={color:COLORS[0],size:8,erase:false,mode:'draw',stamp:'🐺'};
+function initCanvas(cv){
+  if(cv.dataset.ready)return;
+  const r=cv.getBoundingClientRect();
+  if(r.width<10)return;
+  cv.dataset.ready='1';
+  const dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=r.width*dpr;cv.height=r.height*dpr;
+  const x=cv.getContext('2d');
+  x.scale(dpr,dpr);x.lineCap='round';x.lineJoin='round';
+  const saved=LS.g(cv.dataset.key);
+  if(saved){const im=new Image();im.onload=()=>x.drawImage(im,0,0,r.width,r.height);im.src=saved;}
+  let last=null,stamped=false;
+  cv.addEventListener('pointerdown',e=>{
+    try{cv.setPointerCapture(e.pointerId)}catch(_){}
+    const b=cv.getBoundingClientRect();
+    const px=e.clientX-b.left,py=e.clientY-b.top;
+    if(ink.mode==='stamp'){
+      x.globalCompositeOperation='source-over';
+      x.font='52px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif';
+      x.textAlign='center';x.textBaseline='middle';
+      x.fillText(ink.stamp,px,py);
+      stamped=true;blip(640,.09,'sine',.09);
+      return;
+    }
+    last=[px,py];
+    x.globalCompositeOperation=ink.erase?'destination-out':'source-over';
+    x.strokeStyle=ink.color;x.lineWidth=ink.erase?ink.size*3:ink.size;
+    x.beginPath();x.moveTo(last[0],last[1]);x.lineTo(last[0]+.1,last[1]+.1);x.stroke();
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!last)return;
+    const b=cv.getBoundingClientRect(),p=[e.clientX-b.left,e.clientY-b.top];
+    x.beginPath();x.moveTo(last[0],last[1]);x.lineTo(p[0],p[1]);x.stroke();last=p;
+  });
+  const up=()=>{if(last||stamped){last=null;stamped=false;try{LS.s(cv.dataset.key,cv.toDataURL())}catch(e){}}};
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+}
+document.addEventListener('click',e=>{
+  const sw2=e.target.closest('.swatch');
+  if(sw2){
+    ink.color=sw2.dataset.color;ink.erase=false;ink.mode='draw';
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('on',s===sw2||s.dataset.color===ink.color));
+    document.querySelectorAll('#eraser,.stkbtn').forEach(b=>b.classList.remove('on'));
+    blip(640,.08,'sine',.06);return;
+  }
+  const stk=e.target.closest('.stkbtn');
+  if(stk){
+    ink.mode='stamp';ink.stamp=stk.dataset.stk;ink.erase=false;
+    document.querySelectorAll('.stkbtn').forEach(b=>b.classList.toggle('on',b.dataset.stk===ink.stamp));
+    document.querySelectorAll('#eraser').forEach(b=>b.classList.remove('on'));
+    blip(720,.08,'sine',.07);return;
+  }
+  const sz=e.target.closest('.szbtn');
+  if(sz){
+    ink.size=+sz.dataset.size;ink.erase=false;ink.mode='draw';
+    document.querySelectorAll('.szbtn').forEach(b=>b.classList.toggle('on',+b.dataset.size===ink.size));
+    document.querySelectorAll('#eraser,.stkbtn').forEach(b=>b.classList.remove('on'));
+    blip(520,.08,'sine',.06);return;
+  }
+  if(e.target.closest('#eraser')){
+    ink.erase=!ink.erase;ink.mode='draw';
+    document.querySelectorAll('#eraser').forEach(b=>b.classList.toggle('on',ink.erase));
+    document.querySelectorAll('.stkbtn').forEach(b=>b.classList.remove('on'));
+    blip(380,.08,'sine',.06);return;
+  }
+  const fb=e.target.closest('.facebtn');
+  if(fb){
+    const was=fb.classList.contains('sel');
+    fb.parentElement.querySelectorAll('.facebtn').forEach(b=>b.classList.remove('sel'));
+    if(!was){fb.classList.add('sel');LS.s('feel',fb.dataset.feel);blip(700,.16,'sine',.12);}
+  }
+});
+
+/* página 2: arrastrar a Nilo por el sendero */
+(function(){
+  const page=book.children[1];if(!page)return;
+  const drag=page.querySelector('.dragme');if(!drag)return;
+  const svg=page.querySelector('svg');
+  const caves=page.querySelectorAll('.tap');
+  const pts=[[255,628],[360,598],[470,586],[580,585],[690,597],[770,590],[845,550]];
+  function yAt(x){
+    for(let i=1;i<pts.length;i++){
+      if(x<=pts[i][0]){const a=pts[i-1],b=pts[i];return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);}
+    }
+    return pts[pts.length-1][1];
+  }
+  let dragging=false,zone='mid';
+  function toVB(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+  drag.addEventListener('pointerdown',e=>{dragging=true;try{drag.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();ac();});
+  drag.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    const x=Math.max(258,Math.min(842,toVB(e).x));
+    drag.style.transform=`translate(${x-580}px,${yAt(x)-565}px)`;
+    if(x<340&&zone!=='l'){zone='l';doBoing(caves[0]);blip(740,.16,'sine',.12);bubble(e.clientX,e.clientY,'¡Hola, mamá! ¡Hola, Tao! 💛');}
+    else if(x>780&&zone!=='r'){zone='r';doBoing(caves[1]);blip(460,.16,'sine',.12);bubble(e.clientX,e.clientY,'¡Hola, papá! 🌊');}
+    else if(x>=340&&x<=780){zone='mid';}
+  });
+  const end=()=>{dragging=false;};
+  drag.addEventListener('pointerup',end);drag.addEventListener('pointercancel',end);
+})();
+
+/* ================= arranque ================= */
+const nameIn=$('#kidname');
+if(LS.g('name'))nameIn.value=LS.g('name');
+nameIn.addEventListener('input',()=>LS.s('name',nameIn.value));
+$('#startbtn').addEventListener('click',()=>{ac();chime();go(1)});
+const feel=LS.g('feel');
+if(feel){const b=document.querySelector(`.facebtn[data-feel="${feel}"]`);if(b)b.classList.add('sel');}
+go(0);
+</script>
+</body>
+</html>

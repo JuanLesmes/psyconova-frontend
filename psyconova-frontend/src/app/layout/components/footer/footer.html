@@ -12,38 +12,35 @@
       <div class="footer__brand">
         <img
           class="footer__logo"
-          src="assets/images/branding/logoClaroConLetrasSinFondo.png"
+          src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
           alt="PSYCONOVA"
         />
         <p class="footer__tagline">
-          Innovación, bienestar y una mirada humana para construir nuevas
-          formas de abordar la salud mental.
+          {{ 'footer.tagline' | translate }}
         </p>
       </div>
 
       <!-- Navigation -->
       <div class="footer__col">
-        <h4 class="footer__col-title">Navegación</h4>
+        <h4 class="footer__col-title">{{ 'footer.navTitle' | translate }}</h4>
         <ul class="footer__links">
-          <li><a routerLink="/" fragment="home">Inicio</a></li>
-          <li><a routerLink="/" fragment="nosotros">¿Qué es PSYCONOVA?</a></li>
-          <li><a routerLink="/" fragment="services">Servicios</a></li>
-          <li><a routerLink="/" fragment="contact">Contacto</a></li>
+          <li><a routerLink="/" fragment="home">{{ 'nav.home' | translate }}</a></li>
+          <li><a routerLink="/" fragment="nosotros">{{ 'nav.what' | translate }}</a></li>
+          <li><a routerLink="/" fragment="services">{{ 'nav.services' | translate }}</a></li>
+          <li><a routerLink="/" fragment="contact">{{ 'nav.contact' | translate }}</a></li>
         </ul>
       </div>
 
       <!-- Contact -->
       <div class="footer__col">
-        <h4 class="footer__col-title">Contacto</h4>
+        <h4 class="footer__col-title">{{ 'footer.contactTitle' | translate }}</h4>
         <ul class="footer__links">
           <li>
-            <a href="mailto:contacto@psyconova.com">
-              contacto@psyconova.com
-            </a>
+            <a [href]="'mailto:' + contactInfo.email">{{ contactInfo.email }}</a>
           </li>
           <li class="footer__location">
             <span class="footer__location-dot"></span>
-            Colombia
+            {{ 'footer.location' | translate }}
           </li>
         </ul>
       </div>
@@ -56,12 +53,12 @@
     <!-- ── Bottom bar ────────────────────────────── -->
     <div class="footer__bottom">
       <p class="footer__copy">
-        © 2026 PSYCONOVA — Todos los derechos reservados.
+        {{ 'footer.copy' | translate }}
       </p>
       <div class="footer__legal">
-        <a href="#">Política de privacidad</a>
+        <a routerLink="/politica-de-privacidad">{{ 'footer.privacy' | translate }}</a>
         <span class="footer__legal-dot" aria-hidden="true">·</span>
-        <a href="#">Términos de uso</a>
+        <a routerLink="/terminos-de-uso">{{ 'footer.terms' | translate }}</a>
       </div>
     </div>
 

@@ -2,7 +2,7 @@
 
 .svc {
   position: relative;
-  padding: 7rem 2rem 8rem;
+  padding: 4.5rem 2rem 5rem;
   overflow: hidden;
   background:
     radial-gradient(ellipse at 80% 10%, rgba(114, 223, 209, 0.14) 0%, transparent 40%),
@@ -264,108 +264,109 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ── VR Gallery ──────────────────────────────────────── */
-
-.svc-gallery {
-  display: flex;
-  flex-direction: column;
-  gap: 2.4rem;
-}
-
-.svc-gallery__header {
-  display: flex;
-  align-items: baseline;
-  gap: 2rem;
-}
-
-.svc-gallery__title {
-  margin: 0;
-  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #ffffff;
-  white-space: nowrap;
-}
-
-.svc-gallery__sub {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.svc-gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.svc-env {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.svc-env__frame {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.svc-env__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.svc-env__placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  background:
-    radial-gradient(circle at center, rgba(114, 223, 209, 0.06) 0%, transparent 70%);
-}
-
-.svc-env__placeholder-icon {
-  font-size: 2.2rem;
-  color: rgba(114, 223, 209, 0.4);
-}
-
-.svc-env__placeholder-text {
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.svc-env__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0 0.2rem;
-}
-
-.svc-env__num {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #72dfd1;
-  font-family: var(--font-display);
-}
-
-.svc-env__label {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-}
+// --- Desactivado temporalmente: bloque "Entornos VR" (ver services-section.html) ---
+// /* ── VR Gallery ──────────────────────────────────────── */
+//
+// .svc-gallery {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 2.4rem;
+// }
+//
+// .svc-gallery__header {
+//   display: flex;
+//   align-items: baseline;
+//   gap: 2rem;
+// }
+//
+// .svc-gallery__title {
+//   margin: 0;
+//   font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+//   font-weight: 800;
+//   letter-spacing: -0.03em;
+//   color: #ffffff;
+//   white-space: nowrap;
+// }
+//
+// .svc-gallery__sub {
+//   margin: 0;
+//   font-size: 0.95rem;
+//   line-height: 1.7;
+//   color: rgba(255, 255, 255, 0.5);
+// }
+//
+// .svc-gallery__grid {
+//   display: grid;
+//   grid-template-columns: repeat(4, 1fr);
+//   gap: 1rem;
+// }
+//
+// .svc-env {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.75rem;
+// }
+//
+// .svc-env__frame {
+//   position: relative;
+//   aspect-ratio: 4 / 3;
+//   border-radius: 20px;
+//   overflow: hidden;
+//   border: 1px solid rgba(255, 255, 255, 0.1);
+//   background: rgba(255, 255, 255, 0.04);
+// }
+//
+// .svc-env__img {
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   display: block;
+// }
+//
+// .svc-env__placeholder {
+//   position: absolute;
+//   inset: 0;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 0.6rem;
+//   background:
+//     radial-gradient(circle at center, rgba(114, 223, 209, 0.06) 0%, transparent 70%);
+// }
+//
+// .svc-env__placeholder-icon {
+//   font-size: 2.2rem;
+//   color: rgba(114, 223, 209, 0.4);
+// }
+//
+// .svc-env__placeholder-text {
+//   font-size: 0.72rem;
+//   letter-spacing: 0.06em;
+//   text-transform: uppercase;
+//   color: rgba(255, 255, 255, 0.3);
+// }
+//
+// .svc-env__meta {
+//   display: flex;
+//   align-items: center;
+//   gap: 0.6rem;
+//   padding: 0 0.2rem;
+// }
+//
+// .svc-env__num {
+//   font-size: 0.68rem;
+//   font-weight: 800;
+//   letter-spacing: 0.08em;
+//   color: #72dfd1;
+//   font-family: var(--font-display);
+// }
+//
+// .svc-env__label {
+//   font-size: 0.88rem;
+//   font-weight: 600;
+//   color: rgba(255, 255, 255, 0.7);
+// }
 
 /* ── Responsive ─────────────────────────────────────── */
 
@@ -374,9 +375,9 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .svc-gallery__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  //   .svc-gallery__grid {
+  //     grid-template-columns: repeat(2, 1fr);
+  //   }
 }
 
 @media (max-width: 900px) {
@@ -393,10 +394,10 @@
     min-height: auto;
   }
 
-  .svc-gallery__header {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  //   .svc-gallery__header {
+  //     flex-direction: column;
+  //     gap: 0.5rem;
+  //   }
 }
 
 @media (max-width: 600px) {
@@ -404,7 +405,7 @@
     grid-template-columns: 1fr;
   }
 
-  .svc-gallery__grid {
-    grid-template-columns: 1fr;
-  }
+  //   .svc-gallery__grid {
+  //     grid-template-columns: 1fr;
+  //   }
 }

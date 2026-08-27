@@ -1,0 +1,28 @@
+# Configuración de despliegue en Netlify.
+#
+# OJO con la estructura del repositorio: la app de Angular no está en la raíz,
+# vive en psyconova-frontend/. Por eso se fija `base`, y TODAS las demás rutas
+# de este archivo se resuelven a partir de ahí, no de la raíz del repositorio.
+
+[build]
+  base = "psyconova-frontend/"
+  # Netlify instala las dependencias solo, antes de correr este comando.
+  command = "npm run build"
+  publish = "dist/psyconova-frontend/browser/"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions/"
+  node_bundler = "esbuild"
+
+# La app es una SPA: cualquier ruta debe servir index.html para que el router
+# de Angular la resuelva. Sin esto, recargar /contact devuelve un 404.
+#
+# Las funciones se sirven antes que los redirects, así que
+# /.netlify/functions/contact no queda atrapado por esta regla.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

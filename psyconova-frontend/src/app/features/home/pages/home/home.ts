@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HeroSection } from '../../components/hero-section/hero-section';
 import { IntroSection } from '../../components/intro-section/intro-section';
 import { ServicesSection } from '../../components/services-section/services-section';
+import { StoriesSection } from '../../components/stories-section/stories-section';
 import { TeamSection } from '../../components/team-section/team-section';
 import { CtaSection } from '../../components/cta-section/cta-section';
 
@@ -12,6 +13,7 @@ import { CtaSection } from '../../components/cta-section/cta-section';
     HeroSection,
     IntroSection,
     ServicesSection,
+    StoriesSection,
     TeamSection,
     CtaSection,
   ],

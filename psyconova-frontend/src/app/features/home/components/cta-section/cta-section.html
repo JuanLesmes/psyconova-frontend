@@ -8,10 +8,46 @@
 
     <!-- ── Header ──────────────────────────────────── -->
     <div class="ctc-header" reveal revealType="up">
-      <span class="ctc-badge">Contacto</span>
-      <h2 class="ctc-title">Hablemos de tu bienestar</h2>
+      <span class="ctc-badge">{{ 'contact.badge' | translate }}</span>
+      <h2 class="ctc-title">{{ 'contact.title' | translate }}</h2>
       <p class="ctc-subtitle">
-        Cuéntanos qué necesitas y nuestro equipo te contactará para agendar tu primera experiencia.
+        {{ 'contact.subtitle' | translate }}
+      </p>
+    </div>
+
+    <!--
+      Aviso de líneas de crisis. Va ANTES del formulario a propósito: quien
+      llega en un momento difícil tiene que ver esto antes de ponerse a
+      escribir y esperar una respuesta que no es inmediata.
+      Los números están en core/config/contact.config.ts, verificados.
+    -->
+    <div class="ctc-crisis" reveal revealType="up" [revealDelay]="80">
+      <div class="ctc-crisis__head">
+        <svg class="ctc-crisis__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3a9 9 0 100 18 9 9 0 000-18z"/>
+          <path d="M12 8v5" stroke-linecap="round"/>
+          <circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+        <div>
+          <p class="ctc-crisis__title">{{ 'contact.crisis.title' | translate }}</p>
+          <p class="ctc-crisis__text">{{ 'contact.crisis.text' | translate }}</p>
+        </div>
+      </div>
+
+      <ul class="ctc-crisis__lines">
+        <li *ngFor="let line of crisisLines">
+          <a [href]="line.tel" class="ctc-crisis__num">{{ line.number }}</a>
+          <span class="ctc-crisis__desc">
+            {{ 'contact.crisis.lines.' + line.key | translate }}
+          </span>
+        </li>
+      </ul>
+
+      <p class="ctc-crisis__wa">
+        {{ 'contact.crisis.whatsapp' | translate }}
+        <a [href]="crisisWhatsapp.link" target="_blank" rel="noopener">
+          {{ crisisWhatsapp.display }}
+        </a>
       </p>
     </div>
 
@@ -25,7 +61,7 @@
             <circle cx="12" cy="12" r="10"/>
             <path d="M8 12.5l2.5 2.5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <p>¡Consulta enviada! Nos pondremos en contacto pronto.</p>
+          <p>{{ 'contact.success' | translate }}</p>
         </div>
 
         <form class="ctc-form" (ngSubmit)="onSubmit()" *ngIf="!submitted" #f="ngForm">
@@ -42,7 +78,9 @@
                 placeholder=" "
                 required
               />
-              <label class="ctc-label" for="nombre">Nombre</label>
+              <label class="ctc-label" for="nombre">
+                {{ 'contact.form.firstName' | translate }}
+              </label>
               <div class="ctc-line"></div>
             </div>
 
@@ -57,7 +95,9 @@
                 placeholder=" "
                 required
               />
-              <label class="ctc-label" for="apellido">Apellido</label>
+              <label class="ctc-label" for="apellido">
+                {{ 'contact.form.lastName' | translate }}
+              </label>
               <div class="ctc-line"></div>
             </div>
           </div>
@@ -73,7 +113,7 @@
               placeholder=" "
               required
             />
-            <label class="ctc-label" for="celular">Número de celular</label>
+            <label class="ctc-label" for="celular">{{ 'contact.form.phone' | translate }}</label>
             <div class="ctc-line"></div>
           </div>
 
@@ -88,7 +128,7 @@
               placeholder=" "
               required
             />
-            <label class="ctc-label" for="correo">Correo electrónico</label>
+            <label class="ctc-label" for="correo">{{ 'contact.form.email' | translate }}</label>
             <div class="ctc-line"></div>
           </div>
 
@@ -104,13 +144,62 @@
               required
             ></textarea>
             <label class="ctc-label" for="descripcion">
-              Describe brevemente tu consulta
+              {{ 'contact.form.message' | translate }}
             </label>
             <div class="ctc-line"></div>
           </div>
 
-          <button class="ctc-submit" type="submit">
-            <span class="ctc-submit__text">Generar consulta</span>
+          <!--
+            Campo trampa para bots. Queda fuera de la vista y del foco del
+            teclado; una persona nunca lo llena, un bot automático sí.
+            La función serverless descarta cualquier envío que lo traiga con texto.
+          -->
+          <div class="ctc-honeypot" aria-hidden="true">
+            <label for="website">No llenar este campo</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              [(ngModel)]="form.website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+
+          <!-- Autorización de tratamiento de datos (Ley 1581 de 2012) -->
+          <div class="ctc-consent">
+            <input
+              class="ctc-consent__box"
+              type="checkbox"
+              id="consentimiento"
+              name="consentimiento"
+              [(ngModel)]="form.consentimiento"
+              required
+            />
+            <span class="ctc-consent__text">
+              <label for="consentimiento">{{ 'contact.form.consentBefore' | translate }}</label><a
+                class="ctc-consent__link"
+                [href]="privacyPolicyUrl"
+                target="_blank"
+                rel="noopener"
+              >{{ 'contact.form.consentLink' | translate }}</a>.
+            </span>
+          </div>
+
+          <!-- Error de envío: nunca se finge un envío exitoso -->
+          <p class="ctc-error" *ngIf="hasError" role="alert">
+            {{ 'contact.error' | translate }}
+            <a [href]="'mailto:' + fallbackEmail">{{ fallbackEmail }}</a>
+          </p>
+
+          <button
+            class="ctc-submit"
+            type="submit"
+            [disabled]="!form.consentimiento || isSending"
+          >
+            <span class="ctc-submit__text">
+              {{ (isSending ? 'contact.form.sending' : 'contact.form.submit') | translate }}
+            </span>
             <svg class="ctc-submit__icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -137,10 +226,13 @@
               </svg>
             </div>
             <div class="ctc-info-card__content">
-              <span class="ctc-info-card__label">WhatsApp</span>
-              <a href="https://wa.me/573000000000" target="_blank" class="ctc-info-card__value">
-                +57 300 000 0000
-              </a>
+              <span class="ctc-info-card__label">{{ 'contact.info.whatsapp' | translate }}</span>
+              <a
+                [href]="contactInfo.whatsappLink"
+                target="_blank"
+                rel="noopener"
+                class="ctc-info-card__value"
+              >{{ contactInfo.whatsapp }}</a>
             </div>
           </div>
 
@@ -153,8 +245,22 @@
               </svg>
             </div>
             <div class="ctc-info-card__content">
-              <span class="ctc-info-card__label">Ubicación</span>
-              <span class="ctc-info-card__value">Colombia</span>
+              <span class="ctc-info-card__label">{{ 'contact.info.location' | translate }}</span>
+              <span class="ctc-info-card__value">{{ location.street }}</span>
+              <span class="ctc-info-card__sub">
+                {{ location.building }} · {{ location.city }}
+              </span>
+              <a
+                class="ctc-map__link"
+                [href]="mapLinkUrl"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ 'contact.map.link' | translate }}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -167,10 +273,11 @@
               </svg>
             </div>
             <div class="ctc-info-card__content">
-              <span class="ctc-info-card__label">Correo</span>
-              <a href="mailto:contacto@psyconova.com" class="ctc-info-card__value">
-                contacto@psyconova.com
-              </a>
+              <span class="ctc-info-card__label">{{ 'contact.info.email' | translate }}</span>
+              <a
+                [href]="'mailto:' + contactInfo.email"
+                class="ctc-info-card__value"
+              >{{ contactInfo.email }}</a>
             </div>
           </div>
 
@@ -183,12 +290,56 @@
               </svg>
             </div>
             <div class="ctc-info-card__content">
-              <span class="ctc-info-card__label">Horario de atención</span>
-              <span class="ctc-info-card__value">Lun – Vie · 8:00 am – 6:00 pm</span>
+              <span class="ctc-info-card__label">{{ 'contact.info.schedule' | translate }}</span>
+              <span class="ctc-info-card__value">
+                {{ 'contact.info.scheduleValue' | translate }}
+              </span>
             </div>
           </div>
 
         </div>
+
+        <!--
+          Mapa de Google con consentimiento previo.
+          El iframe NO existe en el DOM hasta que el visitante pulsa el botón,
+          así que ninguna cookie de google.com se instala antes de autorizarlo.
+          La dirección y el zoom se ajustan en core/config/contact.config.ts
+        -->
+        <div class="ctc-map" reveal revealType="right" [revealDelay]="600">
+          <div class="ctc-map__frame">
+
+            <!-- Antes de aceptar -->
+            <div class="ctc-map__gate" *ngIf="!mapConsent">
+              <svg class="ctc-map__gate-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+              <p class="ctc-map__gate-title">{{ 'contact.map.gateTitle' | translate }}</p>
+              <p class="ctc-map__gate-text">{{ 'contact.map.gateText' | translate }}</p>
+              <button class="ctc-map__gate-btn" type="button" (click)="acceptMap()">
+                {{ 'contact.map.gateAccept' | translate }}
+              </button>
+              <a
+                class="ctc-map__gate-alt"
+                [href]="mapLinkUrl"
+                target="_blank"
+                rel="noopener"
+              >{{ 'contact.map.gateSkip' | translate }}</a>
+            </div>
+
+            <!-- Después de aceptar -->
+            <iframe
+              *ngIf="mapConsent"
+              class="ctc-map__embed"
+              [src]="mapEmbedUrl"
+              [title]="'contact.map.alt' | translate"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+            ></iframe>
+
+          </div>
+        </div>
+
       </div>
 
     </div>

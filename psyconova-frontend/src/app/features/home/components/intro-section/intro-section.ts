@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 
+/**
+ * Los textos viven en assets/i18n/<idioma>.json bajo `intro.nodes.<id>`.
+ * Aquí sólo queda la geometría y las imágenes, que no se traducen.
+ */
 interface IntroNode {
   id: string;
-  tag: string;
-  title: string;
-  detail: string;
   image: string;
-  alt: string;
   x: number;
   y: number;
   lineX: number;
@@ -17,22 +18,17 @@ interface IntroNode {
 
 interface LoopImage {
   image: string;
-  alt: string;
+  altKey: string;
 }
 
 @Component({
   selector: 'app-intro-section',
   standalone: true,
-  imports: [CommonModule, RevealDirective],
+  imports: [CommonModule, RevealDirective, TranslatePipe],
   templateUrl: './intro-section.html',
   styleUrl: './intro-section.scss'
 })
 export class IntroSection implements OnInit, OnDestroy {
-  title = 'Una experiencia inmersiva para acercar el bienestar emocional a la vida cotidiana';
-
-  description =
-    'PSYCONOVA integra psicología, tecnología y ciencia para crear experiencias innovadoras en salud mental. Su propuesta combina realidad virtual, ciberpsicología y un enfoque humano para ofrecer una forma más accesible, intuitiva y significativa de cuidar el bienestar emocional.';
-
   activeId: string | null = null;
 
   private loopIntervalId?: number;
@@ -41,16 +37,16 @@ export class IntroSection implements OnInit, OnDestroy {
 
   loopImages: LoopImage[] = [
     {
-      image: 'assets/images/intro-story/01-poniendo-gafas.png',
-      alt: 'Persona iniciando una experiencia inmersiva'
+      image: 'assets/images/intro-story/01-poniendo-gafas.webp',
+      altKey: 'intro.loop.start'
     },
     {
-      image: 'assets/images/intro-story/02-gafas-puestas.png',
-      alt: 'Persona usando gafas de realidad virtual'
+      image: 'assets/images/intro-story/02-gafas-puestas.webp',
+      altKey: 'intro.loop.wearing'
     },
     {
-      image: 'assets/images/intro-story/03-transformacion.png',
-      alt: 'Escena de transformación inmersiva'
+      image: 'assets/images/intro-story/03-transformacion.webp',
+      altKey: 'intro.loop.transformation'
     }
   ];
 
@@ -62,12 +58,7 @@ export class IntroSection implements OnInit, OnDestroy {
   nodes: IntroNode[] = [
     {
       id: 'problema',
-      tag: 'Problema',
-      title: 'Estrés y barreras reales',
-      detail:
-        'Muchas personas viven con estrés constante, poco tiempo y dificultades para acceder a apoyos tradicionales de salud mental.',
-      image: 'assets/images/intro-story/09-desierto.png',
-      alt: 'Escena de desierto como metáfora de desgaste y barreras emocionales',
+      image: 'assets/images/intro-story/09-desierto.webp',
       x: 23,
       y: 21,
       lineX: 230,
@@ -75,12 +66,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'que-es',
-      tag: 'Qué es',
-      title: 'Psicología + tecnología + ciencia',
-      detail:
-        'PSYCONOVA es una plataforma de innovación en salud mental que conecta conocimiento psicológico, tecnología y ciencia aplicada.',
-      image: 'assets/images/intro-story/04-espacio.png',
-      alt: 'Escena espacial como metáfora de exploración e innovación',
+      image: 'assets/images/intro-story/04-espacio.webp',
       x: 50,
       y: 10,
       lineX: 502,
@@ -88,12 +74,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'tecnologia',
-      tag: 'Tecnología',
-      title: 'Realidad virtual y ciberpsicología',
-      detail:
-        'La propuesta utiliza experiencias inmersivas para acompañar procesos de bienestar emocional desde una mirada innovadora y ética.',
-      image: 'assets/images/intro-story/06-volcan.png',
-      alt: 'Escena de volcán como metáfora de energía e intensidad tecnológica',
+      image: 'assets/images/intro-story/06-volcan.webp',
       x: 77,
       y: 21,
       lineX: 770,
@@ -101,12 +82,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'exploracion',
-      tag: 'Exploración',
-      title: 'Autoconocimiento y nuevas posibilidades',
-      detail:
-        'Además del alivio emocional, la experiencia abre espacio para explorar la identidad, el asombro y nuevas formas de comprenderse.',
-      image: 'assets/images/intro-story/10-biblioteca.png',
-      alt: 'Escena de biblioteca como metáfora de exploración y autoconocimiento',
+      image: 'assets/images/intro-story/10-biblioteca.webp',
       x: 13,
       y: 50,
       lineX: 130,
@@ -114,12 +90,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'acceso',
-      tag: 'Acceso',
-      title: 'Más simple, más intuitivo',
-      detail:
-        'La experiencia está pensada para ser fácil de vivir, sin requerir conocimientos previos y sin romper por completo la rutina cotidiana.',
-      image: 'assets/images/intro-story/05-mar.png',
-      alt: 'Escena del mar como metáfora de accesibilidad y apertura',
+      image: 'assets/images/intro-story/05-mar.webp',
       x: 87,
       y: 50,
       lineX: 870,
@@ -127,12 +98,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'impacto',
-      tag: 'Impacto',
-      title: 'Democratizar el bienestar mental',
-      detail:
-        'Busca acercar herramientas avanzadas de bienestar emocional a más personas, contextos y formas de vida.',
-      image: 'assets/images/intro-story/07-elefante.png',
-      alt: 'Escena con elefante como metáfora de impacto y fuerza',
+      image: 'assets/images/intro-story/07-elefante.webp',
       x: 26,
       y: 83,
       lineX: 260,
@@ -140,12 +106,7 @@ export class IntroSection implements OnInit, OnDestroy {
     },
     {
       id: 'bienestar',
-      tag: 'Bienestar',
-      title: 'Relajación y regulación emocional',
-      detail:
-        'Ayuda a desconectarse del ruido cotidiano y reconectar con un estado más calmado, consciente y emocionalmente regulado.',
-      image: 'assets/images/intro-story/08-bosque.png',
-      alt: 'Escena de bosque como metáfora de calma y regulación emocional',
+      image: 'assets/images/intro-story/08-bosque.webp',
       x: 74,
       y: 83,
       lineX: 740,
@@ -182,8 +143,10 @@ export class IntroSection implements OnInit, OnDestroy {
     return this.activeNode ? this.activeNode.image : this.currentLoopImage.image;
   }
 
-  get displayAlt(): string {
-    return this.activeNode ? this.activeNode.alt : this.currentLoopImage.alt;
+  get displayAltKey(): string {
+    return this.activeNode
+      ? `intro.nodes.${this.activeNode.id}.alt`
+      : this.currentLoopImage.altKey;
   }
 
   setActive(id: string): void {

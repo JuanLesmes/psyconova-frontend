@@ -2,11 +2,11 @@
   <div class="intro-shell">
     <div class="intro-header" reveal revealType="up">
       <h2 class="intro-title">
-        {{ title }}
+        {{ 'intro.title' | translate }}
       </h2>
 
       <p class="intro-description">
-        {{ description }}
+        {{ 'intro.description' | translate }}
       </p>
     </div>
 
@@ -122,13 +122,13 @@
                   *ngIf="previousLoopImage"
                   class="intro-core__image intro-core__image--previous"
                   [src]="previousLoopImage.image"
-                  [alt]="previousLoopImage.alt"
+                  [alt]="previousLoopImage.altKey | translate"
                 />
 
                 <img
                   class="intro-core__image intro-core__image--current"
                   [src]="currentLoopImage.image"
-                  [alt]="currentLoopImage.alt"
+                  [alt]="currentLoopImage.altKey | translate"
                 />
               </ng-container>
 
@@ -136,7 +136,7 @@
                 <img
                   class="intro-core__image intro-core__image--current"
                   [src]="displayImage"
-                  [alt]="displayAlt"
+                  [alt]="displayAltKey | translate"
                 />
               </ng-template>
             </div>
@@ -156,14 +156,14 @@
         (focus)="setActive(node.id)"
         (click)="setActive(node.id)"
       >
-        <span class="intro-node__tag">{{ node.tag }}</span>
+        <span class="intro-node__tag">{{ 'intro.nodes.' + node.id + '.tag' | translate }}</span>
 
         <strong class="intro-node__title">
-          {{ node.title }}
+          {{ 'intro.nodes.' + node.id + '.title' | translate }}
         </strong>
 
         <span class="intro-node__detail">
-          {{ node.detail }}
+          {{ 'intro.nodes.' + node.id + '.detail' | translate }}
         </span>
       </button>
     </div>
