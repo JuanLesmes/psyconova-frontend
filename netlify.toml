@@ -11,7 +11,10 @@
   publish = "dist/psyconova-frontend/browser/"
 
 [build.environment]
-  NODE_VERSION = "22"
+  # Node 24: es la version con la que se probo el proyecto en local.
+  # Angular 21 admite ^20.19 || ^22.12 || >=24, asi que 22 tambien serviria,
+  # pero conviene que Netlify compile con lo mismo que se verifico aqui.
+  NODE_VERSION = "24"
 
 [functions]
   directory = "netlify/functions/"
