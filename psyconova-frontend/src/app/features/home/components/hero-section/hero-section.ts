@@ -1,20 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-type Language = 'ES' | 'FR' | 'IT' | 'EN';
+import { TranslatePipe } from '@ngx-translate/core';
+import { Language, LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.scss',
 })
 export class HeroSection {
+  private readonly languageService = inject(LanguageService);
+
   menuOpen = false;
-  activeLanguage: Language = 'ES';
-  languages: Language[] = ['ES', 'FR', 'IT', 'EN'];
+  readonly languages = this.languageService.languages;
+  readonly activeLanguage = this.languageService.active;
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
@@ -32,6 +34,6 @@ export class HeroSection {
   }
 
   setLanguage(language: Language): void {
-    this.activeLanguage = language;
+    this.languageService.use(language);
   }
 }

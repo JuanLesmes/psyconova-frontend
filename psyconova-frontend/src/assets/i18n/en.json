@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "goHome": "Go to home",
+    "nextSection": "Go to next section",
+    "home": "Home",
+    "what": "What is PSYCONOVA?",
+    "services": "Services",
+    "about": "About us",
+    "contact": "Contact"
+  },
+  "loading": {
+    "tagline": "Psychology · Technology · Humanity"
+  },
+  "hero": {
+    "titleBefore": "A new",
+    "titleAccent": "perspective",
+    "titleAfter": "on mental health.",
+    "subtitle": "Innovation, sensitivity and a more human digital presence."
+  },
+  "intro": {
+    "title": "An immersive experience that brings emotional wellbeing into everyday life",
+    "description": "PSYCONOVA brings together psychology, technology and science to create innovative mental health experiences. Its approach combines virtual reality, cyberpsychology and a human perspective to offer a more accessible, intuitive and meaningful way to care for emotional wellbeing.",
+    "loop": {
+      "start": "Person starting an immersive experience",
+      "wearing": "Person wearing virtual reality glasses",
+      "transformation": "Immersive transformation scene"
+    },
+    "nodes": {
+      "problema": {
+        "tag": "Problem",
+        "title": "Real stress, real barriers",
+        "detail": "Many people live with constant stress, little time and real difficulties accessing traditional mental health support.",
+        "alt": "Desert scene as a metaphor for exhaustion and emotional barriers"
+      },
+      "que-es": {
+        "tag": "What it is",
+        "title": "Psychology + technology + science",
+        "detail": "PSYCONOVA is a mental health innovation platform that connects psychological knowledge, technology and applied science.",
+        "alt": "Space scene as a metaphor for exploration and innovation"
+      },
+      "tecnologia": {
+        "tag": "Technology",
+        "title": "Virtual reality and cyberpsychology",
+        "detail": "The experience uses immersive environments to support emotional wellbeing from an innovative and ethical perspective.",
+        "alt": "Volcano scene as a metaphor for energy and technological intensity"
+      },
+      "exploracion": {
+        "tag": "Exploration",
+        "title": "Self-knowledge and new possibilities",
+        "detail": "Beyond emotional relief, the experience opens space to explore identity, wonder and new ways of understanding oneself.",
+        "alt": "Library scene as a metaphor for exploration and self-knowledge"
+      },
+      "acceso": {
+        "tag": "Access",
+        "title": "Simpler, more intuitive",
+        "detail": "The experience is designed to be easy to live, requiring no prior knowledge and without disrupting everyday routine.",
+        "alt": "Sea scene as a metaphor for accessibility and openness"
+      },
+      "impacto": {
+        "tag": "Impact",
+        "title": "Making mental wellbeing accessible to all",
+        "detail": "It seeks to bring advanced emotional wellbeing tools to more people, contexts and ways of life.",
+        "alt": "Scene with an elephant as a metaphor for impact and strength"
+      },
+      "bienestar": {
+        "tag": "Wellbeing",
+        "title": "Relaxation and emotional regulation",
+        "detail": "It helps you disconnect from everyday noise and reconnect with a calmer, more mindful and emotionally regulated state.",
+        "alt": "Forest scene as a metaphor for calm and emotional regulation"
+      }
+    }
+  },
+  "services": {
+    "badge": "Our Services",
+    "title": "Virtual reality<br>for wellbeing",
+    "intro": "PSYCONOVA offers a virtual reality service that lets users live immersive experiences designed for emotional care — from anywhere, with no prior knowledge and for as long as each person decides.",
+    "features": {
+      "immersive": "Immersive relaxation and emotional regulation experiences, for as long as the user decides.",
+      "disconnect": "Disconnect from the work environment without travelling or interrupting your routine.",
+      "intuitive": "No prior knowledge needed: the technology guides the experience intuitively.",
+      "anywhere": "At the office, at home or anywhere private, scheduling the session around your availability."
+    },
+    "cards": {
+      "personal": {
+        "label": "Personal wellbeing",
+        "title": "Relaxing environments for managing everyday stress",
+        "desc": "Immersive environments designed to reduce stress, encourage calm and restore emotional balance day to day."
+      },
+      "professional": {
+        "label": "Professional use",
+        "title": "A tool for exploring identity and inner conflict",
+        "desc": "For psychologists and mental health professionals: assessment and intervention supported by virtual reality to accompany therapeutic processes."
+      },
+      "selfKnowledge": {
+        "label": "Self-knowledge",
+        "title": "Exploring the self",
+        "desc": "Spaces for introspection where each person connects with their emotions and deepens their self-understanding through guided environments."
+      }
+    }
+  },
+  "stories": {
+    "badge": "Stories",
+    "title": "Stories that accompany you",
+    "subtitle": "Interactive stories handed out in session, to support children through what they are living.",
+    "tale": {
+      "eyebrow": "Therapeutic story",
+      "title": "Las Manadas",
+      "description": "Nilo is a wolf cub who lives between two caves. One day his pack starts changing shape: someone new arrives, and then a little brother.",
+      "forWhom": "Written for children going through a separation, a blended family or the arrival of a sibling. The story does not tell them what to feel: it gives them words for what they already feel, and shows them that feeling several things at once is fine.",
+      "metaPages": "11 illustrated pages",
+      "metaActivities": "2 drawing activities",
+      "metaCompany": "Read together · in Spanish",
+      "author": "Written and designed by Laura Lesmes, Clinical Psychologist."
+    },
+    "gate": {
+      "chip": "Opens with a keyword",
+      "label": "Keyword",
+      "placeholder": "type it here",
+      "button": "Interact",
+      "hint": "Your psychologist gives it to you in session, along with guidance on reading it as a family.",
+      "error": "That is not the keyword. Check it or ask your psychologist."
+    },
+    "unlocked": {
+      "title": "Story unlocked",
+      "open": "Open the story",
+      "note": "Opens in a new tab. Works best on a tablet or computer, with the sound on."
+    }
+  },
+  "team": {
+    "badge": "Clinical Leadership",
+    "title": "The clinical perspective<br>behind PSYCONOVA",
+    "subtitle": "Every immersive experience is born from clinical practice: technology supports the process, professional judgement guides it.",
+    "availability": "Available for consultations",
+    "label": "Interdisciplinary team",
+    "lead": {
+      "name": "Laura Valentina Lesmes Castañeda",
+      "role": "Founder & Clinical Director",
+      "credentials": "Clinical and Health Psychologist · M.Sc. in Cyberpsychology",
+      "bio": "With a background in clinical psychology and a specialisation in technology applied to emotional wellbeing, she leads the scientific and therapeutic development of PSYCONOVA. Her career combines traditional clinical practice with research into virtual reality as a tool for intervention, building a bridge between modern psychology and technological innovation with a deeply human approach.",
+      "specialties": {
+        "cbt": "Cognitive Behavioural Therapy",
+        "vr": "Therapeutic Virtual Reality",
+        "regulation": "Emotional Regulation",
+        "cyberpsychology": "Cyberpsychology",
+        "act": "Acceptance and Commitment Therapy",
+        "dbt": "Dialectical Behaviour Therapy",
+        "mindfulness": "Mindfulness"
+      },
+      "educationLabel": "Education",
+      "education": {
+        "degree": "Clinical and Health Psychology — Universidad del Rosario · University of Bologna",
+        "masters": "M.Sc. in Cyberpsychology — Universidade Lusófona · University of Barcelona · Université Paris Cité"
+      }
+    },
+    "stats": {
+      "therapy": "Pioneer in therapy",
+      "human": "Human approach",
+      "experience": "Years of experience"
+    },
+    "members": {
+      "tech": {
+        "name": "Team Lead's Name",
+        "role": "Head of Technology",
+        "area": "Technology",
+        "bio": "Responsible for the technical architecture, the development of the VR environments and the integration of the platform with clinical protocols."
+      },
+      "legal": {
+        "name": "Advisor's Name",
+        "role": "Legal Advisor",
+        "area": "Legal",
+        "bio": "Ensures regulatory compliance in data protection, clinical privacy and the legal framework for using technology in mental health."
+      },
+      "marketing": {
+        "name": "Strategist's Name",
+        "role": "Marketing Strategist",
+        "area": "Marketing",
+        "bio": "Defines the brand voice, the communication strategy and the channels that connect PSYCONOVA with the people who need it most."
+      }
+    }
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Let's talk about your wellbeing",
+    "subtitle": "Tell us what you need and our team will get in touch to schedule your first experience.",
+    "crisis": {
+      "title": "Need help right now?",
+      "text": "This form is not an emergency channel. We will answer your enquiry as soon as possible and get in touch at the earliest opportunity, but if you are going through a crisis, these Colombian helplines answer immediately.",
+      "whatsapp": "Line 106 also answers on WhatsApp:",
+      "lines": {
+        "psychological": "Psychological support · 24 hours, every day",
+        "national": "National mental health line · press option 4",
+        "emergency": "Emergencies · 24 hours"
+      }
+    },
+    "success": "Enquiry sent! We'll be in touch soon.",
+    "error": "We couldn't send your enquiry. Please try again or write to us at",
+    "form": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Mobile number",
+      "email": "Email address",
+      "message": "Briefly describe your enquiry",
+      "consentBefore": "I authorise the processing of my personal data in accordance with the ",
+      "consentLink": "privacy policy",
+      "submit": "Send enquiry",
+      "sending": "Sending…"
+    },
+    "info": {
+      "whatsapp": "WhatsApp",
+      "location": "Location",
+      "email": "Email",
+      "schedule": "Opening hours",
+      "scheduleValue": "Mon – Fri · 8:00 am – 6:00 pm"
+    },
+    "map": {
+      "link": "Get directions",
+      "alt": "Map showing the location of PSYCONOVA",
+      "gateTitle": "Google map",
+      "gateText": "Loading it means Google receives your IP address and sets cookies in your browser.",
+      "gateAccept": "Accept and show the map",
+      "gateSkip": "I would rather open it in a new tab"
+    }
+  },
+  "footer": {
+    "tagline": "Innovation, wellbeing and a human perspective to build new ways of approaching mental health.",
+    "navTitle": "Navigation",
+    "contactTitle": "Contact",
+    "location": "Bogotá, Colombia",
+    "copy": "© 2026 PSYCONOVA — All rights reserved.",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use"
+  }
+}

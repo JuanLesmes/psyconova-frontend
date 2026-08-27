@@ -1,0 +1,230 @@
+/* Estilos compartidos por la política de privacidad y los términos de uso. */
+
+.legal {
+  position: relative;
+  padding: 7rem 2rem 5rem;
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(114, 223, 209, 0.1) 0%, transparent 45%),
+    radial-gradient(ellipse at 0% 100%, rgba(200, 178, 247, 0.1) 0%, transparent 45%),
+    linear-gradient(180deg, #f7f4ff 0%, #ffffff 45%, #f0f8ff 100%);
+}
+
+.legal__shell {
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+/* ── Aviso de borrador ───────────────────────────────── */
+
+/*
+  Se queda visible hasta que la abogada valide el texto. Si el sitio saliera
+  a producción antes de esa revisión, el visitante tiene que poder ver que
+  este documento todavía no es definitivo.
+  Para quitarlo: borra este bloque del HTML de ambas páginas.
+*/
+.legal__draft {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+  padding: 1rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(176, 122, 24, 0.32);
+  background: rgba(232, 180, 74, 0.12);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(95, 103, 126, 0.98);
+}
+
+.legal__draft strong {
+  color: #19206d;
+}
+
+.legal__draft-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.15rem;
+  fill: none;
+  stroke: #8d6110;
+  stroke-width: 1.8;
+}
+
+/* ── Encabezado ──────────────────────────────────────── */
+
+.legal__eyebrow {
+  display: inline-flex;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(114, 223, 209, 0.4);
+  background: rgba(114, 223, 209, 0.1);
+  color: #0f8f84;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.legal__title {
+  margin: 1rem 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  color: #19206d;
+  text-wrap: balance;
+}
+
+.legal__updated {
+  margin: 0 0 2.5rem;
+  font-size: 0.85rem;
+  color: rgba(95, 103, 126, 0.9);
+}
+
+/* ── Cuerpo ──────────────────────────────────────────── */
+
+.legal__body h2 {
+  margin: 2.6rem 0 0.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(25, 32, 109, 0.1);
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: #19206d;
+}
+
+.legal__body h3 {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #19206d;
+}
+
+.legal__body p {
+  margin: 0 0 1rem;
+  font-size: 0.97rem;
+  line-height: 1.85;
+  color: #5f677e;
+}
+
+.legal__body ul {
+  margin: 0 0 1.2rem;
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legal__body li {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #5f677e;
+}
+
+.legal__body li::marker {
+  color: #72dfd1;
+}
+
+.legal__body strong {
+  color: #19206d;
+  font-weight: 600;
+}
+
+.legal__body a {
+  color: #7b69e7;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal__body a:hover {
+  color: #19206d;
+}
+
+/* Bloque para lo que la abogada debe definir */
+.legal__todo {
+  margin: 0.4rem 0 1.2rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(123, 105, 231, 0.45);
+  background: rgba(123, 105, 231, 0.06);
+  font-size: 0.87rem;
+  line-height: 1.65;
+  color: #5f677e;
+}
+
+.legal__todo strong {
+  color: #7b69e7;
+}
+
+/* Tabla de datos recogidos */
+.legal__table-wrap {
+  overflow-x: auto;
+  margin: 0 0 1.4rem;
+}
+
+.legal__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.legal__table th,
+.legal__table td {
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(25, 32, 109, 0.1);
+  vertical-align: top;
+}
+
+.legal__table th {
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f8f84;
+  white-space: nowrap;
+}
+
+.legal__table td {
+  color: #5f677e;
+  line-height: 1.6;
+}
+
+.legal__table td:first-child {
+  font-weight: 600;
+  color: #19206d;
+  white-space: nowrap;
+}
+
+/* ── Pie del documento ───────────────────────────────── */
+
+.legal__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(25, 32, 109, 0.1);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #7b69e7;
+  text-decoration: none;
+}
+
+.legal__back:hover {
+  color: #19206d;
+}
+
+.legal__back svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
+
+@media (max-width: 640px) {
+  .legal {
+    padding: 6rem 1.3rem 4rem;
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "goHome": "Ir al inicio",
+    "nextSection": "Ir a la siguiente sección",
+    "home": "Inicio",
+    "what": "¿Qué es PSYCONOVA?",
+    "services": "Servicios",
+    "about": "Nosotros",
+    "contact": "Contacto"
+  },
+  "loading": {
+    "tagline": "Psicología · Tecnología · Humanidad"
+  },
+  "hero": {
+    "titleBefore": "Una nueva",
+    "titleAccent": "mirada",
+    "titleAfter": "para la salud mental.",
+    "subtitle": "Innovación, sensibilidad y una presencia digital más humana."
+  },
+  "intro": {
+    "title": "Una experiencia inmersiva para acercar el bienestar emocional a la vida cotidiana",
+    "description": "PSYCONOVA integra psicología, tecnología y ciencia para crear experiencias innovadoras en salud mental. Su propuesta combina realidad virtual, ciberpsicología y un enfoque humano para ofrecer una forma más accesible, intuitiva y significativa de cuidar el bienestar emocional.",
+    "loop": {
+      "start": "Persona iniciando una experiencia inmersiva",
+      "wearing": "Persona usando gafas de realidad virtual",
+      "transformation": "Escena de transformación inmersiva"
+    },
+    "nodes": {
+      "problema": {
+        "tag": "Problema",
+        "title": "Estrés y barreras reales",
+        "detail": "Muchas personas viven con estrés constante, poco tiempo y dificultades para acceder a apoyos tradicionales de salud mental.",
+        "alt": "Escena de desierto como metáfora de desgaste y barreras emocionales"
+      },
+      "que-es": {
+        "tag": "Qué es",
+        "title": "Psicología + tecnología + ciencia",
+        "detail": "PSYCONOVA es una plataforma de innovación en salud mental que conecta conocimiento psicológico, tecnología y ciencia aplicada.",
+        "alt": "Escena espacial como metáfora de exploración e innovación"
+      },
+      "tecnologia": {
+        "tag": "Tecnología",
+        "title": "Realidad virtual y ciberpsicología",
+        "detail": "La propuesta utiliza experiencias inmersivas para acompañar procesos de bienestar emocional desde una mirada innovadora y ética.",
+        "alt": "Escena de volcán como metáfora de energía e intensidad tecnológica"
+      },
+      "exploracion": {
+        "tag": "Exploración",
+        "title": "Autoconocimiento y nuevas posibilidades",
+        "detail": "Además del alivio emocional, la experiencia abre espacio para explorar la identidad, el asombro y nuevas formas de comprenderse.",
+        "alt": "Escena de biblioteca como metáfora de exploración y autoconocimiento"
+      },
+      "acceso": {
+        "tag": "Acceso",
+        "title": "Más simple, más intuitivo",
+        "detail": "La experiencia está pensada para ser fácil de vivir, sin requerir conocimientos previos y sin romper por completo la rutina cotidiana.",
+        "alt": "Escena del mar como metáfora de accesibilidad y apertura"
+      },
+      "impacto": {
+        "tag": "Impacto",
+        "title": "Democratizar el bienestar mental",
+        "detail": "Busca acercar herramientas avanzadas de bienestar emocional a más personas, contextos y formas de vida.",
+        "alt": "Escena con elefante como metáfora de impacto y fuerza"
+      },
+      "bienestar": {
+        "tag": "Bienestar",
+        "title": "Relajación y regulación emocional",
+        "detail": "Ayuda a desconectarse del ruido cotidiano y reconectar con un estado más calmado, consciente y emocionalmente regulado.",
+        "alt": "Escena de bosque como metáfora de calma y regulación emocional"
+      }
+    }
+  },
+  "services": {
+    "badge": "Nuestros Servicios",
+    "title": "Realidad virtual<br>para el bienestar",
+    "intro": "PSYCONOVA ofrece un servicio basado en realidad virtual que permite a los usuarios vivir experiencias inmersivas diseñadas para el cuidado emocional — desde cualquier lugar, sin conocimiento previo y en el tiempo que cada persona decida.",
+    "features": {
+      "immersive": "Experiencias inmersivas de relajación y regulación emocional en el tiempo que el usuario decida.",
+      "disconnect": "Desconectarse del entorno laboral sin desplazarse ni interrumpir la rutina.",
+      "intuitive": "Sin conocimiento previo: la tecnología guía la experiencia de forma intuitiva.",
+      "anywhere": "En oficina, casa o cualquier lugar privado, programando la sesión según disponibilidad."
+    },
+    "cards": {
+      "personal": {
+        "label": "Bienestar personal",
+        "title": "Ambientes de relajación para el manejo del estrés cotidiano",
+        "desc": "Entornos inmersivos diseñados para reducir el estrés, promover la calma y restaurar el equilibrio emocional en el día a día."
+      },
+      "professional": {
+        "label": "Uso profesional",
+        "title": "Herramienta para explorar la identidad y conflictos",
+        "desc": "Para psicólogos y profesionales de la salud mental: evaluación e intervención apoyada en realidad virtual para acompañar procesos terapéuticos."
+      },
+      "selfKnowledge": {
+        "label": "Autoconocimiento",
+        "title": "Exploración de sí mismos",
+        "desc": "Espacios de introspección donde cada persona conecta con sus emociones y expande su comprensión interna a través de entornos guiados."
+      }
+    }
+  },
+  "stories": {
+    "badge": "Cuentos",
+    "title": "Cuentos que acompañan",
+    "subtitle": "Narraciones interactivas que se entregan en consulta, para acompañar a los niños en lo que están viviendo.",
+    "tale": {
+      "eyebrow": "Cuento terapéutico",
+      "title": "Las Manadas",
+      "description": "Nilo es un lobito que vive entre dos cuevas. Un día su manada empieza a cambiar de forma: llega alguien nuevo, y después llega un hermano pequeño.",
+      "forWhom": "Pensado para niños que atraviesan una separación, una familia que se recompone o la llegada de un hermano. El cuento no explica lo que deben sentir: les da palabras para lo que ya sienten, y les muestra que sentir varias cosas a la vez está bien.",
+      "metaPages": "11 páginas ilustradas",
+      "metaActivities": "2 actividades para dibujar",
+      "metaCompany": "Se lee acompañado",
+      "author": "Escrito y diseñado por Laura Lesmes, Psicóloga Clínica."
+    },
+    "gate": {
+      "chip": "Se abre con palabra clave",
+      "label": "Palabra clave",
+      "placeholder": "escríbela aquí",
+      "button": "Interactuar",
+      "hint": "Tu psicóloga te la entrega en consulta, junto con las indicaciones para leerlo en familia.",
+      "error": "Esa no es la palabra clave. Revísala o pídesela a tu psicóloga."
+    },
+    "unlocked": {
+      "title": "Cuento desbloqueado",
+      "open": "Abrir el cuento",
+      "note": "Se abre en una pestaña nueva. Funciona mejor en tableta o computador, y con el sonido encendido."
+    }
+  },
+  "team": {
+    "badge": "Dirección Clínica",
+    "title": "La mirada clínica<br>detrás de PSYCONOVA",
+    "subtitle": "Cada experiencia inmersiva nace de la práctica clínica: la tecnología acompaña el proceso, el criterio profesional lo guía.",
+    "availability": "Disponible para consultas",
+    "label": "Equipo interdisciplinario",
+    "lead": {
+      "name": "Laura Valentina Lesmes Castañeda",
+      "role": "Fundadora & Directora Clínica",
+      "credentials": "Psicóloga Clínica y de la Salud · M.Sc. en Ciberpsicología",
+      "bio": "Con formación en psicología clínica y una especialización en el uso de tecnología aplicada al bienestar emocional, lidera el desarrollo científico y terapéutico de PSYCONOVA. Su trayectoria combina la práctica clínica tradicional con la investigación en realidad virtual como herramienta de intervención, construyendo un puente entre la psicología moderna y la innovación tecnológica con un enfoque profundamente humano.",
+      "specialties": {
+        "cbt": "Terapia Cognitivo-Conductual",
+        "vr": "Realidad Virtual Terapéutica",
+        "regulation": "Regulación Emocional",
+        "cyberpsychology": "Ciberpsicología",
+        "act": "Terapia de Aceptación y Compromiso",
+        "dbt": "Terapia Dialéctico-Conductual",
+        "mindfulness": "Mindfulness"
+      },
+      "educationLabel": "Formación",
+      "education": {
+        "degree": "Psicología Clínica y de la Salud — Universidad del Rosario · Universidad de Bolonia",
+        "masters": "M.Sc. en Ciberpsicología — Universidad Lusófona · Universidad de Barcelona · Universidad Paris Cité"
+      }
+    },
+    "stats": {
+      "therapy": "Pionera en terapia",
+      "human": "Enfoque humano",
+      "experience": "Años de experiencia"
+    },
+    "members": {
+      "tech": {
+        "name": "Nombre del Líder",
+        "role": "Líder de Tecnología",
+        "area": "Tecnología",
+        "bio": "Responsable de la arquitectura técnica, el desarrollo de los entornos VR y la integración de la plataforma con los protocolos clínicos."
+      },
+      "legal": {
+        "name": "Nombre del Asesor",
+        "role": "Asesor Legal",
+        "area": "Legal",
+        "bio": "Garantiza el cumplimiento normativo en protección de datos, privacidad clínica y el marco legal para el uso de tecnología en salud mental."
+      },
+      "marketing": {
+        "name": "Nombre del Estratega",
+        "role": "Estratega de Marketing",
+        "area": "Marketing",
+        "bio": "Define la voz de marca, la estrategia de comunicación y los canales para conectar a PSYCONOVA con las personas que más lo necesitan."
+      }
+    }
+  },
+  "contact": {
+    "badge": "Contacto",
+    "title": "Hablemos de tu bienestar",
+    "subtitle": "Cuéntanos qué necesitas y nuestro equipo te contactará para agendar tu primera experiencia.",
+    "crisis": {
+      "title": "¿Necesitas ayuda ahora?",
+      "text": "Este formulario no atiende urgencias. Responderemos tu consulta lo antes posible y te contactaremos con la mayor brevedad, pero si estás pasando por una crisis, estas líneas te atienden de inmediato.",
+      "whatsapp": "La Línea 106 también atiende por WhatsApp:",
+      "lines": {
+        "psychological": "Atención psicológica · 24 horas, todos los días",
+        "national": "Línea nacional de salud mental · marca la opción 4",
+        "emergency": "Emergencias · 24 horas"
+      }
+    },
+    "success": "¡Consulta enviada! Nos pondremos en contacto pronto.",
+    "error": "No pudimos enviar tu consulta. Inténtalo de nuevo o escríbenos a",
+    "form": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "phone": "Número de celular",
+      "email": "Correo electrónico",
+      "message": "Describe brevemente tu consulta",
+      "consentBefore": "Autorizo el tratamiento de mis datos personales de acuerdo con la ",
+      "consentLink": "política de privacidad",
+      "submit": "Generar consulta",
+      "sending": "Enviando…"
+    },
+    "info": {
+      "whatsapp": "WhatsApp",
+      "location": "Ubicación",
+      "email": "Correo",
+      "schedule": "Horario de atención",
+      "scheduleValue": "Lun – Vie · 8:00 am – 6:00 pm"
+    },
+    "map": {
+      "link": "Cómo llegar",
+      "alt": "Mapa con la ubicación de PSYCONOVA",
+      "gateTitle": "Mapa de Google",
+      "gateText": "Al cargarlo, Google recibe tu dirección IP e instala cookies en tu navegador.",
+      "gateAccept": "Aceptar y ver el mapa",
+      "gateSkip": "Prefiero abrirlo en otra pestaña"
+    }
+  },
+  "footer": {
+    "tagline": "Innovación, bienestar y una mirada humana para construir nuevas formas de abordar la salud mental.",
+    "navTitle": "Navegación",
+    "contactTitle": "Contacto",
+    "location": "Bogotá, Colombia",
+    "copy": "© 2026 PSYCONOVA — Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso"
+  }
+}
