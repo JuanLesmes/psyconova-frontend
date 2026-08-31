@@ -69,23 +69,6 @@
   }
 }
 
-/* ── Center dot ───────────────────────────────────── */
-
-.ls-center {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #72dfd1;
-  box-shadow: 0 0 20px rgba(114, 223, 209, 0.8), 0 0 40px rgba(114, 223, 209, 0.4);
-  animation: dotGlow 1.8s ease-in-out infinite alternate;
-}
-
-@keyframes dotGlow {
-  from { box-shadow: 0 0 16px rgba(114, 223, 209, 0.6), 0 0 32px rgba(114, 223, 209, 0.3); }
-  to   { box-shadow: 0 0 28px rgba(114, 223, 209, 1),   0 0 56px rgba(114, 223, 209, 0.6); }
-}
-
 /* ── Logo ─────────────────────────────────────────── */
 
 .ls-logo-wrap {
