@@ -522,3 +522,105 @@
     width: 100%;
   }
 }
+
+/* ── Móvil: la constelación pasa a lista ─────────────── */
+
+/*
+  Las posiciones de los nodos son porcentajes sobre un escenario que en
+  escritorio pasa de mil píxeles. Por debajo de ~860px los siete círculos se
+  solapan entre sí y dos quedan cortados por los bordes de la pantalla, así
+  que la disposición radial se cambia por una lista vertical.
+
+  Una constelación no se puede encoger: o hay sitio para las siete posiciones,
+  o hay que cambiar de forma.
+*/
+@media (max-width: 860px) {
+  .intro {
+    padding: 4rem 1.2rem 4.5rem;
+  }
+
+  .synapse-stage {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .synapse-stage::before {
+    display: none;
+  }
+
+  /* Las líneas van trazadas hacia coordenadas fijas del escenario grande. */
+  .synapse-lines {
+    display: none;
+  }
+
+  /* La imagen encabeza la sección: en el DOM ya viene antes que los nodos. */
+  .intro-core {
+    position: static;
+    transform: none;
+    margin-bottom: 1.3rem;
+  }
+
+  .intro-core__glow {
+    display: none;
+  }
+
+  .intro-core__portal-wrap {
+    padding: 12px 12px 15px;
+    border-radius: 140px 140px 18px 18px;
+  }
+
+  .intro-core__portal {
+    width: min(228px, 62vw);
+    height: auto;
+    aspect-ratio: 336 / 460;
+    border-radius: 114px 114px 8px 8px;
+  }
+
+  .intro-node {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 460px;
+    height: auto;
+    border-radius: 22px;
+    padding: 1.05rem 1.25rem;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.4rem;
+    box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
+  }
+
+  .intro-node::before {
+    display: none;
+  }
+
+  /* En pantalla táctil no hay hover, y el estado activo no debe redimensionar. */
+  .intro-node:hover,
+  .intro-node.is-active {
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .intro-node__title {
+    max-width: none;
+    font-size: 1.02rem;
+  }
+
+  /*
+    El detalle se muestra siempre. Obligar a tocar siete tarjetas para leer la
+    explicación de qué es PSYCONOVA es peor que mostrarla de una vez, y en un
+    celular no existe el hover que la revelaba en escritorio.
+  */
+  .intro-node__detail,
+  .intro-node:hover .intro-node__detail,
+  .intro-node.is-active .intro-node__detail {
+    opacity: 1;
+    max-height: none;
+    max-width: none;
+    margin-top: 0.15rem;
+  }
+}
