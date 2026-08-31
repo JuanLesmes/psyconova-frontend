@@ -18,7 +18,17 @@ const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const MAX_BODY_BYTES = 20_000;
 
 const DEFAULT_TO = 'laura.lesmes@psyconova.com';
-const DEFAULT_FROM = 'PSYCONOVA <onboarding@resend.dev>';
+
+/**
+ * Remitente por defecto. Usa el subdominio verificado en Resend.
+ *
+ * Antes apuntaba a onboarding@resend.dev, el remitente de pruebas, que solo
+ * permite enviar al correo del titular de la cuenta. Si la variable de entorno
+ * no llegaba a la función, el envío fallaba con un 403 confuso que parecía un
+ * problema de dominio sin verificar. Con el dominio ya verificado, este es el
+ * valor correcto y la variable solo hace falta para cambiarlo.
+ */
+const DEFAULT_FROM = 'PSYCONOVA <hola@send.psyconova.com>';
 
 interface Consulta {
   nombre?: unknown;
