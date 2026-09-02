@@ -42,3 +42,9 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 .vscode/settings.json
+
+# Generados por scripts/generate-seo-files.mjs en cada build (prebuild).
+# No se versionan a proposito: una copia confirmada podria quedarse con un
+# dominio viejo mientras site.config.ts ya dice otro.
+/public/sitemap.xml
+/public/robots.txt

@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "serve:ssr:psyconova-frontend": "node dist/psyconova-frontend/server/server.mjs"
+    "prebuild": "node scripts/generate-seo-files.mjs",
+    "seo:files": "node scripts/generate-seo-files.mjs"
   },
   "prettier": {
     "printWidth": 100,
