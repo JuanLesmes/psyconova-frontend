@@ -20,6 +20,8 @@
     >
       <img
         src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
+        width="400"
+        height="400"
         alt="PSYCONOVA"
         class="hero-cover__brand-image"
       >
@@ -70,9 +72,9 @@
 
   <nav class="hero-menu-overlay__nav">
     <a routerLink="/" fragment="home" (click)="closeMenu()">{{ 'nav.home' | translate }}</a>
-    <a (click)="scrollTo('nosotros')">{{ 'nav.what' | translate }}</a>
+    <a routerLink="/" fragment="nosotros" (click)="closeMenu()">{{ 'nav.what' | translate }}</a>
     <a routerLink="/" fragment="services" (click)="closeMenu()">{{ 'nav.services' | translate }}</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
+    <a routerLink="/" fragment="equipo" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
     <a routerLink="/" fragment="contact" (click)="closeMenu()">{{ 'nav.contact' | translate }}</a>
   </nav>
 </div>
