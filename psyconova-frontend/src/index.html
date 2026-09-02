@@ -7,6 +7,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" sizes="32x40" href="assets/icons/faviconPsyconova.png?v=3">
   <link rel="shortcut icon" href="assets/icons/faviconPsyconova.png?v=3">
+
+  <!--
+    Precarga de las dos fuentes del primer pintado.
+
+    Solo los subconjuntos `latin`: son los que necesita el español, porque las
+    tildes y la eñe viven en el latin básico. Los `latin-ext` los pide el
+    navegador solo si aparece un carácter que los requiera, gracias al
+    unicode-range de src/styles/_fonts.scss.
+
+    OJO con `crossorigin`: es obligatorio aunque el archivo sea nuestro. Las
+    fuentes siempre se piden en modo CORS, y sin el atributo el navegador
+    descarta la precarga y vuelve a descargarlas — el doble de peso, y la
+    precarga no sirve de nada.
+  -->
+  <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/arimo-latin.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
   <app-root></app-root>
