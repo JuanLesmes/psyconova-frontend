@@ -20,11 +20,23 @@
   directory = "netlify/functions/"
   node_bundler = "esbuild"
 
-# La app es una SPA: cualquier ruta debe servir index.html para que el router
-# de Angular la resuelva. Sin esto, recargar /contact devuelve un 404.
+# Red de seguridad para rutas que no existen como archivo.
 #
-# Las funciones se sirven antes que los redirects, así que
-# /.netlify/functions/contact no queda atrapado por esta regla.
+# El sitio se prerenderiza (outputMode: "static" en angular.json), así que
+# cada ruta real ya tiene su propio index.html generado:
+#
+#   /                        -> index.html
+#   /politica-de-privacidad  -> politica-de-privacidad/index.html
+#   /terminos-de-uso         -> terminos-de-uso/index.html
+#
+# OJO con esta regla: parece que las tapa, pero no lo hace. Netlify busca
+# primero un archivo que coincida y sólo aplica la redirección si no lo
+# encuentra — salvo que la regla lleve `force = true`, que aquí no lleva.
+# Si alguien le añade `force`, las tres páginas de arriba dejarían de
+# servirse y todas devolverían la portada.
+#
+# Las funciones se resuelven antes que los redirects, así que
+# /.netlify/functions/contact tampoco queda atrapado.
 [[redirects]]
   from = "/*"
   to = "/index.html"
