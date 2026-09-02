@@ -36,9 +36,28 @@ export class LoadingScreen implements OnInit, OnDestroy {
       this.hiding = true;
       this.removeTimer = setTimeout(() => {
         this.visible = false;
-      }, 700);
-    }, 2400);
+      }, LoadingScreen.SALIDA_MS);
+    }, LoadingScreen.ESPERA_MS);
   }
+
+  /**
+   * Cuánto se queda la pantalla antes de empezar a irse.
+   *
+   * Eran 2400 ms. Se midieron con Lighthouse y costaban 18 puntos de
+   * rendimiento en móvil: 79 con la pantalla, 97 sin ella. El Speed Index
+   * pasaba de 2,3 s a 5,4 s.
+   *
+   * El motivo de fondo es que el sitio se prerenderiza: el contenido ya está
+   * escrito cuando llega el visitante. La pantalla antes tapaba una página en
+   * blanco; ahora taparía el sitio terminado.
+   *
+   * 900 ms deja ver el logo y la animación sin bloquear la lectura. Si se
+   * vuelve a subir, hay que contar con que la nota baja en la misma medida.
+   */
+  private static readonly ESPERA_MS = 900;
+
+  /** Debe coincidir con la transición de .ls en loading-screen.scss. */
+  private static readonly SALIDA_MS = 400;
 
   ngOnDestroy(): void {
     clearTimeout(this.hideTimer);

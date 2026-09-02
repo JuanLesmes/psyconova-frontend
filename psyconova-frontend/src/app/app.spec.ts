@@ -56,16 +56,37 @@ describe('LoadingScreen', () => {
 
     expect(fixture.nativeElement.querySelector('.ls')).toBeTruthy();
 
-    // 2400 ms: empieza a desvanecerse pero sigue en el DOM.
-    vi.advanceTimersByTime(2400);
+    // Sigue tapando justo antes de que toque irse.
+    vi.advanceTimersByTime(890);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.hiding).toBe(false);
+
+    // 900 ms: empieza a desvanecerse pero sigue en el DOM.
+    vi.advanceTimersByTime(10);
     fixture.detectChanges();
     expect(fixture.componentInstance.hiding).toBe(true);
 
-    // +700 ms de transición: desaparece del DOM.
-    vi.advanceTimersByTime(700);
+    // +400 ms de transición: desaparece del DOM.
+    vi.advanceTimersByTime(400);
     fixture.detectChanges();
     expect(fixture.componentInstance.visible).toBe(false);
     expect(fixture.nativeElement.querySelector('.ls')).toBeNull();
+  });
+
+  /**
+   * Los tiempos del componente y los del CSS tienen que coincidir. Si la
+   * transición del CSS durara más que SALIDA_MS, la pantalla se quitaría del
+   * DOM a mitad del desvanecido y se vería un corte seco — algo que ninguna
+   * prueba de comportamiento detecta, porque el estado sería correcto.
+   */
+  it('la pantalla entera dura menos de 1,5 segundos', () => {
+    const fixture = TestBed.createComponent(LoadingScreen);
+    fixture.detectChanges();
+
+    vi.advanceTimersByTime(1500);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.visible).toBe(false);
   });
 
   it('no deja temporizadores sueltos al destruirse', () => {
