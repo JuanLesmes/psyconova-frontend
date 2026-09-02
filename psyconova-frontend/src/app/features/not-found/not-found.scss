@@ -1,0 +1,123 @@
+.nf {
+  min-height: 68vh;
+  display: flex;
+  align-items: center;
+  padding: 8rem 2rem 5rem;
+  background: linear-gradient(180deg, #f7f4ff 0%, #ffffff 55%);
+}
+
+.nf__shell {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* El número, grande pero en segundo plano: lo que importa es la salida. */
+.nf__code {
+  margin: 0 0 0.6rem;
+  font-size: clamp(4rem, 13vw, 7rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #72dfd1 0%, #7b69e7 55%, #c8b2f7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.nf__title {
+  margin: 0 0 0.9rem;
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  font-weight: 700;
+  color: #19206d;
+}
+
+.nf__text {
+  margin: 0 auto 2.2rem;
+  max-width: 44ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #5f677e;
+}
+
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.nf__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.nf__btn--primary {
+  background: linear-gradient(135deg, #7b69e7 0%, #19206d 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(123, 105, 231, 0.25);
+}
+
+.nf__btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(123, 105, 231, 0.32);
+}
+
+.nf__btn--ghost {
+  border: 1px solid rgba(25, 32, 109, 0.18);
+  color: #19206d;
+  background: #ffffff;
+}
+
+.nf__btn--ghost:hover {
+  background: #f7f4ff;
+  border-color: rgba(123, 105, 231, 0.4);
+}
+
+/* ── Aviso de crisis ──────────────────────────────── */
+
+.nf__crisis {
+  margin-top: 3.4rem;
+  padding: 1.15rem 1.4rem;
+  border-radius: 14px;
+  border: 1px solid rgba(25, 32, 109, 0.1);
+  background: #ffffff;
+  text-align: left;
+}
+
+.nf__crisis-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #19206d;
+}
+
+.nf__crisis-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #5f677e;
+}
+
+.nf__crisis-text strong {
+  color: #0f8f84;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .nf {
+    padding: 6.5rem 1.3rem 4rem;
+  }
+
+  .nf__btn {
+    width: 100%;
+  }
+}
