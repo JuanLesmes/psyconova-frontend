@@ -12,10 +12,18 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(22, 32, 90, 0.08);
-  transition: opacity 0.32s ease, transform 0.32s ease, background 0.32s ease;
+  /* `visibility` va aquí para que la ocultación se desvanezca en vez de
+     cortarse en seco. Ver .navbar--hidden. */
+  transition: opacity 0.32s ease, visibility 0.32s ease, transform 0.32s ease,
+    background 0.32s ease;
 }
+
+/* `pointer-events: none` sólo detiene el ratón. Sin `visibility: hidden`, el
+   botón del menú, el logo y el selector de idioma seguían recibiendo el foco
+   al tabular: tres paradas invisibles en las que nadie sabe dónde está. */
 .navbar--hidden {
   opacity: 0;
+  visibility: hidden;
   transform: translateY(-18px);
   pointer-events: none;
 }

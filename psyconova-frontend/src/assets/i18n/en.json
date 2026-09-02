@@ -8,7 +8,9 @@
     "what": "What is PSYCONOVA?",
     "services": "Services",
     "about": "About us",
-    "contact": "Contact"
+    "contact": "Contact",
+    "skipToContent": "Skip to content",
+    "menuLabel": "Main menu"
   },
   "loading": {
     "tagline": "Psychology · Technology · Humanity"
