@@ -69,4 +69,16 @@ export const PAGES = {
       'limitaciones y aviso sobre atención en crisis.',
     path: '/terminos-de-uso',
   },
+  /**
+   * Página de error. `noindex` la deja fuera de los buscadores y, de paso,
+   * fuera del sitemap: el generador sólo lista las páginas indexables.
+   */
+  notFound: {
+    title: 'Página no encontrada',
+    description:
+      'La dirección que buscas no existe en el sitio de PSYCONOVA. ' +
+      'Desde el inicio puedes llegar al resto del contenido.',
+    path: '/404',
+    noindex: true,
+  },
 } as const satisfies Record<string, PageSeo>;

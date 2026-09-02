@@ -20,24 +20,26 @@
   directory = "netlify/functions/"
   node_bundler = "esbuild"
 
-# Red de seguridad para rutas que no existen como archivo.
+# Qué pasa con una dirección que no existe.
 #
 # El sitio se prerenderiza (outputMode: "static" en angular.json), así que
-# cada ruta real ya tiene su propio index.html generado:
+# cada ruta real ya tiene su propio archivo generado:
 #
 #   /                        -> index.html
 #   /politica-de-privacidad  -> politica-de-privacidad/index.html
 #   /terminos-de-uso         -> terminos-de-uso/index.html
 #
-# OJO con esta regla: parece que las tapa, pero no lo hace. Netlify busca
-# primero un archivo que coincida y sólo aplica la redirección si no lo
-# encuentra — salvo que la regla lleve `force = true`, que aquí no lleva.
-# Si alguien le añade `force`, las tres páginas de arriba dejarían de
-# servirse y todas devolverían la portada.
+# Como no queda ninguna ruta que dependa del router para resolverse, ya no
+# hace falta la regla que servía index.html para todo. Antes cualquier
+# dirección inventada devolvía la portada con código 200: para un buscador,
+# infinitas páginas duplicadas de la portada compitiendo entre sí.
+#
+# Netlify sirve automáticamente el archivo 404.html de la raíz, con código
+# 404 de verdad, para lo que no encuentre. Ese archivo lo genera el postbuild
+# a partir de la ruta /404 prerenderizada.
+#
+# Si algún día se añade una ruta que NO se prerenderice, habrá que declararla
+# aquí explícitamente; una regla comodín volvería a tapar los 404.
 #
 # Las funciones se resuelven antes que los redirects, así que
-# /.netlify/functions/contact tampoco queda atrapado.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# /.netlify/functions/contact no queda afectado.
