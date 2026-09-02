@@ -16,3 +16,47 @@
   position: relative;
   z-index: 1;
 }
+/* ── Enlace de salto ──────────────────────────────────
+   Fuera de pantalla, pero NO oculto.
+
+   `display: none` y `visibility: hidden` sacan el elemento del orden de
+   tabulación, que es justo lo contrario de lo que este enlace necesita:
+   tiene que poder recibir el foco para que alguien lo encuentre.
+
+   Por eso se aparta con position absoluta y vuelve al pulsar Tab.
+   ─────────────────────────────────────────────────── */
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--frame-gap);
+  z-index: 200;
+
+  padding: 0.7rem 1.15rem;
+  border-radius: 0 0 10px 10px;
+  background: #19206d;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: top 0.18s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: var(--frame-gap);
+  outline: 3px solid #72dfd1;
+  outline-offset: 2px;
+}
+
+/* `tabindex="-1"` en <main> permite llevarle el foco al saltar, pero sin ese
+   contorno el usuario no vería dónde aterrizó. */
+.main-layout:focus {
+  outline: none;
+}
+
+.main-layout:focus-visible {
+  outline: 3px solid #72dfd1;
+  outline-offset: -3px;
+}
