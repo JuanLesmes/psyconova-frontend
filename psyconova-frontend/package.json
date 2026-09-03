@@ -10,7 +10,7 @@
     "optimize:images": "node scripts/optimize-images.mjs",
     "prebuild": "node scripts/generate-seo-files.mjs",
     "seo:files": "node scripts/generate-seo-files.mjs",
-    "postbuild": "node scripts/copy-404.mjs"
+    "postbuild": "node scripts/copy-404.mjs && node scripts/generate-csp.mjs"
   },
   "prettier": {
     "printWidth": 100,
