@@ -308,34 +308,82 @@
         <div class="ctc-map" reveal revealType="right" [revealDelay]="600">
           <div class="ctc-map__frame">
 
-            <!-- Antes de aceptar -->
-            <div class="ctc-map__gate" *ngIf="!mapConsent">
-              <svg class="ctc-map__gate-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle cx="12" cy="9" r="2.5"/>
-              </svg>
-              <p class="ctc-map__gate-title">{{ 'contact.map.gateTitle' | translate }}</p>
-              <p class="ctc-map__gate-text">{{ 'contact.map.gateText' | translate }}</p>
-              <button class="ctc-map__gate-btn" type="button" (click)="acceptMap()">
-                {{ 'contact.map.gateAccept' | translate }}
-              </button>
-              <a
-                class="ctc-map__gate-alt"
-                [href]="mapLinkUrl"
-                target="_blank"
-                rel="noopener"
-              >{{ 'contact.map.gateSkip' | translate }}</a>
-            </div>
+            <!--
+              Los tres estados, en UNA sola cadena.
 
-            <!-- Después de aceptar -->
-            <iframe
-              *ngIf="mapConsent"
-              class="ctc-map__embed"
-              [src]="mapEmbedUrl"
-              [title]="'contact.map.alt' | translate"
-              loading="lazy"
-              referrerpolicy="no-referrer"
-            ></iframe>
+              Antes eran tres *ngIf independientes y al hidratar quedaban dos
+              bloques en el DOM a la vez: Angular conservaba el que había
+              pintado el servidor y añadía el del cliente. Con @if/@else hay un
+              único contenedor con una sola rama activa, y no hay ambigüedad
+              posible al hidratar.
+            -->
+            @if (mapConsent === null) {
+              <!--
+                Antes de decidir.
+
+                Las dos opciones son botones del mismo tamaño, la misma
+                tipografía y el mismo peso. Poner el rechazo como un enlace gris
+                pequeño al lado de un botón grande es lo que las autoridades
+                consideran consentimiento no válido: si rechazar cuesta más que
+                aceptar, la decisión no es libre.
+              -->
+              <div class="ctc-map__gate">
+                <svg class="ctc-map__gate-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                  <circle cx="12" cy="9" r="2.5"/>
+                </svg>
+                <p class="ctc-map__gate-title">{{ 'contact.map.gateTitle' | translate }}</p>
+                <p class="ctc-map__gate-text">{{ 'contact.map.gateText' | translate }}</p>
+
+                <div class="ctc-map__gate-actions">
+                  <button class="ctc-map__gate-btn" type="button" (click)="acceptMap()">
+                    {{ 'contact.map.gateAccept' | translate }}
+                  </button>
+                  <button class="ctc-map__gate-btn ctc-map__gate-btn--ghost" type="button" (click)="rejectMap()">
+                    {{ 'contact.map.gateReject' | translate }}
+                  </button>
+                </div>
+
+                <a
+                  class="ctc-map__gate-alt"
+                  [href]="mapLinkUrl"
+                  target="_blank"
+                  rel="noopener"
+                >{{ 'contact.map.gateSkip' | translate }}</a>
+              </div>
+            } @else if (mapConsent === false) {
+              <!--
+                Tras rechazar. No se vuelve a preguntar: insistir después de un
+                «no» convierte la decisión en un trámite que hay que repetir
+                hasta ceder. La dirección sigue estando, y el enlace no carga
+                nada de Google hasta que se pulsa.
+              -->
+              <div class="ctc-map__gate ctc-map__gate--rejected">
+                <p class="ctc-map__gate-title">{{ 'contact.map.rejectedTitle' | translate }}</p>
+                <p class="ctc-map__gate-text">{{ location.street }} · {{ location.city }}</p>
+
+                <div class="ctc-map__gate-actions">
+                  <a
+                    class="ctc-map__gate-btn"
+                    [href]="mapLinkUrl"
+                    target="_blank"
+                    rel="noopener"
+                  >{{ 'contact.map.link' | translate }}</a>
+                  <button class="ctc-map__gate-btn ctc-map__gate-btn--ghost" type="button" (click)="resetMapConsent()">
+                    {{ 'contact.map.rejectedUndo' | translate }}
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <!-- Aceptado: sólo aquí existe el iframe en el DOM. -->
+              <iframe
+                class="ctc-map__embed"
+                [src]="mapEmbedUrl"
+                [title]="'contact.map.alt' | translate"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              ></iframe>
+            }
 
           </div>
         </div>

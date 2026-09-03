@@ -222,7 +222,10 @@
       "gateTitle": "Google map",
       "gateText": "Loading it means Google receives your IP address and sets cookies in your browser.",
       "gateAccept": "Accept and show the map",
-      "gateSkip": "I would rather open it in a new tab"
+      "gateSkip": "I would rather open it in a new tab",
+      "gateReject": "Do not load the map",
+      "rejectedTitle": "Map not loaded",
+      "rejectedUndo": "Change my mind"
     }
   },
   "footer": {

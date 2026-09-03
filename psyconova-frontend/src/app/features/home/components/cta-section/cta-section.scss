@@ -618,19 +618,61 @@ a.ctc-info-card__value:hover {
   color: rgba(95, 103, 126, 0.95);
 }
 
-.ctc-map__gate-btn {
+/*
+  Las dos opciones, con el mismo peso.
+
+  Aceptar y rechazar comparten tamaño, tipografía, relleno y forma. Sólo
+  cambia el relleno de color, que distingue la acción principal sin hacer que
+  la otra parezca menos disponible.
+
+  Es un requisito legal, no una preferencia estética: si rechazar cuesta más
+  que aceptar, el consentimiento no se considera libre. La versión anterior
+  tenía un botón con degradado y sombra frente a un enlace gris de 0,78rem.
+*/
+.ctc-map__gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
   margin-top: 0.6rem;
+}
+
+.ctc-map__gate-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
   padding: 0.6rem 1.5rem;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: linear-gradient(135deg, #19206d 0%, #7b69e7 100%);
   color: #ffffff;
   font-family: var(--font-body);
   font-size: 0.88rem;
   font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(25, 32, 109, 0.22);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+
+/* Misma caja y misma letra que el de aceptar. Sin relleno de color, pero con
+   borde y texto de marca: se lee como una opción real, no como un descarte. */
+.ctc-map__gate-btn--ghost {
+  background: #ffffff;
+  color: #19206d;
+  border-color: rgba(25, 32, 109, 0.3);
+  box-shadow: none;
+}
+
+.ctc-map__gate-btn--ghost:hover {
+  background: #f7f4ff;
+  border-color: #7b69e7;
+  box-shadow: none;
+}
+
+.ctc-map__gate--rejected .ctc-map__gate-title {
+  margin-bottom: 0.15rem;
 }
 
 .ctc-map__gate-btn:hover {
