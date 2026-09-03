@@ -222,7 +222,10 @@
       "gateTitle": "Mapa de Google",
       "gateText": "Al cargarlo, Google recibe tu dirección IP e instala cookies en tu navegador.",
       "gateAccept": "Aceptar y ver el mapa",
-      "gateSkip": "Prefiero abrirlo en otra pestaña"
+      "gateSkip": "Prefiero abrirlo en otra pestaña",
+      "gateReject": "No cargar el mapa",
+      "rejectedTitle": "Mapa no cargado",
+      "rejectedUndo": "Cambiar de opinión"
     }
   },
   "footer": {
