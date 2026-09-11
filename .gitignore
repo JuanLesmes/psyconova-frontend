@@ -7,3 +7,6 @@
 # Originales de diseno (PNG y JPEG pesados). Viven fuera de Git; el sitio usa
 # los WebP que scripts/optimize-images.mjs genera en src/assets/images/.
 psyconova-frontend/design/
+
+# Ajustes locales del editor (VS Code los reescribe solo)
+.vscode/settings.json
