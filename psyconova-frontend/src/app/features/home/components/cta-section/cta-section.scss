@@ -1,4 +1,4 @@
-/* ── Section ────────────────────────────────────────── */
+/* ── Sección ────────────────────────────────────────── */
 
 .ctc {
   position: relative;
@@ -10,7 +10,7 @@
     linear-gradient(180deg, #ffffff 0%, #f7f4ff 50%, #ede8ff 100%);
 }
 
-/* Decorative rings */
+/* Anillos decorativos */
 .ctc-ring {
   position: absolute;
   border-radius: 50%;
@@ -43,7 +43,7 @@
   gap: 2.5rem;
 }
 
-/* ── Header ─────────────────────────────────────────── */
+/* ── Encabezado ─────────────────────────────────────── */
 
 .ctc-header {
   display: flex;
@@ -84,7 +84,7 @@
   color: #5f677e;
 }
 
-/* ── Body grid ───────────────────────────────────────── */
+/* ── Rejilla del cuerpo ──────────────────────────────── */
 
 .ctc-body {
   display: grid;
@@ -93,7 +93,7 @@
   align-items: stretch;
 }
 
-/* ── Form wrap ───────────────────────────────────────── */
+/* ── Contenedor del formulario ───────────────────────── */
 
 .ctc-form-wrap {
   background: rgba(255, 255, 255, 0.85);
@@ -118,7 +118,7 @@
   gap: 1.5rem;
 }
 
-/* ── Field / floating label ──────────────────────────── */
+/* ── Campo y etiqueta flotante ───────────────────────── */
 
 .ctc-field {
   position: relative;
@@ -150,7 +150,7 @@
   transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease, font-weight 0.22s ease;
 }
 
-/* Animated teal underline */
+/* Subrayado animado */
 .ctc-line {
   position: absolute;
   bottom: 0;
@@ -166,7 +166,7 @@
   width: 100%;
 }
 
-/* Float the label up */
+/* La etiqueta sube al enfocar o cuando el campo tiene texto */
 .ctc-input:focus ~ .ctc-label,
 .ctc-input:not(:placeholder-shown) ~ .ctc-label {
   top: 0;
@@ -176,7 +176,7 @@
   color: #72dfd1;
 }
 
-/* Border color on focus */
+/* Al enfocar, el subrayado animado sustituye al borde */
 .ctc-input:focus {
   border-bottom-color: transparent;
 }
@@ -186,7 +186,7 @@
   line-height: 1.7;
 }
 
-/* ── Submit button ───────────────────────────────────── */
+/* ── Botón de envío ──────────────────────────────────── */
 
 .ctc-submit {
   position: relative;
@@ -238,7 +238,7 @@
   flex-shrink: 0;
 }
 
-/* Shimmer sweep */
+/* Destello que recorre el botón */
 .ctc-submit__shimmer {
   position: absolute;
   top: 0;
@@ -319,7 +319,7 @@
   text-decoration: underline;
 }
 
-/* ── Success message ─────────────────────────────────── */
+/* ── Mensaje de éxito ────────────────────────────────── */
 
 .ctc-success {
   display: flex;
@@ -342,7 +342,7 @@
   stroke-width: 1.8;
 }
 
-/* ── Info column ─────────────────────────────────────── */
+/* ── Columna de datos ────────────────────────────────── */
 
 .ctc-info-wrap {
   position: relative;
@@ -352,7 +352,7 @@
   padding-top: 0.5rem;
 }
 
-/* Decorative background blob */
+/* Mancha decorativa de fondo */
 .ctc-info-blob {
   position: absolute;
   top: 50%;
@@ -451,7 +451,7 @@ a.ctc-info-card__value:hover {
   color: #72dfd1;
 }
 
-/* ── Responsive ─────────────────────────────────────── */
+/* ── Puntos de corte ────────────────────────────────── */
 
 @media (max-width: 1024px) {
   .ctc-body {
@@ -499,7 +499,7 @@ a.ctc-info-card__value:hover {
   color: rgba(95, 103, 126, 0.9);
 }
 
-/* ── Mapa (OpenStreetMap) ────────────────────────────── */
+/* ── Mapa ────────────────────────────────────────────── */
 
 .ctc-map {
   position: relative;
@@ -564,7 +564,7 @@ a.ctc-info-card__value:hover {
 }
 
 @media (max-width: 1024px) {
-  /* En una sola columna el mapa ya no tiene alto que rellenar. */
+  /* En una sola columna el mapa no tiene alto que rellenar. */
   .ctc-map {
     min-height: 0;
   }
@@ -623,11 +623,9 @@ a.ctc-info-card__value:hover {
 
   Aceptar y rechazar comparten tamaño, tipografía, relleno y forma. Sólo
   cambia el relleno de color, que distingue la acción principal sin hacer que
-  la otra parezca menos disponible.
-
-  Es un requisito legal, no una preferencia estética: si rechazar cuesta más
-  que aceptar, el consentimiento no se considera libre. La versión anterior
-  tenía un botón con degradado y sombra frente a un enlace gris de 0,78rem.
+  la otra parezca menos disponible. Es un requisito legal, no una preferencia
+  estética: si rechazar cuesta más que aceptar (un botón con degradado y sombra
+  frente a un enlace gris pequeño), el consentimiento no se considera libre.
 */
 .ctc-map__gate-actions {
   display: flex;

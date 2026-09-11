@@ -4,7 +4,11 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -33,18 +37,17 @@ export const appConfig: ApplicationConfig = {
       }),
       fallbackLang: 'es',
       /**
-       * Siempre español al arrancar, no la preferencia guardada.
-       *
-       * Antes esto llamaba a `resolveInitialLanguage()`, que lee localStorage
-       * y navigator. Al construirse la configuración —no en un ciclo de vida—
-       * eso reventaba el prerenderizado entero, que es el caso que más cuesta
-       * de diagnosticar porque no señala ningún componente.
-       *
-       * LanguageService cambia al idioma guardado ya en el navegador, después
-       * de hidratar, para que el primer render coincida con el HTML generado.
+       * Siempre español al arrancar, no la preferencia guardada: la
+       * configuración se construye también al prerenderizar, donde no hay
+       * localStorage ni navigator. LanguageService cambia al idioma guardado
+       * ya en el navegador, después de hidratar, para que el primer render
+       * coincida con el HTML generado.
        */
       lang: toTranslateCode(DEFAULT_LANGUAGE),
     }),
-    provideClientHydration(withEventReplay()),
+    // La hidratación incremental permite `@defer (hydrate on ...)`: las
+    // secciones de la portada se prerenderizan enteras y su JavaScript sólo
+    // se carga cuando hacen falta.
+    provideClientHydration(withEventReplay(), withIncrementalHydration()),
   ],
 };

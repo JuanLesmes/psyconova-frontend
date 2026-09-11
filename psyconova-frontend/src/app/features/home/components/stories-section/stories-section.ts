@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -9,21 +9,16 @@ import { TALE, isValidTaleCode } from '../../../../core/config/tales.config';
 /**
  * Sección de Cuentos.
  *
- * El cuento vive como archivo suelto en assets y se muestra dentro de un
- * iframe. No se convirtió en componente de Angular a propósito: es una app
- * autocontenida con sus propios estilos y scripts, y así Laura puede
- * actualizarla sin tocar el sitio.
- *
- * Mientras está bloqueado se ve la portada animada pero no se puede
- * interactuar: una capa transparente encima intercepta los toques. Al
- * escribir la palabra clave esa capa desaparece.
- *
- * Sobre el alcance real de la palabra clave, lee el aviso en tales.config.ts.
+ * El cuento vive como archivo suelto en assets y se muestra en un iframe. No
+ * es un componente de Angular a propósito: es una app autocontenida con sus
+ * propios estilos y scripts, y así la titular del sitio puede actualizarla sin
+ * tocar el sitio. Mientras está bloqueado se ve la portada animada, pero una
+ * capa transparente intercepta los toques hasta que se escribe la palabra
+ * clave. Sobre el alcance real de esa clave, ver tales.config.ts.
  */
 @Component({
   selector: 'app-stories-section',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RevealDirective, TranslatePipe],
+  imports: [FormsModule, RevealDirective, TranslatePipe],
   templateUrl: './stories-section.html',
   styleUrl: './stories-section.scss',
 })
@@ -40,7 +35,7 @@ export class StoriesSection {
 
   /**
    * El desbloqueo dura sólo lo que dure la visita: al recargar vuelve a
-   * pedirse la palabra clave. Es a propósito — no se guarda en localStorage
+   * pedirse la palabra clave. Es a propósito: no se guarda en localStorage
    * ni en ninguna otra parte.
    */
   unlocked = false;

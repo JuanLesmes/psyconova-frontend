@@ -1,4 +1,4 @@
-/* ── Shell ──────────────────────────────────────────── */
+/* ── Contenedor ─────────────────────────────────────── */
 
 .footer {
   position: relative;
@@ -9,7 +9,7 @@
     linear-gradient(180deg, #0d1340 0%, #080b26 100%);
 }
 
-/* Subtle dot grid texture */
+/* Trama sutil de puntos */
 .footer::before {
   content: '';
   position: absolute;
@@ -19,7 +19,7 @@
   pointer-events: none;
 }
 
-/* Teal glow line at the very top */
+/* Línea luminosa en el borde superior */
 .footer__glow {
   position: absolute;
   top: 0;
@@ -43,7 +43,7 @@
   padding: 3rem 2rem 1.6rem;
 }
 
-/* ── Main grid ──────────────────────────────────────── */
+/* ── Rejilla principal ──────────────────────────────── */
 
 .footer__main {
   display: grid;
@@ -52,7 +52,7 @@
   padding-bottom: 2rem;
 }
 
-/* Brand column */
+/* Columna de marca */
 .footer__brand {
   display: flex;
   flex-direction: column;
@@ -78,7 +78,7 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Nav / Contact columns */
+/* Columnas de navegación y contacto */
 .footer__col {
   display: flex;
   flex-direction: column;
@@ -133,7 +133,7 @@
   flex-shrink: 0;
 }
 
-/* ── Divider ────────────────────────────────────────── */
+/* ── Separador ──────────────────────────────────────── */
 
 .footer__divider {
   height: 1px;
@@ -146,7 +146,7 @@
   );
 }
 
-/* ── Bottom bar ─────────────────────────────────────── */
+/* ── Barra inferior ─────────────────────────────────── */
 
 .footer__bottom {
   display: flex;
@@ -185,7 +185,7 @@
   font-size: 0.82rem;
 }
 
-/* ── Responsive ─────────────────────────────────────── */
+/* ── Puntos de corte ────────────────────────────────── */
 
 @media (max-width: 960px) {
   .footer__main {

@@ -1,13 +1,11 @@
 <section class="story" id="cuentos">
-
   <!-- Decoración de fondo -->
   <div class="story-glow story-glow--one" aria-hidden="true"></div>
   <div class="story-glow story-glow--two" aria-hidden="true"></div>
 
   <div class="story-shell">
-
-    <!-- ── Header ───────────────────────────────────── -->
-    <div class="story-header" reveal revealType="up">
+    <!-- ── Encabezado ───────────────────────────────── -->
+    <div class="story-header" appReveal revealType="up">
       <span class="story-badge">{{ 'stories.badge' | translate }}</span>
       <h2 class="story-title" [innerHTML]="'stories.title' | translate"></h2>
       <p class="story-subtitle">
@@ -16,8 +14,7 @@
     </div>
 
     <!-- ── El cuento ────────────────────────────────── -->
-    <article class="tale" reveal revealType="fade" [revealDelay]="150">
-
+    <article class="tale" appReveal revealType="fade" [revealDelay]="150">
       <!-- Portada: se ve siempre, se toca sólo al desbloquear -->
       <div class="tale__preview" [class.is-locked]="!unlocked">
         <iframe
@@ -32,15 +29,17 @@
           Capa que intercepta los toques mientras está bloqueado. La portada
           se sigue viendo y animando debajo.
         -->
-        <div class="tale__veil" *ngIf="!unlocked" aria-hidden="true">
-          <span class="tale__lock">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="5" y="11" width="14" height="9" rx="2.5"/>
-              <path d="M8 11V8a4 4 0 018 0v3"/>
-            </svg>
-            {{ 'stories.gate.chip' | translate }}
-          </span>
-        </div>
+        @if (!unlocked) {
+          <div class="tale__veil" aria-hidden="true">
+            <span class="tale__lock">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="11" width="14" height="9" rx="2.5" />
+                <path d="M8 11V8a4 4 0 018 0v3" />
+              </svg>
+              {{ 'stories.gate.chip' | translate }}
+            </span>
+          </div>
+        }
       </div>
 
       <!-- Ficha y acceso -->
@@ -60,46 +59,50 @@
         <p class="tale__author">{{ 'stories.tale.author' | translate }}</p>
 
         <!-- Bloqueado: pedir la palabra clave -->
-        <form class="tale__gate" *ngIf="!unlocked" (ngSubmit)="submitCode()">
-          <label class="tale__gate-label" for="taleCode">
-            {{ 'stories.gate.label' | translate }}
-          </label>
-          <div class="tale__gate-row">
-            <input
-              class="tale__gate-input"
-              id="taleCode"
-              name="taleCode"
-              type="text"
-              autocomplete="off"
-              [class.has-error]="wrongCode"
-              [attr.placeholder]="'stories.gate.placeholder' | translate"
-              [(ngModel)]="code"
-              (ngModelChange)="clearError()"
-            />
-            <button class="tale__gate-btn" type="submit" [disabled]="!code.trim()">
-              {{ 'stories.gate.button' | translate }}
-            </button>
-          </div>
-          <p class="tale__gate-hint">{{ 'stories.gate.hint' | translate }}</p>
-          <p class="tale__gate-error" *ngIf="wrongCode" role="alert">
-            {{ 'stories.gate.error' | translate }}
-          </p>
-        </form>
+        @if (!unlocked) {
+          <form class="tale__gate" (ngSubmit)="submitCode()">
+            <label class="tale__gate-label" for="taleCode">
+              {{ 'stories.gate.label' | translate }}
+            </label>
+            <div class="tale__gate-row">
+              <input
+                class="tale__gate-input"
+                id="taleCode"
+                name="taleCode"
+                type="text"
+                autocomplete="off"
+                [class.has-error]="wrongCode"
+                [attr.placeholder]="'stories.gate.placeholder' | translate"
+                [(ngModel)]="code"
+                (ngModelChange)="clearError()"
+              />
+              <button class="tale__gate-btn" type="submit" [disabled]="!code.trim()">
+                {{ 'stories.gate.button' | translate }}
+              </button>
+            </div>
+            <p class="tale__gate-hint">{{ 'stories.gate.hint' | translate }}</p>
+            @if (wrongCode) {
+              <p class="tale__gate-error" role="alert">
+                {{ 'stories.gate.error' | translate }}
+              </p>
+            }
+          </form>
+        }
 
         <!-- Desbloqueado -->
-        <div class="tale__open" *ngIf="unlocked">
-          <p class="tale__open-title">✓ {{ 'stories.unlocked.title' | translate }}</p>
-          <a class="tale__open-btn" [href]="taleUrl" target="_blank" rel="noopener">
-            {{ 'stories.unlocked.open' | translate }}
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-          <p class="tale__gate-hint">{{ 'stories.unlocked.note' | translate }}</p>
-        </div>
+        @if (unlocked) {
+          <div class="tale__open">
+            <p class="tale__open-title">✓ {{ 'stories.unlocked.title' | translate }}</p>
+            <a class="tale__open-btn" [href]="taleUrl" target="_blank" rel="noopener">
+              {{ 'stories.unlocked.open' | translate }}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+            <p class="tale__gate-hint">{{ 'stories.unlocked.note' | translate }}</p>
+          </div>
+        }
       </div>
-
     </article>
-
   </div>
 </section>

@@ -1,28 +1,14 @@
-import {
-  Directive,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  PLATFORM_ID,
-  SimpleChanges,
-  inject,
-} from '@angular/core';
+import { Directive, ElementRef, PLATFORM_ID, effect, inject, input, output } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 /**
  * Encierra el foco dentro de un panel mientras está abierto.
  *
- * ── Por qué esto no es opcional ──
- *
  * Poner `role="dialog"` y `aria-modal="true"` en un elemento es una promesa:
  * quien usa lector de pantalla entiende que lo de detrás no existe mientras
- * esto esté abierto. Si no se cumple, es peor que no haberlo declarado.
- *
- * Sin encierro del foco, alguien que navega con teclado abre el menú y sigue
- * tabulando hacia la página de debajo — que no puede ver, porque el menú la
- * tapa. El foco desaparece de la pantalla y no hay forma de saber dónde está.
+ * esto esté abierto. Sin encierro del foco, alguien que navega con teclado
+ * abre el menú y sigue tabulando hacia la página de debajo, que no puede ver
+ * porque el menú la tapa.
  *
  * La directiva cumple las tres partes de la promesa:
  *
@@ -33,15 +19,14 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
  * Escape cierra, que es lo que espera cualquiera que haya usado un diálogo.
  */
 @Directive({
-  selector: '[focusTrap]',
-  standalone: true,
+  selector: '[appFocusTrap]',
   host: {
     '(keydown)': 'onKeydown($event)',
   },
 })
-export class FocusTrapDirective implements OnChanges {
+export class FocusTrapDirective {
   /** El panel está abierto. */
-  @Input({ required: true }) focusTrap = false;
+  readonly appFocusTrap = input.required<boolean>();
 
   /**
    * Se emite al pulsar Escape, para que el componente cierre.
@@ -50,7 +35,7 @@ export class FocusTrapDirective implements OnChanges {
    * propiedades que empiecen por `on`: las confunde con manejadores de evento
    * del DOM, que serían una vía de inyección.
    */
-  @Output() escape = new EventEmitter<void>();
+  readonly escapePressed = output<void>();
 
   // Anotado a mano: `inject(ElementRef<HTMLElement>)` deja `nativeElement`
   // sin tipo, y entonces querySelectorAll no acepta el argumento genérico.
@@ -61,31 +46,37 @@ export class FocusTrapDirective implements OnChanges {
   /** Quién tenía el foco antes de abrir, para devolvérselo al cerrar. */
   private origen: HTMLElement | null = null;
 
-  ngOnChanges(cambios: SimpleChanges): void {
-    if (!this.esNavegador || !cambios['focusTrap']) return;
+  constructor() {
+    // Reacciona a cada apertura y cierre. El estado inicial cerrado no
+    // devuelve el foco a nadie porque `origen` todavía es null.
+    effect(() => {
+      const abierto = this.appFocusTrap();
+      if (!this.esNavegador) return;
 
-    if (this.focusTrap) {
-      this.origen = this.document.activeElement as HTMLElement | null;
-      // El panel se muestra con una transición de visibility: enfocar antes
-      // de que termine no funciona, porque aún no es visible.
-      setTimeout(() => this.enfocables()[0]?.focus(), 60);
-      return;
-    }
+      if (abierto) {
+        this.origen = this.document.activeElement as HTMLElement | null;
+        // El panel se muestra con una transición de visibility: enfocar antes
+        // de que termine no funciona, porque aún no es visible.
+        setTimeout(() => this.enfocables()[0]?.focus(), 60);
+        return;
+      }
 
-    // Sólo se devuelve el foco si sigue dentro del panel. Si el usuario ya lo
-    // movió a otra parte, arrastrarlo de vuelta sería peor que no hacer nada.
-    if (this.origen && this.el.nativeElement.contains(this.document.activeElement)) {
-      this.origen.focus();
-    }
-    this.origen = null;
+      // Sólo se devuelve el foco si sigue dentro del panel. Si el usuario ya
+      // lo movió a otra parte, arrastrarlo de vuelta sería peor que no hacer
+      // nada.
+      if (this.origen && this.el.nativeElement.contains(this.document.activeElement)) {
+        this.origen.focus();
+      }
+      this.origen = null;
+    });
   }
 
   onKeydown(evento: KeyboardEvent): void {
-    if (!this.focusTrap) return;
+    if (!this.appFocusTrap()) return;
 
     if (evento.key === 'Escape') {
       evento.preventDefault();
-      this.escape.emit();
+      this.escapePressed.emit();
       return;
     }
 
@@ -125,16 +116,10 @@ export class FocusTrapDirective implements OnChanges {
       '[tabindex]:not([tabindex="-1"])',
     ].join(', ');
 
-    /**
-     * Se descartan los que estén ocultos por CSS.
-     *
-     * La comprobación va por `getComputedStyle` y no por `offsetParent`, que
-     * sería lo habitual: `offsetParent` depende de que el navegador haya
-     * calculado la maquetación, y el entorno de pruebas no la calcula. Con
-     * él, la lista salía vacía en las pruebas mientras funcionaba en un
-     * navegador real — la peor combinación posible, porque las pruebas no
-     * habrían detectado nunca una rotura.
-     */
+    // Se descartan los ocultos por CSS. La comprobación va por
+    // `getComputedStyle` y no por `offsetParent`: este último depende de que
+    // el navegador haya calculado la maquetación, y el entorno de pruebas no
+    // la calcula.
     const oculto = (e: HTMLElement) => {
       const cs = getComputedStyle(e);
       return cs.visibility === 'hidden' || cs.display === 'none' || e.hasAttribute('hidden');

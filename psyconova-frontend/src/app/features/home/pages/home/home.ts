@@ -11,7 +11,6 @@ import { CONTACT_INFO, LOCATION } from '../../../../core/config/contact.config';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [
     HeroSection,
     IntroSection,

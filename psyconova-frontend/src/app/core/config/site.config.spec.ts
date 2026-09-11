@@ -26,14 +26,13 @@ function rutasDelRouter(rutas: Routes, prefijo = ''): string[] {
     const completa = [prefijo, ruta.path].filter(p => p !== '' && p !== undefined).join('/');
 
     /**
-     * Cuenta como página si pinta algo y no envuelve a nadie.
-     *
-     * La condición de las hijas importa: MainLayoutComponent tiene componente
-     * propio y además hijas, porque es la cáscara —navbar, pie— alrededor de
-     * las páginas de verdad. Sin descartarlo, la raíz saldría dos veces: una
-     * por el layout y otra por la portada que vive dentro.
+     * Cuenta como página si pinta algo (directo o bajo demanda) y no envuelve
+     * a nadie. La condición de las hijas importa: MainLayoutComponent tiene
+     * componente propio y además hijas, porque es la cáscara (navbar, pie)
+     * alrededor de las páginas de verdad. Sin descartarlo, la raíz saldría dos
+     * veces: una por el layout y otra por la portada que vive dentro.
      */
-    if (ruta.component && !ruta.children) {
+    if ((ruta.component || ruta.loadComponent) && !ruta.children) {
       encontradas.push('/' + completa);
     }
 

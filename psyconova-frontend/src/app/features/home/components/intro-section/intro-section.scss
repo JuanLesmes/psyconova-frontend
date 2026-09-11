@@ -79,7 +79,7 @@
   text-wrap: pretty;
 }
 
-/* ── Stage ─────────────────────────────────────────── */
+/* ── Escenario ─────────────────────────────────────── */
 
 .synapse-stage {
   position: relative;
@@ -98,7 +98,7 @@
   pointer-events: none;
 }
 
-/* ── SVG synapse lines ──────────────────────────────── */
+/* ── Líneas de sinapsis (SVG) ───────────────────────── */
 
 .synapse-lines {
   position: absolute;
@@ -114,7 +114,7 @@
   opacity: 0.7;
 }
 
-/* Always-visible dim connection to every node — stroke/opacity set as HTML attributes */
+/* Conexión tenue siempre visible hacia cada nodo; el trazo y la opacidad van como atributos en el HTML */
 .resting-connection {
   fill: none;
   stroke-width: 1.5;
@@ -127,7 +127,7 @@
   stroke-opacity: 0.1 !important;
 }
 
-/* Resting dot at each node position */
+/* Punto en reposo en la posición de cada nodo */
 .synapse-dot {
   fill: rgba(25, 32, 109, 0.22);
   transition: fill 0.3s ease;
@@ -138,7 +138,7 @@
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 
-/* Active highlighted connection */
+/* Conexión activa iluminada */
 .active-connection {
   stroke-width: 1.8;
   stroke-linecap: round;
@@ -150,7 +150,7 @@
     connectionPulse 3.2s ease-in-out infinite 0.65s;
 }
 
-/* Traveling neuron pulse */
+/* Pulso que viaja por la conexión */
 .neuron-pulse {
   fill: none;
   stroke-linecap: round;
@@ -171,7 +171,7 @@
   animation-delay: 1.45s;
 }
 
-/* ── Central portal ─────────────────────────────────── */
+/* ── Portal central ─────────────────────────────────── */
 
 .intro-core {
   position: absolute;
@@ -205,7 +205,7 @@
   background: rgba(200, 178, 247, 0.36);
 }
 
-/* Outer frame — gives the "window/door" border */
+/* Marco exterior: el borde de «ventana» o «puerta» */
 .intro-core__portal-wrap {
   position: relative;
   padding: 16px 16px 20px;
@@ -223,7 +223,7 @@
     0 0 0 1px rgba(255, 255, 255, 0.24);
 }
 
-/* Inner decorative pane line */
+/* Línea decorativa interior del marco */
 .intro-core__portal-wrap::after {
   content: '';
   position: absolute;
@@ -234,7 +234,7 @@
   z-index: 10;
 }
 
-/* Small arch keystone accent */
+/* Pequeña clave en lo alto del arco */
 .intro-core__arch-accent {
   position: absolute;
   top: -7px;
@@ -249,7 +249,7 @@
   z-index: 11;
 }
 
-/* Arch-shaped portal that clips the image */
+/* Portal en forma de arco que recorta la imagen */
 .intro-core__portal {
   position: relative;
   width: 336px;
@@ -283,7 +283,7 @@
   animation: imageFadeOut 0.92s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* ── Nodes ──────────────────────────────────────────── */
+/* ── Nodos ──────────────────────────────────────────── */
 
 .intro-node {
   position: absolute;
@@ -389,7 +389,7 @@
   margin-top: 0.45rem;
 }
 
-/* ── Keyframes ──────────────────────────────────────── */
+/* ── Animaciones ────────────────────────────────────── */
 
 @keyframes imageFadeIn {
   from {
@@ -462,7 +462,7 @@
   }
 }
 
-/* ── Responsive ─────────────────────────────────────── */
+/* ── Puntos de corte ────────────────────────────────── */
 
 @media (max-width: 1440px) {
   .intro {
@@ -556,7 +556,7 @@
     display: none;
   }
 
-  /* La imagen encabeza la sección: en el DOM ya viene antes que los nodos. */
+  /* La imagen encabeza la sección: en el DOM precede a los nodos. */
   .intro-core {
     position: static;
     transform: none;

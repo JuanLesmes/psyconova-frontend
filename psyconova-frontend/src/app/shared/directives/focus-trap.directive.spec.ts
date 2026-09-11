@@ -13,12 +13,11 @@ import { FocusTrapDirective } from './focus-trap.directive';
  * Estas pruebas fijan las tres partes de la promesa que hace `aria-modal`.
  */
 @Component({
-  standalone: true,
   imports: [FocusTrapDirective],
   template: `
     <button id="fuera">Fuera del panel</button>
 
-    <div [focusTrap]="abierto" (escape)="cerrado = true">
+    <div [appFocusTrap]="abierto" (escapePressed)="cerrado = true">
       <button id="primero">Primero</button>
       <a id="medio" href="#x">Enlace del medio</a>
       <button id="ultimo">Último</button>
@@ -35,8 +34,6 @@ describe('FocusTrapDirective', () => {
   let anfitrion: Anfitrion;
 
   const $ = (id: string) => fixture.nativeElement.querySelector('#' + id) as HTMLElement;
-  const panel = () => fixture.nativeElement.querySelector('[id]')!.parentElement!
-    .querySelector('div') as HTMLElement;
 
   const tabular = (shift = false) => {
     const evento = new KeyboardEvent('keydown', {

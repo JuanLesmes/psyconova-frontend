@@ -13,7 +13,6 @@ import { PAGES } from '../../../../core/config/site.config';
  */
 @Component({
   selector: 'app-privacy-policy',
-  standalone: true,
   imports: [RouterLink],
   templateUrl: './privacy-policy.html',
   styleUrl: '../../legal.scss',

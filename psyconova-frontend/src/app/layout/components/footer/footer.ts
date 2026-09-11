@@ -6,11 +6,10 @@ import { CONTACT_INFO } from '../../../core/config/contact.config';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   imports: [RouterLink, RevealDirective, TranslatePipe],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
 export class FooterComponent {
-  readonly contactInfo = CONTACT_INFO;
+  readonly contactInfo = { ...CONTACT_INFO };
 }

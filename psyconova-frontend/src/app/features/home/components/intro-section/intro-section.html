@@ -1,6 +1,6 @@
 <section class="intro" id="nosotros">
   <div class="intro-shell">
-    <div class="intro-header" reveal revealType="up">
+    <div class="intro-header" appReveal revealType="up">
       <h2 class="intro-title">
         {{ 'intro.title' | translate }}
       </h2>
@@ -19,8 +19,9 @@
       >
         <defs>
           <!--
-            gradientUnits="userSpaceOnUse" fixes invisible lines on perfectly
-            horizontal or vertical paths (objectBoundingBox has zero dimension).
+            `gradientUnits="userSpaceOnUse"`: con el valor por defecto
+            (objectBoundingBox) una línea perfectamente horizontal o vertical
+            tiene caja de cero alto o ancho y el degradado no se pinta.
           -->
           <linearGradient
             id="synapseGradient"
@@ -51,39 +52,41 @@
           </filter>
         </defs>
 
-        <!-- Resting connections — solid color avoids gradient bbox issues on H/V lines -->
-        <line
-          *ngFor="let node of nodes"
-          class="resting-connection"
-          [class.is-active]="node.id === activeId"
-          x1="500"
-          y1="380"
-          [attr.x2]="node.lineX"
-          [attr.y2]="node.lineY"
-          stroke="#a89be0"
-          stroke-opacity="0.38"
-        ></line>
+        <!-- Conexiones en reposo. Color plano por el mismo motivo del degradado. -->
+        @for (node of nodes; track node.id) {
+          <line
+            class="resting-connection"
+            [class.is-active]="node.id === activeId()"
+            x1="500"
+            y1="380"
+            [attr.x2]="node.lineX"
+            [attr.y2]="node.lineY"
+            stroke="#a89be0"
+            stroke-opacity="0.38"
+          ></line>
+        }
 
-        <!-- Resting dots at each node position -->
-        <circle
-          *ngFor="let node of nodes"
-          class="synapse-dot"
-          [class.synapse-dot--active]="node.id === activeId"
-          [attr.cx]="node.lineX"
-          [attr.cy]="node.lineY"
-          r="6"
-        ></circle>
+        <!-- Punto de cada nodo -->
+        @for (node of nodes; track node.id) {
+          <circle
+            class="synapse-dot"
+            [class.synapse-dot--active]="node.id === activeId()"
+            [attr.cx]="node.lineX"
+            [attr.cy]="node.lineY"
+            r="6"
+          ></circle>
+        }
 
         <circle cx="500" cy="380" r="7" class="synapse-center-dot"></circle>
 
-        <!-- Active connection highlight + traveling neuron pulses -->
-        <ng-container *ngIf="activeNode">
+        <!-- Conexión activa iluminada y pulsos que viajan por ella -->
+        @if (activeNode(); as node) {
           <line
             class="active-connection"
             x1="500"
             y1="380"
-            [attr.x2]="activeNode.lineX"
-            [attr.y2]="activeNode.lineY"
+            [attr.x2]="node.lineX"
+            [attr.y2]="node.lineY"
             stroke="url(#synapseGradient)"
             filter="url(#softGlow)"
           ></line>
@@ -92,8 +95,8 @@
             class="neuron-pulse neuron-pulse--one"
             x1="500"
             y1="380"
-            [attr.x2]="activeNode.lineX"
-            [attr.y2]="activeNode.lineY"
+            [attr.x2]="node.lineX"
+            [attr.y2]="node.lineY"
             filter="url(#neuronGlow)"
           ></line>
 
@@ -101,11 +104,11 @@
             class="neuron-pulse neuron-pulse--two"
             x1="500"
             y1="380"
-            [attr.x2]="activeNode.lineX"
-            [attr.y2]="activeNode.lineY"
+            [attr.x2]="node.lineX"
+            [attr.y2]="node.lineY"
             filter="url(#neuronGlow)"
           ></line>
-        </ng-container>
+        }
       </svg>
 
       <article class="intro-core">
@@ -117,55 +120,61 @@
 
           <div class="intro-core__portal">
             <div class="intro-core__media">
-              <ng-container *ngIf="!activeNode; else hoveredImage">
+              @if (activeNode(); as node) {
                 <img
-                  *ngIf="previousLoopImage"
-                  class="intro-core__image intro-core__image--previous"
-                  [src]="previousLoopImage.image"
-                  [alt]="previousLoopImage.altKey | translate"
+                  class="intro-core__image intro-core__image--current"
+                  [src]="node.image"
+                  [alt]="'intro.nodes.' + node.id + '.alt' | translate"
+                  width="672"
+                  height="840"
                 />
+              } @else {
+                @if (previousLoopImage(); as previous) {
+                  <img
+                    class="intro-core__image intro-core__image--previous"
+                    [src]="previous.image"
+                    [alt]="previous.altKey | translate"
+                    width="672"
+                    height="840"
+                  />
+                }
 
                 <img
                   class="intro-core__image intro-core__image--current"
-                  [src]="currentLoopImage.image"
-                  [alt]="currentLoopImage.altKey | translate"
+                  [src]="currentLoopImage().image"
+                  [alt]="currentLoopImage().altKey | translate"
+                  width="672"
+                  height="840"
                 />
-              </ng-container>
-
-              <ng-template #hoveredImage>
-                <img
-                  class="intro-core__image intro-core__image--current"
-                  [src]="displayImage"
-                  [alt]="displayAltKey | translate"
-                />
-              </ng-template>
+              }
             </div>
           </div>
         </div>
       </article>
 
-      <button
-        *ngFor="let node of nodes"
-        type="button"
-        class="intro-node"
-        [class.is-active]="node.id === activeId"
-        [style.left.%]="node.x"
-        [style.top.%]="node.y"
-        (mouseenter)="setActive(node.id)"
-        (mouseleave)="clearActiveDelayed()"
-        (focus)="setActive(node.id)"
-        (click)="setActive(node.id)"
-      >
-        <span class="intro-node__tag">{{ 'intro.nodes.' + node.id + '.tag' | translate }}</span>
+      @for (node of nodes; track node.id) {
+        <button
+          type="button"
+          class="intro-node"
+          [class.is-active]="node.id === activeId()"
+          [style.left.%]="node.x"
+          [style.top.%]="node.y"
+          (mouseenter)="setActive(node.id)"
+          (mouseleave)="clearActiveDelayed()"
+          (focus)="setActive(node.id)"
+          (click)="setActive(node.id)"
+        >
+          <span class="intro-node__tag">{{ 'intro.nodes.' + node.id + '.tag' | translate }}</span>
 
-        <strong class="intro-node__title">
-          {{ 'intro.nodes.' + node.id + '.title' | translate }}
-        </strong>
+          <strong class="intro-node__title">
+            {{ 'intro.nodes.' + node.id + '.title' | translate }}
+          </strong>
 
-        <span class="intro-node__detail">
-          {{ 'intro.nodes.' + node.id + '.detail' | translate }}
-        </span>
-      </button>
+          <span class="intro-node__detail">
+            {{ 'intro.nodes.' + node.id + '.detail' | translate }}
+          </span>
+        </button>
+      }
     </div>
   </div>
 </section>

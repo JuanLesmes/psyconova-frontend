@@ -8,10 +8,9 @@
     y le permite saltarse la barra para ir directo al contenido. Sin él hay que
     tabular por el menú entero en cada página.
 
-    OJO al ocultarlo: NO puede usar `display: none` ni `visibility: hidden`.
-    Eso lo saca del orden de tabulación y deja de servir para lo único que
-    existe. Se posiciona fuera de pantalla y vuelve con :focus — ver
-    .skip-link en main-layout.scss.
+    No se oculta con `display: none` ni `visibility: hidden`: eso lo sacaría
+    del orden de tabulación y dejaría de servir. Se posiciona fuera de
+    pantalla y vuelve con :focus (ver .skip-link en main-layout.scss).
   -->
   <a class="skip-link" href="#contenido">{{ 'nav.skipToContent' | translate }}</a>
 

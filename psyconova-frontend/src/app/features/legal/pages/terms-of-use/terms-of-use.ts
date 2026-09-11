@@ -6,7 +6,6 @@ import { PAGES } from '../../../../core/config/site.config';
 /** Términos de uso. Ver la nota sobre el idioma en PrivacyPolicy. */
 @Component({
   selector: 'app-terms-of-use',
-  standalone: true,
   imports: [RouterLink],
   templateUrl: './terms-of-use.html',
   styleUrl: '../../legal.scss',

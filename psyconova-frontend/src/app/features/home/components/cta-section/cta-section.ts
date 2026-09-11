@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
@@ -11,9 +10,14 @@ import {
   CRISIS_LINES,
   CRISIS_WHATSAPP,
   LOCATION,
-  MAP_CONSENT_KEY,
   PRIVACY_POLICY_URL,
 } from '../../../../core/config/contact.config';
+import {
+  MapConsent,
+  guardarConsentimientoMapa,
+  leerConsentimientoMapa,
+  olvidarConsentimientoMapa,
+} from '../../../../core/config/map-consent';
 
 interface ContactForm {
   nombre: string;
@@ -27,7 +31,7 @@ interface ContactForm {
   website: string;
 }
 
-type SubmitState = 'idle' | 'sending' | 'success' | 'error';
+export type SubmitState = 'idle' | 'sending' | 'success' | 'error';
 
 const EMPTY_FORM: ContactForm = {
   nombre: '',
@@ -39,10 +43,13 @@ const EMPTY_FORM: ContactForm = {
   website: '',
 };
 
+/**
+ * Sección de contacto: líneas de crisis, formulario, datos de contacto y el
+ * mapa con consentimiento previo.
+ */
 @Component({
   selector: 'app-cta-section',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RevealDirective, TranslatePipe],
+  imports: [FormsModule, RevealDirective, TranslatePipe],
   templateUrl: './cta-section.html',
   styleUrl: './cta-section.scss',
 })
@@ -50,17 +57,20 @@ export class CtaSection {
   private readonly contact = inject(ContactService);
   private readonly sanitizer = inject(DomSanitizer);
 
-  readonly privacyPolicyUrl = PRIVACY_POLICY_URL;
-  readonly fallbackEmail = CONTACT_FALLBACK_EMAIL;
-  readonly contactInfo = CONTACT_INFO;
-  readonly crisisLines = CRISIS_LINES;
-  readonly crisisWhatsapp = CRISIS_WHATSAPP;
-  readonly location = LOCATION;
+  /** Datos públicos que pinta la plantilla. Salen de core/config/contact.config.ts. */
+  readonly contacto = {
+    info: CONTACT_INFO,
+    fallbackEmail: CONTACT_FALLBACK_EMAIL,
+    privacyPolicyUrl: PRIVACY_POLICY_URL,
+    crisisLines: CRISIS_LINES,
+    crisisWhatsapp: CRISIS_WHATSAPP,
+    location: LOCATION,
+  };
 
   /**
    * Mapa embebido de Google. Sólo se construye la URL: el iframe no se añade
    * al DOM hasta que `mapConsent` es true, así que ninguna petición sale a
-   * google.com antes de que el visitante lo autorice.
+   * google.com sin que el visitante lo autorice.
    */
   readonly mapEmbedUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
     `https://maps.google.com/maps?q=${encodeURIComponent(LOCATION.query)}` +
@@ -71,35 +81,22 @@ export class CtaSection {
   readonly mapLinkUrl =
     'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(LOCATION.query);
 
-  /**
-   * Decisión del visitante sobre el mapa de Google.
-   *
-   *   null   todavía no ha decidido — se le pregunta
-   *   true   aceptó — se carga el iframe
-   *   false  rechazó — se muestra la dirección y no se vuelve a preguntar
-   */
-  mapConsent: boolean | null = this.readMapConsent();
+  /** Decisión sobre el mapa. Ver core/config/map-consent.ts. */
+  readonly mapConsent = signal<MapConsent>(leerConsentimientoMapa());
 
-  state: SubmitState = 'idle';
+  readonly state = signal<SubmitState>('idle');
+  readonly isSending = computed(() => this.state() === 'sending');
+  readonly submitted = computed(() => this.state() === 'success');
+  readonly hasError = computed(() => this.state() === 'error');
+
+  /** Objeto plano y no signal: `ngModel` escribe en sus campos directamente. */
   form: ContactForm = { ...EMPTY_FORM };
-
-  get isSending(): boolean {
-    return this.state === 'sending';
-  }
-
-  get submitted(): boolean {
-    return this.state === 'success';
-  }
-
-  get hasError(): boolean {
-    return this.state === 'error';
-  }
 
   onSubmit(): void {
     // El consentimiento es obligatorio: sin él no se envía nada.
-    if (!this.form.consentimiento || this.isSending) return;
+    if (!this.form.consentimiento || this.isSending()) return;
 
-    this.state = 'sending';
+    this.state.set('sending');
 
     this.contact
       .send({
@@ -113,82 +110,42 @@ export class CtaSection {
       })
       .subscribe({
         next: () => {
-          this.state = 'success';
+          this.state.set('success');
           this.form = { ...EMPTY_FORM };
         },
         error: (err: unknown) => {
-          // Nunca fingimos un envío exitoso: el usuario debe poder reintentar
+          // Nunca se finge un envío exitoso: el usuario debe poder reintentar
           // o escribir directamente al correo.
           console.error('No se pudo enviar la consulta de contacto:', err);
-          this.state = 'error';
+          this.state.set('error');
         },
       });
   }
 
   resetForm(): void {
-    this.state = 'idle';
+    this.state.set('idle');
   }
 
   /** El visitante acepta cargar el mapa; se recuerda para próximas visitas. */
-  /** El visitante acepta cargar el mapa; se recuerda para próximas visitas. */
   acceptMap(): void {
-    this.mapConsent = true;
-    this.guardarConsentimiento('1');
+    this.mapConsent.set(true);
+    guardarConsentimientoMapa(true);
   }
 
   /**
-   * El visitante rechaza el mapa.
-   *
-   * Se guarda igual que la aceptación, y por el mismo motivo: no volver a
-   * preguntar. Insistir después de un «no» convierte la decisión en un trámite
-   * que hay que repetir en cada visita hasta que uno cede — que es justo lo
+   * El visitante rechaza el mapa. Se guarda igual que la aceptación y por el
+   * mismo motivo: no volver a preguntar. Insistir después de un «no» convierte
+   * la decisión en un trámite que hay que repetir hasta ceder, que es lo
    * contrario de un consentimiento libre.
    */
   rejectMap(): void {
-    this.mapConsent = false;
-    this.guardarConsentimiento('0');
+    this.mapConsent.set(false);
+    guardarConsentimientoMapa(false);
   }
 
   /** Vuelve a mostrar la pregunta, para quien cambie de idea. */
   resetMapConsent(): void {
-    this.mapConsent = null;
-
-    try {
-      localStorage.removeItem(MAP_CONSENT_KEY);
-    } catch {
-      // Sin persistencia se vuelve a preguntar de todas formas.
-    }
-  }
-
-  private guardarConsentimiento(valor: '0' | '1'): void {
-    try {
-      localStorage.setItem(MAP_CONSENT_KEY, valor);
-    } catch {
-      // Modo privado o almacenamiento bloqueado: la decisión vale para esta
-      // visita y se vuelve a preguntar en la siguiente. Nunca se da por
-      // aceptado lo que no se pudo guardar.
-    }
-  }
-
-  /**
-   * Tres estados, no dos.
-   *
-   * `null` es «todavía no ha decidido», y es distinto de «dijo que no». Con un
-   * booleano no se pueden separar: el rechazo se vería igual que no haber
-   * preguntado nunca, y habría que volver a preguntar en cada visita.
-   *
-   * Cualquier valor que no sea exactamente '1' o '0' —basura, una versión
-   * antigua de la clave— se trata como «sin decidir». Nunca como aceptado.
-   */
-  private readMapConsent(): boolean | null {
-    try {
-      const guardado = localStorage.getItem(MAP_CONSENT_KEY);
-      if (guardado === '1') return true;
-      if (guardado === '0') return false;
-      return null;
-    } catch {
-      // Modo privado o almacenamiento bloqueado: se pregunta de nuevo.
-      return null;
-    }
+    this.mapConsent.set(null);
+    olvidarConsentimientoMapa();
   }
 }

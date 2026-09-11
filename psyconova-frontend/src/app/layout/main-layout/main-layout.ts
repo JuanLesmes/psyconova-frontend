@@ -6,7 +6,6 @@ import { FooterComponent } from '../components/footer/footer';
 
 @Component({
   selector: 'app-main-layout',
-  standalone: true,
   imports: [RouterOutlet, Navbar, FooterComponent, TranslatePipe],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',

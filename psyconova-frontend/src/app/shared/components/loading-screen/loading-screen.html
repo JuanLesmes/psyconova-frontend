@@ -1,27 +1,27 @@
-<div class="ls" [class.ls--hiding]="hiding" *ngIf="visible" aria-hidden="true">
+@if (visible) {
+  <div class="ls" [class.ls--hiding]="hiding" aria-hidden="true">
+    <!-- Anillos en expansión -->
+    <div class="ls-rings">
+      <div class="ls-ring ls-ring--1"></div>
+      <div class="ls-ring ls-ring--2"></div>
+      <div class="ls-ring ls-ring--3"></div>
+    </div>
 
-  <!-- Neural rings -->
-  <div class="ls-rings">
-    <div class="ls-ring ls-ring--1"></div>
-    <div class="ls-ring ls-ring--2"></div>
-    <div class="ls-ring ls-ring--3"></div>
+    <!-- Logotipo -->
+    <div class="ls-logo-wrap">
+      <img
+        class="ls-logo"
+        src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
+        width="400"
+        height="400"
+        alt="PSYCONOVA"
+      />
+      <p class="ls-tagline">{{ 'loading.tagline' | translate }}</p>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="ls-progress-track">
+      <div class="ls-progress-bar"></div>
+    </div>
   </div>
-
-  <!-- Logo -->
-  <div class="ls-logo-wrap">
-    <img
-      class="ls-logo"
-      src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
-      width="400"
-      height="400"
-      alt="PSYCONOVA"
-    />
-    <p class="ls-tagline">{{ 'loading.tagline' | translate }}</p>
-  </div>
-
-  <!-- Progress bar -->
-  <div class="ls-progress-track">
-    <div class="ls-progress-bar"></div>
-  </div>
-
-</div>
+}

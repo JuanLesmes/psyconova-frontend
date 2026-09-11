@@ -1,13 +1,11 @@
 <section class="ctc" id="contact">
-
-  <!-- Background decorative rings -->
+  <!-- Anillos decorativos de fondo -->
   <div class="ctc-ring ctc-ring--one" aria-hidden="true"></div>
   <div class="ctc-ring ctc-ring--two" aria-hidden="true"></div>
 
   <div class="ctc-shell">
-
-    <!-- ── Header ──────────────────────────────────── -->
-    <div class="ctc-header" reveal revealType="up">
+    <!-- ── Encabezado ──────────────────────────────── -->
+    <div class="ctc-header" appReveal revealType="up">
       <span class="ctc-badge">{{ 'contact.badge' | translate }}</span>
       <h2 class="ctc-title">{{ 'contact.title' | translate }}</h2>
       <p class="ctc-subtitle">
@@ -16,17 +14,17 @@
     </div>
 
     <!--
-      Aviso de líneas de crisis. Va ANTES del formulario a propósito: quien
-      llega en un momento difícil tiene que ver esto antes de ponerse a
-      escribir y esperar una respuesta que no es inmediata.
-      Los números están en core/config/contact.config.ts, verificados.
+      Aviso de líneas de crisis. Va por delante del formulario a propósito:
+      quien llega en un momento difícil tiene que verlo primero, sin ponerse a
+      escribir y esperar una respuesta que no es inmediata. Los números están
+      en core/config/contact.config.ts, verificados.
     -->
-    <div class="ctc-crisis" reveal revealType="up" [revealDelay]="80">
+    <div class="ctc-crisis" appReveal revealType="up" [revealDelay]="80">
       <div class="ctc-crisis__head">
         <svg class="ctc-crisis__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3a9 9 0 100 18 9 9 0 000-18z"/>
-          <path d="M12 8v5" stroke-linecap="round"/>
-          <circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/>
+          <path d="M12 3a9 9 0 100 18 9 9 0 000-18z" />
+          <path d="M12 8v5" stroke-linecap="round" />
+          <circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none" />
         </svg>
         <div>
           <p class="ctc-crisis__title">{{ 'contact.crisis.title' | translate }}</p>
@@ -35,258 +33,266 @@
       </div>
 
       <ul class="ctc-crisis__lines">
-        <li *ngFor="let line of crisisLines">
-          <a [href]="line.tel" class="ctc-crisis__num">{{ line.number }}</a>
-          <span class="ctc-crisis__desc">
-            {{ 'contact.crisis.lines.' + line.key | translate }}
-          </span>
-        </li>
+        @for (line of contacto.crisisLines; track line) {
+          <li>
+            <a [href]="line.tel" class="ctc-crisis__num">{{ line.number }}</a>
+            <span class="ctc-crisis__desc">
+              {{ 'contact.crisis.lines.' + line.key | translate }}
+            </span>
+          </li>
+        }
       </ul>
 
       <p class="ctc-crisis__wa">
         {{ 'contact.crisis.whatsapp' | translate }}
-        <a [href]="crisisWhatsapp.link" target="_blank" rel="noopener">
-          {{ crisisWhatsapp.display }}
+        <a [href]="contacto.crisisWhatsapp.link" target="_blank" rel="noopener">
+          {{ contacto.crisisWhatsapp.display }}
         </a>
       </p>
     </div>
 
-    <!-- ── Body: form + info ────────────────────────── -->
+    <!-- ── Cuerpo: formulario + datos ───────────────── -->
     <div class="ctc-body">
+      <!-- Formulario -->
+      <div class="ctc-form-wrap" appReveal revealType="left" [revealDelay]="150">
+        @if (submitted()) {
+          <div class="ctc-success">
+            <svg viewBox="0 0 24 24" class="ctc-success__icon" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 12.5l2.5 2.5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p>{{ 'contact.success' | translate }}</p>
+          </div>
+        }
 
-      <!-- Form -->
-      <div class="ctc-form-wrap" reveal revealType="left" [revealDelay]="150">
-        <div *ngIf="submitted" class="ctc-success">
-          <svg viewBox="0 0 24 24" class="ctc-success__icon" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 12.5l2.5 2.5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p>{{ 'contact.success' | translate }}</p>
-        </div>
+        @if (!submitted()) {
+          <form class="ctc-form" (ngSubmit)="onSubmit()">
+            <div class="ctc-row">
+              <!-- Nombre -->
+              <div class="ctc-field">
+                <input
+                  class="ctc-input"
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  [(ngModel)]="form.nombre"
+                  placeholder=" "
+                  required
+                />
+                <label class="ctc-label" for="nombre">
+                  {{ 'contact.form.firstName' | translate }}
+                </label>
+                <div class="ctc-line"></div>
+              </div>
 
-        <form class="ctc-form" (ngSubmit)="onSubmit()" *ngIf="!submitted" #f="ngForm">
+              <!-- Apellido -->
+              <div class="ctc-field">
+                <input
+                  class="ctc-input"
+                  type="text"
+                  id="apellido"
+                  name="apellido"
+                  [(ngModel)]="form.apellido"
+                  placeholder=" "
+                  required
+                />
+                <label class="ctc-label" for="apellido">
+                  {{ 'contact.form.lastName' | translate }}
+                </label>
+                <div class="ctc-line"></div>
+              </div>
+            </div>
 
-          <div class="ctc-row">
-            <!-- Nombre -->
+            <!-- Celular -->
             <div class="ctc-field">
               <input
                 class="ctc-input"
-                type="text"
-                id="nombre"
-                name="nombre"
-                [(ngModel)]="form.nombre"
+                type="tel"
+                id="celular"
+                name="celular"
+                [(ngModel)]="form.celular"
                 placeholder=" "
                 required
               />
-              <label class="ctc-label" for="nombre">
-                {{ 'contact.form.firstName' | translate }}
+              <label class="ctc-label" for="celular">{{ 'contact.form.phone' | translate }}</label>
+              <div class="ctc-line"></div>
+            </div>
+
+            <!-- Correo -->
+            <div class="ctc-field">
+              <input
+                class="ctc-input"
+                type="email"
+                id="correo"
+                name="correo"
+                [(ngModel)]="form.correo"
+                placeholder=" "
+                required
+              />
+              <label class="ctc-label" for="correo">{{ 'contact.form.email' | translate }}</label>
+              <div class="ctc-line"></div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="ctc-field ctc-field--area">
+              <textarea
+                class="ctc-input ctc-textarea"
+                id="descripcion"
+                name="descripcion"
+                [(ngModel)]="form.descripcion"
+                placeholder=" "
+                rows="4"
+                required
+              ></textarea>
+              <label class="ctc-label" for="descripcion">
+                {{ 'contact.form.message' | translate }}
               </label>
               <div class="ctc-line"></div>
             </div>
 
-            <!-- Apellido -->
-            <div class="ctc-field">
-              <input
-                class="ctc-input"
-                type="text"
-                id="apellido"
-                name="apellido"
-                [(ngModel)]="form.apellido"
-                placeholder=" "
-                required
-              />
-              <label class="ctc-label" for="apellido">
-                {{ 'contact.form.lastName' | translate }}
-              </label>
-              <div class="ctc-line"></div>
-            </div>
-          </div>
-
-          <!-- Celular -->
-          <div class="ctc-field">
-            <input
-              class="ctc-input"
-              type="tel"
-              id="celular"
-              name="celular"
-              [(ngModel)]="form.celular"
-              placeholder=" "
-              required
-            />
-            <label class="ctc-label" for="celular">{{ 'contact.form.phone' | translate }}</label>
-            <div class="ctc-line"></div>
-          </div>
-
-          <!-- Correo -->
-          <div class="ctc-field">
-            <input
-              class="ctc-input"
-              type="email"
-              id="correo"
-              name="correo"
-              [(ngModel)]="form.correo"
-              placeholder=" "
-              required
-            />
-            <label class="ctc-label" for="correo">{{ 'contact.form.email' | translate }}</label>
-            <div class="ctc-line"></div>
-          </div>
-
-          <!-- Descripción -->
-          <div class="ctc-field ctc-field--area">
-            <textarea
-              class="ctc-input ctc-textarea"
-              id="descripcion"
-              name="descripcion"
-              [(ngModel)]="form.descripcion"
-              placeholder=" "
-              rows="4"
-              required
-            ></textarea>
-            <label class="ctc-label" for="descripcion">
-              {{ 'contact.form.message' | translate }}
-            </label>
-            <div class="ctc-line"></div>
-          </div>
-
-          <!--
+            <!--
             Campo trampa para bots. Queda fuera de la vista y del foco del
             teclado; una persona nunca lo llena, un bot automático sí.
             La función serverless descarta cualquier envío que lo traiga con texto.
           -->
-          <div class="ctc-honeypot" aria-hidden="true">
-            <label for="website">No llenar este campo</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              [(ngModel)]="form.website"
-              tabindex="-1"
-              autocomplete="off"
-            />
-          </div>
+            <div class="ctc-honeypot" aria-hidden="true">
+              <label for="website">No llenar este campo</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                [(ngModel)]="form.website"
+                tabindex="-1"
+                autocomplete="off"
+              />
+            </div>
 
-          <!-- Autorización de tratamiento de datos (Ley 1581 de 2012) -->
-          <div class="ctc-consent">
-            <input
-              class="ctc-consent__box"
-              type="checkbox"
-              id="consentimiento"
-              name="consentimiento"
-              [(ngModel)]="form.consentimiento"
-              required
-            />
-            <span class="ctc-consent__text">
-              <label for="consentimiento">{{ 'contact.form.consentBefore' | translate }}</label><a
-                class="ctc-consent__link"
-                [href]="privacyPolicyUrl"
-                target="_blank"
-                rel="noopener"
-              >{{ 'contact.form.consentLink' | translate }}</a>.
-            </span>
-          </div>
+            <!-- Autorización de tratamiento de datos (Ley 1581 de 2012) -->
+            <div class="ctc-consent">
+              <input
+                class="ctc-consent__box"
+                type="checkbox"
+                id="consentimiento"
+                name="consentimiento"
+                [(ngModel)]="form.consentimiento"
+                required
+              />
+              <span class="ctc-consent__text">
+                <label for="consentimiento">{{ 'contact.form.consentBefore' | translate }}</label
+                ><a
+                  class="ctc-consent__link"
+                  [href]="contacto.privacyPolicyUrl"
+                  target="_blank"
+                  rel="noopener"
+                  >{{ 'contact.form.consentLink' | translate }}</a
+                >.
+              </span>
+            </div>
 
-          <!-- Error de envío: nunca se finge un envío exitoso -->
-          <p class="ctc-error" *ngIf="hasError" role="alert">
-            {{ 'contact.error' | translate }}
-            <a [href]="'mailto:' + fallbackEmail">{{ fallbackEmail }}</a>
-          </p>
+            <!-- Error de envío: nunca se finge un envío exitoso -->
+            @if (hasError()) {
+              <p class="ctc-error" role="alert">
+                {{ 'contact.error' | translate }}
+                <a [href]="'mailto:' + contacto.fallbackEmail">{{ contacto.fallbackEmail }}</a>
+              </p>
+            }
 
-          <button
-            class="ctc-submit"
-            type="submit"
-            [disabled]="!form.consentimiento || isSending"
-          >
-            <span class="ctc-submit__text">
-              {{ (isSending ? 'contact.form.sending' : 'contact.form.submit') | translate }}
-            </span>
-            <svg class="ctc-submit__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <div class="ctc-submit__shimmer"></div>
-          </button>
-
-        </form>
+            <button
+              class="ctc-submit"
+              type="submit"
+              [disabled]="!form.consentimiento || isSending()"
+            >
+              <span class="ctc-submit__text">
+                {{ (isSending() ? 'contact.form.sending' : 'contact.form.submit') | translate }}
+              </span>
+              <svg class="ctc-submit__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="ctc-submit__shimmer"></div>
+            </button>
+          </form>
+        }
       </div>
 
-      <!-- Info cards -->
+      <!-- Tarjetas de datos -->
       <div class="ctc-info-wrap">
-
-        <!-- Decorative blob -->
+        <!-- Mancha decorativa -->
         <div class="ctc-info-blob" aria-hidden="true"></div>
 
         <div class="ctc-info-stack">
-
           <!-- WhatsApp -->
-          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="200">
+          <div class="ctc-info-card" appReveal revealType="right" [revealDelay]="200">
             <div class="ctc-info-card__icon ctc-info-card__icon--teal">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.954 9.954 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"
+                />
+                <path
+                  d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.954 9.954 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"
+                />
               </svg>
             </div>
             <div class="ctc-info-card__content">
               <span class="ctc-info-card__label">{{ 'contact.info.whatsapp' | translate }}</span>
               <a
-                [href]="contactInfo.whatsappLink"
+                [href]="contacto.info.whatsappLink"
                 target="_blank"
                 rel="noopener"
                 class="ctc-info-card__value"
-              >{{ contactInfo.whatsapp }}</a>
+                >{{ contacto.info.whatsapp }}</a
+              >
             </div>
           </div>
 
           <!-- Ubicación -->
-          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="300">
+          <div class="ctc-info-card" appReveal revealType="right" [revealDelay]="300">
             <div class="ctc-info-card__icon ctc-info-card__icon--purple">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle cx="12" cy="9" r="2.5"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
               </svg>
             </div>
             <div class="ctc-info-card__content">
               <span class="ctc-info-card__label">{{ 'contact.info.location' | translate }}</span>
-              <span class="ctc-info-card__value">{{ location.street }}</span>
+              <span class="ctc-info-card__value">{{ contacto.location.street }}</span>
               <span class="ctc-info-card__sub">
-                {{ location.building }} · {{ location.city }}
+                {{ contacto.location.building }} · {{ contacto.location.city }}
               </span>
-              <a
-                class="ctc-map__link"
-                [href]="mapLinkUrl"
-                target="_blank"
-                rel="noopener"
-              >
+              <a class="ctc-map__link" [href]="mapLinkUrl" target="_blank" rel="noopener">
                 {{ 'contact.map.link' | translate }}
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path
+                    d="M7 17L17 7M17 7H9M17 7v8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
                 </svg>
               </a>
             </div>
           </div>
 
           <!-- Correo -->
-          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="400">
+          <div class="ctc-info-card" appReveal revealType="right" [revealDelay]="400">
             <div class="ctc-info-card__icon ctc-info-card__icon--indigo">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="2" y="4" width="20" height="16" rx="3"/>
-                <path d="M2 8l10 6 10-6"/>
+                <rect x="2" y="4" width="20" height="16" rx="3" />
+                <path d="M2 8l10 6 10-6" />
               </svg>
             </div>
             <div class="ctc-info-card__content">
               <span class="ctc-info-card__label">{{ 'contact.info.email' | translate }}</span>
-              <a
-                [href]="'mailto:' + contactInfo.email"
-                class="ctc-info-card__value"
-              >{{ contactInfo.email }}</a>
+              <a [href]="'mailto:' + contacto.info.email" class="ctc-info-card__value">{{
+                contacto.info.email
+              }}</a>
             </div>
           </div>
 
           <!-- Horario -->
-          <div class="ctc-info-card" reveal revealType="right" [revealDelay]="500">
+          <div class="ctc-info-card" appReveal revealType="right" [revealDelay]="500">
             <div class="ctc-info-card__icon ctc-info-card__icon--teal">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 7v5l3.5 3.5" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3.5 3.5" stroke-linecap="round" />
               </svg>
             </div>
             <div class="ctc-info-card__content">
@@ -296,30 +302,25 @@
               </span>
             </div>
           </div>
-
         </div>
 
         <!--
-          Mapa de Google con consentimiento previo.
-          El iframe NO existe en el DOM hasta que el visitante pulsa el botón,
-          así que ninguna cookie de google.com se instala antes de autorizarlo.
-          La dirección y el zoom se ajustan en core/config/contact.config.ts
+          Mapa de Google con consentimiento previo. El iframe no existe en el
+          DOM hasta que el visitante pulsa el botón, así que ninguna cookie de
+          google.com se instala sin autorización. La dirección y el zoom se
+          ajustan en core/config/contact.config.ts.
         -->
-        <div class="ctc-map" reveal revealType="right" [revealDelay]="600">
+        <div class="ctc-map" appReveal revealType="right" [revealDelay]="600">
           <div class="ctc-map__frame">
-
             <!--
-              Los tres estados, en UNA sola cadena.
-
-              Antes eran tres *ngIf independientes y al hidratar quedaban dos
-              bloques en el DOM a la vez: Angular conservaba el que había
-              pintado el servidor y añadía el del cliente. Con @if/@else hay un
-              único contenedor con una sola rama activa, y no hay ambigüedad
-              posible al hidratar.
+              Los tres estados en una sola cadena @if/@else: hay un único
+              contenedor con una sola rama activa, sin ambigüedad al hidratar.
+              Con tres bloques independientes, Angular conservaría el que pintó
+              el servidor y añadiría el del cliente, dejando dos en el DOM.
             -->
-            @if (mapConsent === null) {
+            @if (mapConsent() === null) {
               <!--
-                Antes de decidir.
+                Sin decidir todavía.
 
                 Las dos opciones son botones del mismo tamaño, la misma
                 tipografía y el mismo peso. Poner el rechazo como un enlace gris
@@ -329,8 +330,10 @@
               -->
               <div class="ctc-map__gate">
                 <svg class="ctc-map__gate-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                  <circle cx="12" cy="9" r="2.5"/>
+                  <path
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                  />
+                  <circle cx="12" cy="9" r="2.5" />
                 </svg>
                 <p class="ctc-map__gate-title">{{ 'contact.map.gateTitle' | translate }}</p>
                 <p class="ctc-map__gate-text">{{ 'contact.map.gateText' | translate }}</p>
@@ -339,19 +342,20 @@
                   <button class="ctc-map__gate-btn" type="button" (click)="acceptMap()">
                     {{ 'contact.map.gateAccept' | translate }}
                   </button>
-                  <button class="ctc-map__gate-btn ctc-map__gate-btn--ghost" type="button" (click)="rejectMap()">
+                  <button
+                    class="ctc-map__gate-btn ctc-map__gate-btn--ghost"
+                    type="button"
+                    (click)="rejectMap()"
+                  >
                     {{ 'contact.map.gateReject' | translate }}
                   </button>
                 </div>
 
-                <a
-                  class="ctc-map__gate-alt"
-                  [href]="mapLinkUrl"
-                  target="_blank"
-                  rel="noopener"
-                >{{ 'contact.map.gateSkip' | translate }}</a>
+                <a class="ctc-map__gate-alt" [href]="mapLinkUrl" target="_blank" rel="noopener">{{
+                  'contact.map.gateSkip' | translate
+                }}</a>
               </div>
-            } @else if (mapConsent === false) {
+            } @else if (mapConsent() === false) {
               <!--
                 Tras rechazar. No se vuelve a preguntar: insistir después de un
                 «no» convierte la decisión en un trámite que hay que repetir
@@ -360,16 +364,17 @@
               -->
               <div class="ctc-map__gate ctc-map__gate--rejected">
                 <p class="ctc-map__gate-title">{{ 'contact.map.rejectedTitle' | translate }}</p>
-                <p class="ctc-map__gate-text">{{ location.street }} · {{ location.city }}</p>
+                <p class="ctc-map__gate-text">{{ contacto.location.street }} · {{ contacto.location.city }}</p>
 
                 <div class="ctc-map__gate-actions">
-                  <a
-                    class="ctc-map__gate-btn"
-                    [href]="mapLinkUrl"
-                    target="_blank"
-                    rel="noopener"
-                  >{{ 'contact.map.link' | translate }}</a>
-                  <button class="ctc-map__gate-btn ctc-map__gate-btn--ghost" type="button" (click)="resetMapConsent()">
+                  <a class="ctc-map__gate-btn" [href]="mapLinkUrl" target="_blank" rel="noopener">{{
+                    'contact.map.link' | translate
+                  }}</a>
+                  <button
+                    class="ctc-map__gate-btn ctc-map__gate-btn--ghost"
+                    type="button"
+                    (click)="resetMapConsent()"
+                  >
                     {{ 'contact.map.rejectedUndo' | translate }}
                   </button>
                 </div>
@@ -384,12 +389,9 @@
                 referrerpolicy="no-referrer"
               ></iframe>
             }
-
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 </section>

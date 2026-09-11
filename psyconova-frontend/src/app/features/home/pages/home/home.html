@@ -1,6 +1,19 @@
-<app-hero-section></app-hero-section>
-<app-intro-section></app-intro-section>
-<app-services-section></app-services-section>
-<app-stories-section></app-stories-section>
-<app-team-section></app-team-section>
-<app-cta-section></app-cta-section>
+<app-hero-section />
+<app-intro-section />
+<app-services-section />
+
+<!--
+  Las secciones de abajo se prerenderizan como las demás, pero su código sólo
+  se descarga e hidrata cuando entran en pantalla (hidratación incremental).
+  El HTML completo sigue estando para los buscadores; lo que se difiere es el
+  JavaScript.
+-->
+@defer (hydrate on viewport) {
+  <app-stories-section />
+}
+@defer (hydrate on viewport) {
+  <app-team-section />
+}
+@defer (hydrate on viewport) {
+  <app-cta-section />
+}
