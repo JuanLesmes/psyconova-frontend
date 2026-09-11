@@ -3,24 +3,14 @@ import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 
 import { Home } from './home';
+import { instalarIntersectionObserverFalso } from '../../../../testing/intersection-observer.stub';
 
 describe('Home', () => {
   let component: Home;
   let fixture: ComponentFixture<Home>;
 
   beforeEach(async () => {
-    // El entorno de pruebas no trae IntersectionObserver, que usa RevealDirective.
-    globalThis.IntersectionObserver = class {
-      observe(): void {}
-      unobserve(): void {}
-      disconnect(): void {}
-      takeRecords(): IntersectionObserverEntry[] {
-        return [];
-      }
-      readonly root = null;
-      readonly rootMargin = '';
-      readonly thresholds: readonly number[] = [];
-    } as unknown as typeof IntersectionObserver;
+    instalarIntersectionObserverFalso();
 
     await TestBed.configureTestingModule({
       imports: [Home],

@@ -123,9 +123,9 @@ describe('esCorreoValido · no rechazar direcciones legítimas', () => {
   it.each([
     ['normal', 'laura@ejemplo.com'],
     ['con signo de suma', 'laura+psyconova@gmail.com'],
-    ['con punto en el nombre', 'laura.lesmes@psyconova.com'],
+    ['con punto en el nombre', 'ana.perez@ejemplo.com'],
     ['dominio colombiano', 'contacto@universidad.edu.co'],
-    ['subdominio', 'hola@send.psyconova.com'],
+    ['subdominio', 'hola@correo.ejemplo.com'],
     ['con guion', 'mi-correo@mi-dominio.com'],
   ])('acepta un correo %s', (_caso, correo) => {
     expect(esCorreoValido(correo)).toBe(true);
