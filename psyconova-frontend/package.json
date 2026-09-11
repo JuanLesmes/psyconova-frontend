@@ -8,9 +8,13 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "optimize:images": "node scripts/optimize-images.mjs",
+    "fonts:download": "node scripts/download-fonts.mjs",
     "prebuild": "node scripts/generate-seo-files.mjs",
     "seo:files": "node scripts/generate-seo-files.mjs",
-    "postbuild": "node scripts/copy-404.mjs && node scripts/generate-csp.mjs"
+    "postbuild": "node scripts/copy-404.mjs && node scripts/generate-csp.mjs",
+    "lint": "ng lint",
+    "format": "prettier --write \"src/**/*.{ts,html,scss}\" \"scripts/*.mjs\" \"netlify/**/*.mts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss}\" \"scripts/*.mjs\" \"netlify/**/*.mts\""
   },
   "prettier": {
     "printWidth": 100,
@@ -45,12 +49,17 @@
     "@angular/build": "^21.0.4",
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.0",
+    "@eslint/js": "^10.0.1",
     "@netlify/functions": "^6.0.0",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "angular-eslint": "21.4.0",
+    "eslint": "^10.3.0",
     "jsdom": "^27.1.0",
+    "prettier": "^3.9.6",
     "sharp": "^0.35.4",
     "typescript": "~5.9.2",
+    "typescript-eslint": "8.59.2",
     "vitest": "^4.0.8"
   }
 }
