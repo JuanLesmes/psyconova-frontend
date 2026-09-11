@@ -6,11 +6,9 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!--
-    Iconos generados por scripts/generate-icons.mjs desde design/.
-
-    Antes había aquí un solo PNG de 500x500 y 121 kB, declarado como
-    `sizes="32x40"`, que se descargaba entero para pintarse en una pestaña de
-    16 píxeles. Era el segundo archivo más pesado de la portada.
+    Iconos generados por scripts/generate-icons.mjs desde design/. Tres
+    tamaños pequeños en vez de un solo PNG grande: un favicon de 500x500 se
+    descargaría entero para pintarse en una pestaña de 16 píxeles.
   -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=4">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=4">
@@ -24,10 +22,9 @@
     navegador solo si aparece un carácter que los requiera, gracias al
     unicode-range de src/styles/_fonts.scss.
 
-    OJO con `crossorigin`: es obligatorio aunque el archivo sea nuestro. Las
-    fuentes siempre se piden en modo CORS, y sin el atributo el navegador
-    descarta la precarga y vuelve a descargarlas — el doble de peso, y la
-    precarga no sirve de nada.
+    `crossorigin` es obligatorio aunque el archivo sea propio: las fuentes
+    siempre se piden en modo CORS, y sin el atributo el navegador descarta la
+    precarga y vuelve a descargarlas, el doble de peso para nada.
   -->
   <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/arimo-latin.woff2" as="font" type="font/woff2" crossorigin>

@@ -3,7 +3,7 @@
  *
  *   npm run optimize:images
  *
- * Los originales viven en design/source-images/ y NO se despliegan.
+ * Los originales viven en design/source-images/ y no se despliegan.
  * El resultado va a src/assets/images/, que es lo que llega al navegador.
  *
  * Para añadir imágenes nuevas: deja los originales en la carpeta de origen
@@ -31,20 +31,18 @@ const JOBS = [
     height: 680,
     quality: 84,
     /**
-     * Recorte por archivo, en píxeles del original.
-     *
-     * El recorte automático de sharp no sirvió aquí: dejaba media foto de
-     * cielo y la cara abajo del encuadre. Con coordenadas explícitas se
-     * controla dónde queda el rostro.
+     * Recorte por archivo, en píxeles del original. Con coordenadas explícitas
+     * se controla dónde queda el rostro; el recorte automático de sharp
+     * dejaría media foto de cielo y la cara abajo del encuadre.
      *
      * Para ajustarlo: abre el original, mira las coordenadas del recorte que
      * quieres y cámbialas aquí. `top` baja el encuadre, `height` hace zoom
      * (menos alto = más cerca). La proporción debe ser 520/680 = 0.765.
      */
     recortes: {
-      // laura.jpeg: original de 3024x4032. Encuadre de cabeza y hombros, con
-      // aire arriba porque el marco de la tarjeta es un arco redondeado que
-      // recorta las esquinas superiores.
+      // La clave es el nombre del archivo sin extensión. Original de 3024x4032:
+      // encuadre de cabeza y hombros, con aire arriba porque el marco de la
+      // tarjeta es un arco redondeado que recorta las esquinas superiores.
       'laura': { left: 934, top: 1280, width: 1285, height: 1680 },
     },
   },

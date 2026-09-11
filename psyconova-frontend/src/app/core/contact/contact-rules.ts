@@ -1,13 +1,11 @@
 /**
  * Reglas de validación de una consulta de contacto.
  *
- * Vive aquí, y no dentro de la función serverless, por un motivo concreto:
- * el corredor de pruebas sólo mira `src/**` (ver tsconfig.spec.json), así que
- * lo que se quede en netlify/functions/ no se puede probar. Este módulo lo
- * importan los dos — la función al recibir el POST, y las pruebas.
- *
- * Todo lo de aquí es puro: no toca red, ni entorno, ni reloj. Esa es la
- * condición para poder probarlo sin montar nada.
+ * Viven aquí y no dentro de la función serverless porque el corredor de
+ * pruebas sólo mira `src/**` (ver tsconfig.spec.json): lo que quede en
+ * netlify/functions/ no se puede probar. Este módulo lo importan los dos, la
+ * función al recibir el POST y las pruebas. Todo es puro (sin red, entorno ni
+ * reloj), que es la condición para probarlo sin montar nada.
  */
 
 /** Tamaño máximo de cada campo. Lo que pase de aquí se recorta, no se rechaza. */
@@ -56,17 +54,16 @@ export type ResultadoValidacion =
  * Recorta en vez de rechazar a propósito: alguien que escribe de más no
  * debería perder su consulta entera por pasarse de largo. Lo que no sea
  * string (número, objeto, null) se descarta como vacío, y entonces el campo
- * cae en la lista de faltantes si era obligatorio.
+ * cae en la lista de faltantes si es obligatorio.
  */
 export function recortar(valor: unknown, maximo: number): string {
   return typeof valor === 'string' ? valor.trim().slice(0, maximo) : '';
 }
 
 /**
- * Escapa el texto del visitante antes de meterlo en el correo.
- *
- * El correo se envía como HTML. Sin esto, cualquiera podría escribir
- * etiquetas en el mensaje y que le llegaran interpretadas a la psicóloga.
+ * Escapa el texto del visitante para meterlo en el correo, que se envía como
+ * HTML. Sin esto, cualquiera podría escribir etiquetas en el mensaje y
+ * llegarían interpretadas a la bandeja del negocio.
  */
 export function escaparHtml(valor: string): string {
   return valor.replace(
@@ -77,11 +74,9 @@ export function escaparHtml(valor: string): string {
 
 /**
  * Comprobación deliberadamente laxa: algo, arroba, algo, punto, dos letras.
- *
- * No intenta validar el estándar completo. Un patrón estricto rechaza
- * direcciones legítimas — con signos de suma, con dominios largos, con
- * caracteres poco comunes — y perder una consulta buena cuesta mucho más
- * que dejar pasar una mal escrita, que además rebotará sola.
+ * Un patrón estricto rechaza direcciones legítimas (signos de suma, dominios
+ * largos, caracteres poco comunes), y perder una consulta buena cuesta mucho
+ * más que dejar pasar una mal escrita, que además rebota sola.
  */
 const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -97,7 +92,7 @@ const OBLIGATORIOS = ['nombre', 'apellido', 'celular', 'correo', 'descripcion'] 
  *
  * El orden importa y no es casual:
  *
- *   1. La trampa de bots va PRIMERO. Si respondiéramos después de validar,
+ *   1. La trampa de bots va primero. Si respondiéramos después de validar,
  *      un bot aprendería qué campos le faltan por los mensajes de error.
  *   2. Campos obligatorios, todos de una vez, para que el visitante vea
  *      todo lo que le falta en un solo intento.

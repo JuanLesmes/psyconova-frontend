@@ -204,7 +204,7 @@ body{font-family:var(--hand);background:#3A342C;overflow:hidden;touch-action:man
 /* ================= utilidades ================= */
 const $=(s,el)=>(el||document).querySelector(s);
 const T=(x,y)=>`translate(${x},${y})`;
-/* El cuento NO guarda absolutamente nada en el navegador. El nombre, la
+/* El cuento no guarda absolutamente nada en el navegador. El nombre, la
    emoción y los dibujos viven solo mientras dura la visita, así el siguiente
    niño que lo abra empieza en blanco y no encuentra nada del anterior. */
 const _sesion={};
@@ -305,7 +305,7 @@ const C={
   ambar:o=>wolf(Object.assign({c:'#D9A64E',belly:'#F4E0AE',ear:1},o)),
   luna :o=>wolf(Object.assign({c:'#E6BE6E',belly:'#F8EAC2',ear:1.15},o)),
 };
-/* lobezno bebé (chibi) — hijo de papá y Ámbar: gris dorado */
+/* lobezno bebé (chibi), hijo de papá y Ámbar: gris dorado */
 function babyW(o){
   o=Object.assign({x:0,y:0,s:1,flip:false,reach:false},o);
   const c='#C9B183',b='#EADFC4',dk=TINTA,inner='#CE9578';
@@ -553,7 +553,7 @@ const art3=`${SVGO}
   <ellipse cx="600" cy="740" rx="820" ry="90" fill="#8AA278"/>
   ${vig}</svg>`;
 
-/* p4 · pingüino, Canela y leones — con juego de unir bebés */
+/* p4 · pingüino, Canela y leones, con juego de unir bebés */
 function chick(){
   const dk='#343A42',or='#E8963E';
   return `<g><ellipse cy="0" rx="20" ry="4.5" fill="rgba(70,75,90,.15)"/>

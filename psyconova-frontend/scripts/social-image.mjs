@@ -1,7 +1,7 @@
 /**
  * Genera la imagen que WhatsApp, LinkedIn y X muestran al compartir el enlace.
  *
- * 1200x630 es la proporcion que esperan los tres. Mas pequena y la escalan
+ * 1200x630 es la proporcion que piden los tres. Mas pequena y la escalan
  * borrosa; con otra proporcion, la recortan por donde no toca.
  *
  * Se genera en vez de dibujarse a mano para que salga de los mismos colores
@@ -63,17 +63,13 @@ const lema = `
 </svg>`;
 
 /**
- * El logo, en blanco.
- *
- * Ninguna variante de assets trae el texto en claro: en las siete, la palabra
- * PSYCONOVA es azul oscuro, pensada para fondo blanco. Sobre este degradado
- * quedaria ilegible.
- *
- * La pantalla de carga resuelve lo mismo con `filter: brightness(0) invert(1)`,
- * que pinta el logo entero de blanco conservando su silueta. Aqui se hace la
- * operacion equivalente: se toma solo el canal alfa del original y se usa como
- * transparencia de un rectangulo blanco. Asi la imagen social y la pantalla de
- * carga muestran exactamente la misma marca.
+ * El logo, en blanco. Ninguna variante de assets trae el texto en claro: la
+ * palabra PSYCONOVA es azul oscuro, pensada para fondo blanco, e ilegible
+ * sobre este degradado. La pantalla de carga resuelve lo mismo con
+ * `filter: brightness(0) invert(1)`; aqui se hace la operacion equivalente:
+ * se toma solo el canal alfa del original y se usa como transparencia de un
+ * rectangulo blanco, asi la imagen social y la pantalla de carga muestran
+ * exactamente la misma marca.
  */
 const LADO = 300;
 

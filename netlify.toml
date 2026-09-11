@@ -1,8 +1,8 @@
 # Configuración de despliegue en Netlify.
 #
-# OJO con la estructura del repositorio: la app de Angular no está en la raíz,
-# vive en psyconova-frontend/. Por eso se fija `base`, y TODAS las demás rutas
-# de este archivo se resuelven a partir de ahí, no de la raíz del repositorio.
+# La app de Angular no está en la raíz: vive en psyconova-frontend/. Por eso
+# se fija `base`, y todas las demás rutas de este archivo se resuelven a
+# partir de ahí, no de la raíz del repositorio.
 
 [build]
   base = "psyconova-frontend/"
@@ -29,10 +29,10 @@
 #   /politica-de-privacidad  -> politica-de-privacidad/index.html
 #   /terminos-de-uso         -> terminos-de-uso/index.html
 #
-# Como no queda ninguna ruta que dependa del router para resolverse, ya no
-# hace falta la regla que servía index.html para todo. Antes cualquier
-# dirección inventada devolvía la portada con código 200: para un buscador,
-# infinitas páginas duplicadas de la portada compitiendo entre sí.
+# Como ninguna ruta depende del router para resolverse, no hay regla comodín
+# que sirva index.html para todo: una así devolvería la portada con código
+# 200 para cualquier dirección inventada, que para un buscador son infinitas
+# páginas duplicadas compitiendo entre sí.
 #
 # Netlify sirve automáticamente el archivo 404.html de la raíz, con código
 # 404 de verdad, para lo que no encuentre. Ese archivo lo genera el postbuild
@@ -50,9 +50,9 @@
 # Van aquí y no en el HTML porque varias sólo funcionan como cabecera real:
 # un <meta> equivalente lo ignora el navegador.
 #
-# La CSP NO está aquí a propósito. Se añade en el paso siguiente, después de
-# inventariar exactamente qué carga el sitio y de pasar por modo informe:
-# escrita a ciegas es la forma más fácil de romper algo en silencio.
+# La Content Security Policy no está aquí: la genera scripts/generate-csp.mjs
+# en el postbuild a partir del HTML construido, con los hashes de los scripts
+# en línea recalculados en cada build.
 # ─────────────────────────────────────────────────────────────────────────
 
 [[headers]]
@@ -78,8 +78,8 @@
     # alguien que consulta una web de salud mental sí es un dato sensible.
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-    # El sitio no pide ninguna de estas capacidades — se comprobó en el código,
-    # no hay una sola llamada a navigator.geolocation ni a mediaDevices.
+    # El sitio no usa ninguna de estas capacidades: no hay llamadas a
+    # navigator.geolocation ni a mediaDevices.
     # Declararlas vacías impide que un script inyectado las pida en nuestro
     # nombre, y que el mapa de Google intente pedir la ubicación.
     #
@@ -93,11 +93,11 @@
 
     # HTTPS obligatorio durante un año, subdominios incluidos.
     #
-    # OJO, esto es difícil de revertir: el navegador lo recuerda hasta que
-    # caduca, aunque se quite la cabecera. Con `includeSubDomains`, cualquier
-    # subdominio futuro tendrá que servir HTTPS o será inalcanzable. Hoy no hay
-    # ninguno con servidor web —send.psyconova.com sólo tiene registros de
-    # correo— y Netlify da certificado a todo lo que se le añada.
+    # Difícil de revertir: el navegador lo recuerda hasta que caduca, aunque
+    # se quite la cabecera. Con `includeSubDomains`, cualquier subdominio
+    # tendrá que servir HTTPS o será inalcanzable. El único subdominio,
+    # send.psyconova.com, sólo tiene registros de correo, y Netlify da
+    # certificado a todo lo que se le añada.
     #
     # Para dar marcha atrás: poner max-age=0, desplegar, y esperar a que los
     # navegadores que ya lo vieron vuelvan a pasar por el sitio.
@@ -130,8 +130,8 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Las imágenes tampoco llevan hash y sí se reemplazan de vez en cuando —la
-# foto de la psicóloga, las ilustraciones—. Una semana es suficiente para no
+# Las imágenes tampoco llevan hash y sí se reemplazan de vez en cuando (la
+# foto del equipo, las ilustraciones). Una semana es suficiente para no
 # volver a pedirlas en cada visita, y corto para que un cambio se vea pronto.
 [[headers]]
   for = "/assets/images/*"

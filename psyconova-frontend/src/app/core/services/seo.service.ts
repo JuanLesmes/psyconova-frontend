@@ -3,20 +3,13 @@ import { Meta, Title } from '@angular/platform-browser';
 import { PageSeo, SITE, absoluteUrl } from '../config/site.config';
 
 /**
- * Deja una página lista para buscadores y redes sociales.
+ * Deja una página lista para buscadores y redes sociales en una sola llamada.
  *
- * ── Por qué una sola llamada y no etiquetas sueltas ──
- *
- * Repartir el SEO entre index.html, las rutas y cada componente es como se
- * llega al fallo más común de todos: que todas las páginas declaren el mismo
- * canonical. El canonical suele quedarse estático en index.html mientras el
- * framework sólo actualiza el título, y entonces cada página le está diciendo
- * al buscador «ignórame, la buena es la portada». Es peor que no tener
- * canonical.
- *
- * Aquí `apply()` pone TODO: título, descripción, canonical, Open Graph,
- * Twitter Card y robots. Si una página lo llama, está completa; si no lo
- * llama, le falta todo. No hay estados a medias.
+ * `apply()` pone todo: título, descripción, canonical, Open Graph, Twitter
+ * Card y robots. Si una página lo llama está completa; si no, le falta todo.
+ * Repartir el SEO entre index.html y cada componente lleva al fallo más
+ * común: un canonical estático en index.html que hace que cada página le diga
+ * al buscador «ignórame, la buena es la portada», peor que no tener canonical.
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -59,16 +52,12 @@ export class SeoService {
     this.setCanonical(url);
 
     /**
-     * Los datos estructurados se retiran en cada página.
-     *
-     * Sólo la portada los pone, justo después de esta llamada. Sin este
-     * borrado, al navegar de la portada a los términos sin recargar, la ficha
-     * de negocio se quedaría pegada al documento y el buscador vería una
-     * página legal declarándose consultorio de psicología.
-     *
-     * En el HTML prerenderizado no pasaría —cada página se genera en limpio—
-     * pero sí a quien navegue por el sitio, y también a los rastreadores que
-     * ejecutan JavaScript.
+     * Los datos estructurados se borran en cada página. Sólo la portada los
+     * pone, justo después de esta llamada. Sin este borrado, al navegar de la
+     * portada a los términos sin recargar, la ficha de negocio se quedaría
+     * pegada al documento y un rastreador que ejecute JavaScript vería una
+     * página legal declarándose consultorio de psicología. En el HTML
+     * prerenderizado no ocurre, porque cada página se genera en limpio.
      */
     this.clearBusinessData();
   }

@@ -1,21 +1,15 @@
 /**
- * Destino al que se envían las consultas del formulario de contacto.
- *
- * Mientras esté vacío, el formulario NO envía nada y muestra un error
- * explícito en vez de fingir que la consulta llegó.
- *
- * Opciones para llenarlo, según dónde se despliegue el sitio:
- *  - Función serverless propia:  '/.netlify/functions/contact'  o  '/api/contact'
- *  - Web3Forms:                  'https://api.web3forms.com/submit'
- *                                (requiere enviar también su access_key)
- *  - Backend propio de PSYCONOVA: 'https://api.psyconova.com/contacto'
+ * Destino de las consultas del formulario de contacto. Mientras esté vacío,
+ * el formulario no envía nada y muestra un error explícito en vez de fingir
+ * que la consulta llegó. Otras opciones según el despliegue: Web3Forms
+ * ('https://api.web3forms.com/submit', más su access_key) o un backend propio.
  */
 export const CONTACT_ENDPOINT = '/.netlify/functions/contact';
 
 /**
  * Datos de contacto públicos. Viven aquí y no en los archivos de traducción
- * porque no se traducen, y en un solo sitio para que no vuelva a pasar lo del
- * teléfono de ejemplo repetido en tres plantillas.
+ * porque no se traducen, y en un solo sitio para que ninguna plantilla se
+ * quede con un dato distinto al de las demás.
  */
 export const CONTACT_INFO = {
   whatsapp: '+57 305 373 2503',
@@ -31,12 +25,10 @@ export const CONTACT_FALLBACK_EMAIL = CONTACT_INFO.email;
 export const PRIVACY_POLICY_URL = '/politica-de-privacidad';
 
 /**
- * Líneas de atención en crisis que se muestran sobre el formulario.
- *
- * Los números son de Colombia y están verificados contra las fuentes oficiales
- * (minsalud.gov.co y saludcapital.gov.co) en agosto de 2026. Antes de cambiar
- * cualquiera de estos datos, confírmalo con la fuente oficial: un número
- * equivocado en una línea de crisis es peor que no tener ninguna.
+ * Líneas de atención en crisis que se muestran sobre el formulario. Números
+ * de Colombia, verificados contra las fuentes oficiales (minsalud.gov.co y
+ * saludcapital.gov.co) en agosto de 2026. Cualquier cambio se confirma con la
+ * fuente oficial: un número equivocado en una línea de crisis es peor que ninguno.
  */
 export const CRISIS_LINES = [
   { number: '106', tel: 'tel:106', key: 'psychological' },
@@ -64,14 +56,9 @@ export const LOCATION = {
 };
 
 /**
- * Clave del consentimiento del mapa en localStorage.
- *
- * El mapa de Google carga recursos de google.com que instalan cookies, así que
- * NO se carga hasta que el visitante lo autoriza explícitamente. Un aviso que
- * aparece después de que la cookie ya se puso no cumple con nada: el bloqueo
- * previo es lo único que sirve.
- *
- * Si algún día se cambia el texto del aviso de forma sustancial, sube la
- * versión de la clave para volver a pedir el consentimiento.
+ * Clave del consentimiento del mapa en localStorage. El mapa de Google instala
+ * cookies de google.com, así que no se carga hasta que el visitante lo autoriza:
+ * un aviso posterior a la cookie no cumple con nada. Si el texto del aviso
+ * cambia de forma sustancial, sube la versión para volver a pedir el consentimiento.
  */
 export const MAP_CONSENT_KEY = 'psyconova.mapConsent.v1';

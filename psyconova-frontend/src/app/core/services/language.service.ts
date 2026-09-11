@@ -8,12 +8,10 @@ export type Language = (typeof LANGUAGES)[number];
 const STORAGE_KEY = 'psyconova.language';
 
 /**
- * Español por defecto, y también el idioma con el que se prerenderiza.
- *
- * Al generar el HTML en la compilación no hay navegador ni preferencia
- * guardada, así que todas las páginas salen en español. Es lo correcto para
- * un sitio colombiano: es lo que verán los buscadores y lo que se lee al
- * compartir el enlace.
+ * Español por defecto, y también el idioma con el que se prerenderiza: al
+ * generar el HTML no hay navegador ni preferencia guardada, así que todas las
+ * páginas salen en español. Es lo que ven los buscadores y lo que se lee al
+ * compartir el enlace, lo correcto para un sitio colombiano.
  */
 export const DEFAULT_LANGUAGE: Language = 'ES';
 
@@ -46,23 +44,14 @@ export function resolveInitialLanguage(): Language {
 }
 
 /**
- * Fuente única del idioma activo del sitio.
+ * Fuente única del idioma activo. El navbar y la portada comparten este
+ * servicio, así que cambiar el idioma en un selector se refleja en el otro.
  *
- * El navbar y la portada comparten este servicio, de modo que cambiar el
- * idioma en cualquiera de los dos selectores se refleja en el otro.
- *
- * ── Por qué NO lee la preferencia al construirse ──
- *
- * Con hidratación, lo primero que pinta el navegador tiene que coincidir
- * exactamente con el HTML prerenderizado, que siempre viene en español. Si
- * el servicio arrancara leyendo `localStorage`, alguien con el inglés
- * guardado vería el primer render en inglés sobre un HTML en español:
- * Angular detecta el desajuste, descarta lo prerenderizado y lo reconstruye
- * entero. Eso es exactamente el salto de maquetación que el prerenderizado
- * venía a evitar.
- *
- * Así que arranca en español —igual que el servidor— y cambia al idioma
- * guardado justo después, ya hidratado.
+ * No lee la preferencia al construirse: con hidratación, el primer pintado
+ * tiene que coincidir con el HTML prerenderizado, que siempre viene en
+ * español. Si arrancara en el idioma guardado, Angular detectaría el desajuste
+ * y reconstruiría la página entera. Por eso arranca en español, igual que el
+ * servidor, y cambia al idioma guardado justo después, ya hidratado.
  */
 @Injectable({ providedIn: 'root' })
 export class LanguageService {

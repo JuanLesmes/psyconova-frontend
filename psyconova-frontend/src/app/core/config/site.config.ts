@@ -1,14 +1,11 @@
 /**
- * Datos del sitio que aparecen en varios sitios a la vez.
+ * Datos del sitio que aparecen en varios lugares a la vez.
  *
- * ── Por qué el dominio vive aquí y en ningún otro lado ──
- *
- * Normalmente el dominio acaba copiado en index.html, en el sitemap y en
- * robots.txt. Al cambiarlo, alguno se queda atrás — y un sitemap con el
- * dominio viejo le entrega al buscador una lista de URLs muertas.
- *
- * Aquí es la única copia. El sitemap y el robots se GENERAN a partir de esta
- * constante en el `prebuild`, así que no pueden desincronizarse.
+ * El dominio vive aquí y en ningún otro lado: el sitemap y el robots.txt se
+ * generan a partir de esta constante en el `prebuild`, así que no pueden
+ * desincronizarse. Con copias sueltas en index.html, sitemap y robots, alguna
+ * se quedaría atrás y un sitemap con el dominio viejo le entregaría al
+ * buscador una lista de URLs muertas.
  */
 export const SITE = {
   /** Sin barra final: las rutas la ponen. */
@@ -39,12 +36,9 @@ export interface PageSeo {
 }
 
 /**
- * Las páginas del sitio, en un solo sitio.
- *
- * De aquí salen tres cosas: los metadatos que aplica cada componente, las
- * rutas que se prerenderizan y las URLs del sitemap. Añadir una página aquí
- * la mete en los tres a la vez, que es justo lo que evita que alguien se
- * olvide de una.
+ * Las páginas del sitio, en un solo lugar. De aquí salen los metadatos que
+ * aplica cada componente, las rutas que se prerenderizan y las URLs del
+ * sitemap: añadir una página aquí la mete en los tres a la vez.
  */
 export const PAGES = {
   home: {

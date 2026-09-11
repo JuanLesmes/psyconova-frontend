@@ -1,21 +1,12 @@
 /**
  * Genera la Content Security Policy a partir del HTML ya construido.
  *
- * ── Por que se genera y no se escribe a mano ──
- *
- * La CSP autoriza los scripts en linea por su hash. Angular genera dos de
- * ellos —los del reemplazo de eventos— y su contenido cambia entre versiones
- * del framework. Un hash escrito a mano se queda obsoleto en la siguiente
- * actualizacion y el sitio deja de arrancar, sin que nadie lo note hasta que
- * alguien lo abre.
- *
- * ── Por que del HTML CONSTRUIDO y no del fuente ──
- *
- * El build transforma el HTML: minifica, inserta los scripts de Angular e
- * incrusta el CSS critico. Un hash calculado sobre src/index.html no coincide
- * con nada de lo que acaba desplegandose.
- *
- * Corre en el `postbuild`, despues de copy-404.mjs.
+ * La CSP autoriza los scripts en linea por su hash. Angular genera dos (los
+ * del reemplazo de eventos) y su contenido cambia entre versiones del
+ * framework: un hash escrito a mano queda obsoleto en la siguiente
+ * actualizacion y el sitio deja de arrancar sin que nadie lo note. Se lee el
+ * HTML construido y no el fuente porque el build minifica, inserta los scripts
+ * de Angular e incrusta el CSS critico. Corre en el `postbuild`, tras copy-404.mjs.
  */
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, readdir } from 'node:fs/promises';
@@ -27,16 +18,11 @@ const CUENTOS = 'assets/cuentos';
 /**
  * Hash de un fragmento en linea, tal y como lo calcula el navegador.
  *
- * ── Por que se normalizan los saltos de linea ──
- *
- * El analizador de HTML convierte CRLF en LF antes de entregarle el contenido
- * al motor de scripts, asi que el navegador hashea la version con LF. Un
- * archivo guardado en Windows llega con CRLF y produce un hash distinto:
- * las-manadas.html pasa de 61.995 a 61.004 caracteres al normalizarlo, y solo
- * el segundo coincide.
- *
- * Sin esto la politica se ve correcta, se despliega, y el cuento deja de
- * funcionar para todo el mundo sin un solo aviso.
+ * Se normalizan los saltos de linea porque el analizador de HTML convierte
+ * CRLF en LF y solo entonces entrega el contenido al motor de scripts, asi que
+ * el navegador hashea la version con LF. Un archivo guardado en Windows llega
+ * con CRLF y daria un hash distinto: la politica se veria correcta, se
+ * desplegaria, y el cuento dejaria de funcionar sin un solo aviso.
  */
 const sha256 = contenido =>
   `'sha256-${createHash('sha256')
@@ -44,7 +30,7 @@ const sha256 = contenido =>
     .digest('base64')}'`;
 
 /**
- * Scripts en linea que el navegador EJECUTA.
+ * Scripts en linea que el navegador ejecuta.
  *
  * Se excluyen los que llevan `src` (esos los cubre 'self') y los bloques de
  * datos como application/ld+json o application/json: el navegador no los
@@ -60,24 +46,18 @@ const hashesDeScripts = html => {
  * Manejadores escritos como atributo: onload, onclick y compañia.
  *
  * Angular incrusta el CSS critico y difiere la hoja completa con
- *
- *   <link rel="stylesheet" media="print" onload="this.media='all'">
- *
- * Sin autorizar ese onload, la hoja se queda en `media="print"` y NUNCA se
- * aplica: el sitio sale a medio maquetar y no hay ningun error que lo diga.
- * Es la trampa mas silenciosa de toda la CSP.
- *
- * Autorizarlos exige `'unsafe-hashes'`, que suena peor de lo que es: permite
- * ejecutar exactamente estos fragmentos como atributo, nada mas.
+ * `<link rel="stylesheet" media="print" onload="this.media='all'">`. Sin
+ * autorizar ese onload, la hoja se queda en `media="print"` y nunca se aplica:
+ * el sitio sale a medio maquetar y ningun error lo dice. Autorizarlos exige
+ * `'unsafe-hashes'`, que solo permite ejecutar exactamente estos fragmentos
+ * como atributo, nada mas.
  */
 const hashesDeAtributos = html => {
   /**
-   * Las comillas de dentro y las de fuera se tratan por separado.
-   *
-   * El primer intento usaba `["']([^"']+)["']`, que sobre
-   * `onload="this.media='all'"` capturaba solo `this.media=`: la clase negada
-   * corta en la primera comilla simple, que aqui es contenido, no delimitador.
-   * El hash salia de un fragmento que no existe y el navegador lo rechazaba.
+   * Las comillas de dentro y las de fuera se tratan por separado. Una clase
+   * negada `[^"']+` cortaria `onload="this.media='all'"` en la primera comilla
+   * simple, que aqui es contenido y no delimitador: el hash saldria de un
+   * fragmento que no existe y el navegador lo rechazaria.
    */
   const dobles = [...html.matchAll(/\son[a-z]+="([^"]*)"/g)].map(m => m[1]);
   const simples = [...html.matchAll(/\son[a-z]+='([^']*)'/g)].map(m => m[1]);
@@ -114,12 +94,10 @@ const app = await recoger(deLaApp);
 const cuento = await recoger(delCuento);
 
 /**
- * Directivas comunes.
- *
- * `style-src 'unsafe-inline'` es la concesion inevitable: Angular inyecta los
- * estilos de cada componente en tiempo de ejecucion y no hay forma de saber
- * sus hashes de antemano. Es la mas benigna de las concesiones — un estilo
- * inyectado puede afear la pagina, no ejecutar codigo.
+ * Directivas comunes. `style-src 'unsafe-inline'` es la concesion inevitable:
+ * Angular inyecta los estilos de cada componente en tiempo de ejecucion y no
+ * hay forma de saber sus hashes de antemano. Es la mas benigna de las
+ * concesiones: un estilo inyectado puede afear la pagina, no ejecutar codigo.
  */
 const comunes = [
   `default-src 'self'`,
@@ -142,30 +120,14 @@ const comunes = [
 ];
 
 /**
- * ── Dos avisos de Lighthouse que se dejan a proposito ──
+ * Dos avisos de Lighthouse que se dejan a proposito.
  *
- * 1. «'unsafe-hashes' permite ejecutar manejadores en linea» (severidad alta).
- *
- *    Cierto en general, pero aqui la excepcion es un unico hash para un unico
- *    valor: `this.media='all'`. Para aprovecharlo habria que inyectar un
- *    elemento con exactamente ese atributo, y lo unico que consigue es cambiar
- *    el `media` de una hoja de estilos.
- *
- *    La alternativa seria apagar el CSS critico en linea (inlineCritical), y
- *    eso empeora el primer pintado a cambio de cerrar una puerta que no lleva
- *    a ninguna parte.
- *
- * 2. «Considera anadir 'unsafe-inline' para navegadores antiguos» (media).
- *
- *    NO se anade. El consejo vale para sitios que deben funcionar en
- *    navegadores anteriores a 2016, que son los que no entienden hashes. Esta
- *    aplicacion es Angular 21: esos navegadores no la ejecutan de ninguna
- *    manera, asi que no ganarian nada.
- *
- *    Y tendria un coste real: si algun dia un hash dejara de coincidir, en vez
- *    de fallar de forma ruidosa la politica pasaria a permitir cualquier
- *    script en linea, en silencio. Preferimos que se rompa a que se afloje sin
- *    que nadie se entere.
+ * 1. «'unsafe-hashes' permite manejadores en linea»: aqui es un unico hash
+ *    para `this.media='all'`, y lo unico que consigue es cambiar el `media` de
+ *    una hoja. La alternativa (apagar inlineCritical) empeora el primer pintado.
+ * 2. «Anadir 'unsafe-inline' para navegadores antiguos»: no se anade. Esos
+ *    navegadores no ejecutan Angular 21 de ninguna manera, y si un hash dejara
+ *    de coincidir la politica pasaria a permitir cualquier script en silencio.
  */
 const politicaApp = [
   ...comunes,

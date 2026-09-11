@@ -1,19 +1,11 @@
 /**
  * Cuentos terapéuticos con acceso por palabra clave.
  *
- * ⚠️ LEE ESTO ANTES DE CONFIAR EN LA PALABRA CLAVE
- *
- * Esta comprobación ocurre en el navegador, así que NO es control de acceso
- * real: alguien con conocimientos puede abrir las herramientas de desarrollo,
- * leer las claves de aquí y entrar sin ellas, o pedir el archivo directamente
- * por su URL.
- *
- * Sirve para lo que probablemente se busca — que el cuento se entregue en
- * consulta y no quede suelto para cualquiera que pase por el sitio — pero no
- * para proteger algo que de verdad no pueda verse.
- *
- * Si hace falta control real, el camino es una función serverless que valide
- * la clave en el servidor y devuelva el cuento sólo entonces.
+ * La comprobación ocurre en el navegador, así que no es control de acceso
+ * real: quien abra las herramientas de desarrollo puede leer las claves o
+ * pedir el archivo por su URL. Sirve para que el cuento se entregue en consulta
+ * y no quede suelto para cualquiera que pase por el sitio. Si hace falta
+ * control real, el camino es una función serverless que valide la clave.
  */
 export const TALE = {
   /** Ruta del archivo dentro de assets. */
@@ -21,14 +13,14 @@ export const TALE = {
 
   /**
    * Palabras clave aceptadas. Se comparan sin tildes, sin espacios sobrantes
-   * y sin distinguir mayúsculas, para que escribirla mal por poco no frustre
-   * a una familia. Para cambiarlas, edita esta lista.
+   * y sin distinguir mayúsculas, para que un error pequeño al escribirla no
+   * frustre a una familia.
    */
   codes: ['manada', 'las manadas'],
 };
 
 /**
- * Normaliza lo que escribe el usuario antes de comparar.
+ * Normaliza lo que escribe el usuario para poder compararlo.
  *
  * `\p{Diacritic}` con la bandera `u` quita los acentos que NFD acaba de
  * separar de su letra. Se usa esta forma y no un rango de caracteres porque
