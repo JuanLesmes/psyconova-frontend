@@ -1,39 +1,34 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, HostListener, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Language, LanguageService } from '../../../core/services/language.service';
-import { FocusTrapDirective } from '../../../shared/directives/focus-trap.directive';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { MenuBar } from '../../../shared/components/menu-bar/menu-bar';
+import { MenuOverlay } from '../../../shared/components/menu-overlay/menu-overlay';
 
+/**
+ * Barra fija que aparece al salir del hero.
+ *
+ * Sobre el hero se oculta, porque la portada ya trae su propia barra
+ * (`HeroSection`). Más abajo aparece al desplazarse hacia arriba y se esconde
+ * al bajar. En las páginas sin hero, las legales y el 404, es la única
+ * navegación y se muestra siempre.
+ */
 @Component({
   selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe, FocusTrapDirective],
+  imports: [MenuBar, MenuOverlay],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar implements OnInit {
-  private readonly languageService = inject(LanguageService);
   private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
 
-  menuOpen = false;
-  readonly languages = this.languageService.languages;
-  readonly activeLanguage = this.languageService.active;
+  readonly menuOpen = signal(false);
+  readonly visible = signal(false);
 
-  isNavbarVisible = false;
   private lastScrollY = 0;
 
   /**
-   * La barra se oculta sobre el hero, donde ya hay un menú propio, y reaparece
-   * al salir de él. Pero eso sólo se decidía dentro del manejador de scroll.
-   *
-   * En una página sin hero —las legales y el 404— nadie disparaba ese
-   * manejador hasta que el visitante se desplazaba, así que la barra se
-   * quedaba invisible al entrar: sin menú, sin logo y sin selector de idioma.
-   * Y sus botones seguían recibiendo el foco con el teclado, invisibles.
-   *
-   * Calcularlo también al arrancar deja cada página con el estado correcto
-   * desde el primer instante.
+   * La visibilidad se calcula también al arrancar, no sólo al desplazarse.
+   * En una página sin hero nadie dispara el manejador de scroll hasta que el
+   * visitante se mueve, y la barra quedaría invisible al entrar.
    */
   ngOnInit(): void {
     if (!this.esNavegador) return;
@@ -41,16 +36,12 @@ export class Navbar implements OnInit {
   }
 
   toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-    this.isNavbarVisible = true;
+    this.menuOpen.update(abierto => !abierto);
+    this.visible.set(true);
   }
 
   closeMenu(): void {
-    this.menuOpen = false;
-  }
-
-  setLanguage(language: Language): void {
-    this.languageService.use(language);
+    this.menuOpen.set(false);
   }
 
   @HostListener('window:scroll')
@@ -62,15 +53,15 @@ export class Navbar implements OnInit {
     const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
     const hero = document.getElementById('home');
 
-    if (this.menuOpen) {
-      this.isNavbarVisible = true;
+    if (this.menuOpen()) {
+      this.visible.set(true);
       this.lastScrollY = currentScrollY;
       return;
     }
 
     // Sin hero no hay nada que ceder: la barra es la única navegación.
     if (!hero) {
-      this.isNavbarVisible = true;
+      this.visible.set(true);
       this.lastScrollY = currentScrollY;
       return;
     }
@@ -79,7 +70,7 @@ export class Navbar implements OnInit {
     const isInsideHero = heroRect.bottom > 0;
 
     if (isInsideHero) {
-      this.isNavbarVisible = false;
+      this.visible.set(false);
       this.lastScrollY = currentScrollY;
       return;
     }
@@ -88,9 +79,9 @@ export class Navbar implements OnInit {
     const scrollingUp = currentScrollY < this.lastScrollY - 4;
 
     if (scrollingDown) {
-      this.isNavbarVisible = false;
+      this.visible.set(false);
     } else if (scrollingUp) {
-      this.isNavbarVisible = true;
+      this.visible.set(true);
     }
 
     this.lastScrollY = currentScrollY;

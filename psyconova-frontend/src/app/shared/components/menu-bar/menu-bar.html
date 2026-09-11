@@ -1,0 +1,44 @@
+<button
+  class="menu-bar__toggle"
+  [class.is-hidden]="open()"
+  type="button"
+  [attr.aria-label]="(open() ? 'nav.closeMenu' : 'nav.openMenu') | translate"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="menuId()"
+  (click)="toggled.emit()"
+>
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<a
+  class="menu-bar__brand"
+  routerLink="/"
+  fragment="home"
+  [attr.aria-label]="'nav.goHome' | translate"
+>
+  <!-- El enlace ya lleva su nombre accesible; la imagen queda decorativa. -->
+  <img
+    src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
+    width="400"
+    height="400"
+    alt=""
+    class="menu-bar__brand-image"
+  >
+</a>
+
+<div class="menu-bar__languages">
+  @for (language of languages; track language) {
+    <button
+      type="button"
+      class="menu-bar__language"
+      [class.is-active]="activeLanguage() === language"
+      [attr.aria-pressed]="activeLanguage() === language"
+      [attr.lang]="language.toLowerCase()"
+      (click)="setLanguage(language)"
+    >
+      {{ language }}
+    </button>
+  }
+</div>

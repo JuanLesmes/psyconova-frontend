@@ -1,0 +1,27 @@
+<div
+  class="menu-overlay"
+  [class.is-open]="open()"
+  [id]="menuId()"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'nav.menuLabel' | translate"
+  [appFocusTrap]="open()"
+  (escapePressed)="closed.emit()"
+>
+  <button
+    class="menu-overlay__back"
+    type="button"
+    [attr.aria-label]="'nav.closeMenu' | translate"
+    (click)="closed.emit()"
+  >
+    <span aria-hidden="true">←</span>
+  </button>
+
+  <nav class="menu-overlay__nav">
+    @for (link of links; track link.fragment) {
+      <a routerLink="/" [fragment]="link.fragment" (click)="closed.emit()">
+        {{ link.key | translate }}
+      </a>
+    }
+  </nav>
+</div>

@@ -1,0 +1,118 @@
+/* La barra ocupa todo el alto de su contenedor; los tres controles se
+   centran en él con `top: 50%`. El contenedor decide dónde está la barra
+   (fija en pantalla o absoluta sobre el hero) y cuánto mide. */
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+}
+
+.menu-bar__toggle,
+.menu-bar__brand,
+.menu-bar__languages {
+  position: absolute;
+  top: 50%;
+  z-index: 100;
+  pointer-events: auto;
+  transition:
+    transform 0.32s ease,
+    opacity 0.32s ease,
+    visibility 0.32s ease;
+}
+
+.menu-bar__toggle {
+  left: 22px;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  appearance: none;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.menu-bar__toggle span {
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--color-primary-dark);
+}
+
+.menu-bar__brand {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.menu-bar__brand-image {
+  display: block;
+  height: 76px;
+  width: auto;
+  max-width: 460px;
+  object-fit: contain;
+}
+
+.menu-bar__languages {
+  right: 22px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.menu-bar__language {
+  border: 0;
+  background: transparent;
+  appearance: none;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(22, 32, 90, 0.42);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.menu-bar__language.is-active {
+  color: var(--color-primary-dark);
+}
+
+/* Oculto de verdad: `visibility: hidden` lo saca del orden de tabulación.
+   Con sólo opacidad, los tres controles seguirían recibiendo el foco
+   invisibles. */
+.menu-bar__toggle.is-hidden,
+:host(.is-collapsed) .menu-bar__toggle,
+:host(.is-collapsed) .menu-bar__brand,
+:host(.is-collapsed) .menu-bar__languages {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+:host(.is-collapsed) .menu-bar__toggle,
+:host(.is-collapsed) .menu-bar__languages {
+  transform: translateY(calc(-50% - 28px));
+}
+
+:host(.is-collapsed) .menu-bar__brand {
+  transform: translate(-50%, calc(-50% - 28px));
+}
+
+@media (max-width: 768px) {
+  .menu-bar__brand-image {
+    height: 60px;
+    max-width: 320px;
+  }
+
+  .menu-bar__language {
+    font-size: 0.8rem;
+  }
+}

@@ -1,40 +1,33 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Language, LanguageService } from '../../../../core/services/language.service';
-import { FocusTrapDirective } from '../../../../shared/directives/focus-trap.directive';
+import { MenuBar } from '../../../../shared/components/menu-bar/menu-bar';
+import { MenuOverlay } from '../../../../shared/components/menu-overlay/menu-overlay';
 
+/**
+ * Portada. Lleva su propia barra de menú porque la barra fija (`Navbar`) se
+ * oculta mientras el hero está en pantalla.
+ */
 @Component({
   selector: 'app-hero-section',
-  standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe, FocusTrapDirective],
+  imports: [TranslatePipe, MenuBar, MenuOverlay],
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.scss',
 })
 export class HeroSection {
-  private readonly languageService = inject(LanguageService);
-
-  menuOpen = false;
-  readonly languages = this.languageService.languages;
-  readonly activeLanguage = this.languageService.active;
+  readonly menuOpen = signal(false);
 
   toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
+    this.menuOpen.update(abierto => !abierto);
   }
 
   closeMenu(): void {
-    this.menuOpen = false;
+    this.menuOpen.set(false);
   }
 
   scrollTo(id: string): void {
-    this.menuOpen = false;
+    this.menuOpen.set(false);
     setTimeout(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 80);
-  }
-
-  setLanguage(language: Language): void {
-    this.languageService.use(language);
   }
 }
