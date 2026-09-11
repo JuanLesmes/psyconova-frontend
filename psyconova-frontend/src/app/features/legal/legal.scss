@@ -17,9 +17,9 @@
 /* ── Aviso de borrador ───────────────────────────────── */
 
 /*
-  Se queda visible hasta que la abogada valide el texto. Si el sitio saliera
-  a producción antes de esa revisión, el visitante tiene que poder ver que
-  este documento todavía no es definitivo.
+  Se queda visible mientras el texto esté pendiente de validación jurídica. Si
+  el sitio saliera a producción sin esa revisión, el visitante tiene que poder
+  ver que este documento todavía no es definitivo.
   Para quitarlo: borra este bloque del HTML de ambas páginas.
 */
 .legal__draft {
@@ -138,22 +138,6 @@
 
 .legal__body a:hover {
   color: #19206d;
-}
-
-/* Bloque para lo que la abogada debe definir */
-.legal__todo {
-  margin: 0.4rem 0 1.2rem;
-  padding: 0.8rem 1.1rem;
-  border-radius: 12px;
-  border: 1px dashed rgba(123, 105, 231, 0.45);
-  background: rgba(123, 105, 231, 0.06);
-  font-size: 0.87rem;
-  line-height: 1.65;
-  color: #5f677e;
-}
-
-.legal__todo strong {
-  color: #7b69e7;
 }
 
 /* Tabla de datos recogidos */
