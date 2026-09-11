@@ -15,15 +15,15 @@ Los números:
 
 | | Usos |
 |---|---|
-| `var(--color-*)` dentro de componentes | **11** |
-| Colores escritos a mano (`#19206d`, `#72dfd1`…) | **160** |
+| `var(--color-*)` dentro de componentes | **7** |
+| Colores escritos a mano (`#19206d`, `#72dfd1`…) | **173** |
 
 Y los valores divergen:
 
 | Token | Valor declarado | Color realmente usado | ¿Coinciden? |
 |---|---|---|---|
-| `--color-primary-dark` | `#16205A` | `#19206d` (34 usos) | No |
-| `--color-primary` | `#67CECF` | `#72dfd1` (24 usos) | No |
+| `--color-primary-dark` | `#16205A` | `#19206d` (39 usos) | No |
+| `--color-primary` | `#67CECF` | `#72dfd1` (25 usos) | No |
 | `--color-accent-soft` | `#BB99E7` | `#c8b2f7` (10 usos) | No |
 | `--color-text-soft` | `#51608d` | `#5f677e` (11 usos) | No |
 | `--color-accent` | `#67E5BF` | sólo en el fondo del hero | Parcial |
@@ -32,36 +32,23 @@ Y los valores divergen:
 alguien lo intenta esperando un cambio global, no pasará casi nada. La paleta que manda es
 la de la tabla siguiente.
 
-Las tipografías sí van por variable (18 usos de `--font-body` y `--font-display`, ninguno
+Las tipografías sí van por variable (19 usos de `--font-body` y `--font-display`, ninguno
 escrito a mano), así que ahí el sistema funciona.
 
-Unificar esto está propuesto como mejora técnica (P-11 en [PROPUESTAS](./PROPUESTAS.md)),
-pero mientras no se haga: **al escribir estilos nuevos, usa los colores de la tabla de
-abajo, no los tokens.** Es preferible ser consistente con lo que hay que crear un tercer
-sistema.
+Unificar los tokens con la paleta real es una tarea pendiente. Mientras no se haga: **al
+escribir estilos nuevos, usa los colores de la tabla de abajo, no los tokens.** Es
+preferible ser consistente con lo que hay que crear un tercer sistema.
 
 ## La paleta real
-
-> **📊 GRÁFICO G-09 — Paleta de color real y dónde se usa cada tono**
-> **Va aquí:** justo debajo de este párrafo, sustituyendo o acompañando la tabla.
-> **Tipo:** muestrario de color. Una fila por tono: un cuadrado grande de color, el código
-> hex, el nombre, y a la derecha una lista de dónde se usa.
-> **Debe mostrar:** los ocho colores de la tabla de abajo. Para cada uno, indica sobre qué
-> fondo se usa (claro u oscuro) — es lo que determina si el contraste funciona.
-> **Añade una fila aparte, marcada con un símbolo de advertencia:** el par `#0f8f84` sobre
-> fondo claro, con la nota "contraste 3,7:1 — por debajo del 4,5:1 que exige WCAG AA para
-> texto pequeño".
-> **Estilo:** agrupa visualmente en dos bloques: "para fondos oscuros" y "para fondos
-> claros". Es la distinción que de verdad importa al elegir un color aquí.
 
 | Color | Hex | Nombre de uso | Dónde aparece |
 |---|---|---|---|
 | ⬛ | `#19206d` | Azul tinta | Texto principal, fondos oscuros, base de degradados |
 | 🟦 | `#0d1340` | Azul noche | Fondo oscuro de Servicios, Cuentos y footer |
 | ⬛ | `#0e0a2e` | Casi negro violáceo | Extremos de los degradados oscuros |
-| 🟩 | `#72dfd1` | Turquesa | Acento sobre fondo **oscuro**: insignias, iconos, líneas |
+| 🟩 | `#72dfd1` | Turquesa | Acento sobre fondo **oscuro**: insignias, iconos, líneas, contorno de foco |
 | 🟩 | `#0f8f84` | Verde azulado oscuro | El mismo acento, pero sobre fondo **claro** |
-| 🟪 | `#7b69e7` | Violeta | Acentos secundarios, botones, detalles del correo |
+| 🟪 | `#7b69e7` | Violeta | Acentos secundarios, botones, enlaces, detalles del correo |
 | 🟪 | `#c8b2f7` | Lavanda | Acento suave sobre fondo oscuro, degradados |
 | ⬜ | `#5f677e` | Gris azulado | Texto secundario sobre fondo claro |
 
@@ -72,23 +59,9 @@ las secciones claras usan `#0f8f84`. No es un descuido: es una adaptación consc
 añades un elemento con acento, elige la versión según el fondo.
 
 (La versión oscura, `#0f8f84`, se queda de todos modos en 3,7:1 sobre los fondos claros del
-sitio, que no alcanza el 4,5:1 de WCAG AA para texto pequeño. Está recogido en las
-propuestas como P-08.)
+sitio, que no alcanza el 4,5:1 de WCAG AA para texto pequeño. Es una mejora pendiente.)
 
 ## Ritmo claro-oscuro
-
-> **📊 GRÁFICO G-10 — Ritmo claro-oscuro de las secciones**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** franja vertical continua que represente la página completa, dividida en los
-> siete bloques, cada uno pintado con su degradado real.
-> **Debe mostrar:** la alternancia. De arriba a abajo:
-> `Hero` claro → `Intro` claro → `Servicios` **oscuro** → `Cuentos` **oscuro** →
-> `Equipo` claro → `Contacto` claro → `Footer` **oscuro**.
-> **Anota al lado de cada bloque** su degradado real (los valores están en la tabla de
-> abajo) y el color de acento que le corresponde (`#72dfd1` en los oscuros, `#0f8f84` en los
-> claros).
-> **Estilo:** debe verse como una tira de color continua. El objetivo es que quien lo mire
-> entienda de inmediato la regla "los oscuros van juntos en el medio y al final".
 
 Ninguna sección tiene un fondo plano. Todas se construyen igual: dos o tres degradados
 radiales de color muy tenue superpuestos sobre un degradado lineal vertical.
@@ -114,8 +87,9 @@ es la posición y la opacidad. Esa repetición es lo que da unidad visual al sit
 | Contacto | `#ffffff → #f7f4ff → #ede8ff` | Claro |
 | Footer | `#0d1340 → #080b26` | **Oscuro** |
 | Pantalla de carga | `#0d1340 → #19206d → #0a0826` (145°) | **Oscuro** |
+| Páginas legales y 404 | `#f7f4ff → #ffffff → #f0f8ff` | Claro |
 
-Varias secciones oscuras añaden encima una textura de puntos casi invisible:
+Las dos secciones oscuras añaden encima una textura de puntos casi invisible:
 
 ```scss
 background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
@@ -124,20 +98,29 @@ background-size: 48px 48px;
 
 ## Tipografía
 
-Dos familias, cargadas desde Google Fonts con un `@import` al principio de `styles.scss`:
+Dos familias, **servidas desde el propio dominio** (`src/assets/fonts/`, cuatro archivos
+woff2) y declaradas en `src/styles/_fonts.scss`:
 
 | Variable | Fuente | Pesos | Para qué |
 |---|---|---|---|
-| `--font-display` | **Arimo** | 400, 500, 600, 700 | Títulos y encabezados |
-| `--font-body` | **Roboto** | 300, 400, 500, 700 | Todo lo demás |
+| `--font-display` | **Arimo** | 400 a 700 (fuente variable) | Títulos y encabezados |
+| `--font-body` | **Roboto** | 300 a 900 (fuente variable) | Todo lo demás |
 
-Ambas caen a `Arial, sans-serif` si Google Fonts no responde. Como Arimo es métricamente
-compatible con Arial, la caída es casi imperceptible; con Roboto se nota más.
+Ambas caen a `Arial, sans-serif` mientras la fuente llega (`font-display: swap`). Como
+Arimo es métricamente compatible con Arial, el cambio es casi imperceptible; con Roboto se
+nota más.
 
-**Detalle de rendimiento:** el `@import` de Google Fonts está dentro del CSS, no como
-`<link>` en el `index.html`. Eso significa que el navegador tiene que descargar y analizar
-la hoja de estilos antes de descubrir que necesita las fuentes, lo que retrasa el texto.
-Moverlo a `index.html` con `<link rel="preconnect">` es una mejora de una línea (P-09).
+`_fonts.scss` es un **archivo generado**: lo escribe `scripts/download-fonts.mjs`
+(`npm run fonts:download`) a partir de la respuesta de Google Fonts, sustituyendo las URL
+remotas por las locales y conservando el `unicode-range`. Sólo se descargan los subconjuntos
+`latin` y `latin-ext`; las tildes y la eñe viven en el `latin` básico, así que `latin-ext`
+sólo se pide si aparece un carácter que lo necesite. No lo edites a mano: la siguiente
+ejecución del script lo pisa.
+
+**Detalle de rendimiento:** `index.html` precarga los dos archivos `latin` con
+`<link rel="preload" as="font" crossorigin>`. El atributo `crossorigin` es obligatorio
+aunque el archivo sea propio: las fuentes siempre se piden en modo CORS y, sin él, el
+navegador descarta la precarga y las descarga dos veces.
 
 ### Escala de títulos
 
@@ -154,9 +137,10 @@ Los valores reales que usa el sitio, de mayor a menor:
 | Uso | Valor | En móvil | En escritorio |
 |---|---|---|---|
 | Título del hero | `clamp(4rem, 8vw, 6.7rem)` | 64 px | 107 px |
-| Títulos de sección grandes | `clamp(2.8rem, 6vw, 5.2rem)` | 45 px | 83 px |
+| Títulos de sección grandes y enlaces del menú | `clamp(2.8rem, 6vw, 5.2rem)` | 45 px | 83 px |
 | Títulos de sección medios | `clamp(2.8rem, 4.2vw, 4.4rem)` | 45 px | 70 px |
 | Título global `.section-title` | `clamp(2rem, 4vw, 3.6rem)` | 32 px | 58 px |
+| Título de las páginas legales | `clamp(2rem, 4vw, 2.9rem)` | 32 px | 46 px |
 | Subtítulos | `clamp(2rem, 2.8vw, 2.8rem)` | 32 px | 45 px |
 
 Los títulos llevan siempre `letter-spacing: -0.03em` y `line-height` cercano a 1,04. Es un
@@ -165,22 +149,6 @@ las letras algo apretadas.
 
 ## Anatomía de una sección
 
-> **📊 GRÁFICO G-11 — Anatomía de una sección tipo**
-> **Va aquí:** debajo de este párrafo, antes del bloque de código.
-> **Tipo:** wireframe anotado de una sola sección, con llamadas numeradas.
-> **Debe mostrar:** la estructura que repiten todas las secciones, con el nombre de clase
-> CSS de cada parte.
-> **Partes que hay que etiquetar, de arriba a abajo:**
-> 1. `<section class="xxx" id="ancla">` — el contenedor, con su degradado de fondo.
-> 2. `.xxx::before` — la textura de puntos superpuesta (sólo en secciones oscuras).
-> 3. `.xxx-glow` / `.xxx-ring` — formas decorativas absolutas, siempre con `aria-hidden`.
-> 4. `.xxx-shell` — el contenedor que centra y limita el ancho del contenido.
-> 5. `.xxx-header` — insignia + título + subtítulo. Lleva el atributo `reveal`.
-> 6. El contenido propio de la sección.
-> **Anota el prefijo:** cada sección usa un prefijo de tres o cuatro letras para todas sus
-> clases: `svc-` en Servicios, `ctc-` en Contacto, `story-` en Cuentos, `team-` en Equipo,
-> `intro-` en Intro. Es lo que evita colisiones entre hojas de estilo.
-
 Todas las secciones siguen el mismo esqueleto:
 
 ```html
@@ -188,7 +156,7 @@ Todas las secciones siguen el mismo esqueleto:
   <div class="svc-glow" aria-hidden="true"></div>   <!-- decoración -->
 
   <div class="svc-shell">                            <!-- contenedor centrado -->
-    <div class="svc-header" reveal revealType="up">
+    <div class="svc-header" appReveal revealType="up">
       <span class="svc-badge">Nuestros Servicios</span>
       <h2 class="svc-title" [innerHTML]="'services.title' | translate"></h2>
       <p class="svc-intro">…</p>
@@ -202,12 +170,13 @@ Todas las secciones siguen el mismo esqueleto:
 Convenciones que se cumplen sin excepción:
 
 - **Prefijo por sección.** Cada sección tiene su prefijo (`svc-`, `ctc-`, `story-`,
-  `team-`, `intro-`, `hero-cover__`, `footer__`, `ls-`) y todas sus clases lo llevan. Como
-  los estilos de Angular están encapsulados por componente, el prefijo no es estrictamente
-  necesario, pero hace que buscar en el código sea trivial.
+  `team-`, `intro-`, `hero-cover__`, `footer__`, `ls-`, `menu-bar__`, `menu-overlay__`,
+  `legal__`, `nf__`) y todas sus clases lo llevan. Como los estilos de Angular están
+  encapsulados por componente, el prefijo no es estrictamente necesario, pero hace que
+  buscar en el código sea trivial.
 - **Todo lo decorativo lleva `aria-hidden="true"`.** Anillos, resplandores, texturas. Un
   lector de pantalla no debe anunciarlos.
-- **La cabecera siempre es insignia + título + subtítulo**, y siempre lleva `reveal`.
+- **La cabecera siempre es insignia + título + subtítulo**, y siempre lleva `appReveal`.
 - **Los títulos con salto de línea usan `[innerHTML]`.** Por ejemplo
   `"title": "Realidad virtual<br>para el bienestar"`. El `<br>` viene dentro del texto
   traducido. Es la única razón por la que se usa `innerHTML` en el proyecto; ver la nota de
@@ -224,22 +193,25 @@ En [`styles.scss`](../psyconova-frontend/src/styles.scss) vive lo poco que es gl
 | `.section-tag` | Insignia genérica en mayúsculas con `letter-spacing: 0.2em` |
 | `.section-title` | Título genérico con la escala `clamp` |
 | `.btn`, `.btn--primary`, `.btn--ghost` | Botones tipo píldora de 48 px de alto |
+| `.reveal`, `.reveal--*`, `.is-visible` | Las transiciones de la animación de aparición |
+| `@media (prefers-reduced-motion: reduce)` | Anula animaciones y transiciones en todo el sitio; ver más abajo |
 
-En la práctica **las secciones no usan estas clases**: cada una se define las suyas con su
-prefijo. Las globales sobreviven de una etapa anterior del proyecto. No las borres sin
-comprobarlo, pero tampoco esperes que cambiarlas afecte a la portada.
+En la práctica **las secciones no usan las clases `.container`, `.section` ni `.btn`**:
+cada una se define las suyas con su prefijo. Esas clases globales sobreviven de una etapa
+anterior del proyecto. No las borres sin comprobarlo, pero tampoco esperes que cambiarlas
+afecte a la portada.
 
 `_reset.scss` es mínimo: `box-sizing: border-box`, quitar márgenes de encabezados y
 párrafos, `img { max-width: 100%; display: block }`, quitar el subrayado de los enlaces, y
 `scroll-behavior: smooth` en `html` (que es lo que hace que los saltos de ancla sean
-suaves).
+suaves; con movimiento reducido pasa a `auto`).
 
 ## Formas recurrentes
 
 | Forma | Valor | Dónde |
 |---|---|---|
-| Píldora | `border-radius: 999px` (22 usos) | Insignias, botones, etiquetas |
-| Círculo | `border-radius: 50%` (11 usos) | Iconos, puntos, anillos decorativos |
+| Píldora | `border-radius: 999px` (24 usos) | Insignias, botones, etiquetas |
+| Círculo | `border-radius: 50%` (10 usos) | Iconos, puntos, anillos decorativos |
 | Tarjeta | `border-radius: 18px` a `28px` | Tarjetas de servicio, de contacto, de equipo |
 | Marco de foto | Arco (radio grande arriba, pequeño abajo) | Foto del equipo, portal de Intro |
 
@@ -259,28 +231,18 @@ Es un rectángulo turquesa fijo que enmarca toda la ventana, siempre visible por
 contenido. Es la firma visual del sitio. `pointer-events: none` es imprescindible: sin eso,
 bloquearía todos los clics de la página.
 
-## La animación de aparición (reveal)
+El **enlace de salto** (`.skip-link`) vive en el mismo archivo: está fuera de pantalla con
+`top: -100px` y entra al recibir el foco. No se oculta con `display: none` ni
+`visibility: hidden` porque eso lo sacaría del orden de tabulación, que es justo lo que
+necesita.
 
-> **📊 GRÁFICO G-12 — Cómo funciona la animación de aparición**
-> **Va aquí:** debajo de este párrafo, antes del ejemplo de uso.
-> **Tipo:** secuencia de tres viñetas horizontales que muestran la ventana del navegador y
-> un elemento acercándose al borde inferior.
-> **Debe mostrar:**
-> - **Viñeta 1:** el elemento está fuera de la pantalla, debajo. Etiqueta: "clases `reveal`
->   y `reveal--up` aplicadas. `opacity: 0`, desplazado 48 px hacia abajo."
-> - **Viñeta 2:** el elemento cruza el umbral. Dibuja una línea horizontal punteada 50 px por
->   encima del borde inferior de la ventana, etiquetada `rootMargin: 0 0 -50px 0`. Etiqueta:
->   "el IntersectionObserver dispara cuando el 12 % del elemento cruza la línea."
-> - **Viñeta 3:** el elemento está visible y en su sitio. Etiqueta: "se añade `is-visible`.
->   Transición de 0,75 s. **El observador deja de vigilarlo: la animación no se repite.**"
-> **Añade abajo una nota destacada:** "No hay soporte de `prefers-reduced-motion`. Quien
-> tenga activada la reducción de movimiento en su sistema ve todas las animaciones igual."
+## La animación de aparición (reveal)
 
 La directiva [`reveal.directive.ts`](../psyconova-frontend/src/app/shared/directives/reveal.directive.ts)
 es la única pieza de animación compartida del proyecto. Se usa como atributo:
 
 ```html
-<div reveal revealType="up" [revealDelay]="150">…</div>
+<div appReveal revealType="up" [revealDelay]="150">…</div>
 ```
 
 | Entrada | Valores | Por defecto |
@@ -290,9 +252,23 @@ es la única pieza de animación compartida del proyecto. Se usa como atributo:
 | `revealThreshold` | 0 a 1, cuánto del elemento debe verse | `0.12` |
 
 Cómo funciona: al inicializarse añade las clases `reveal` y `reveal--<tipo>` (que ponen
-`opacity: 0` y una transformación de 48 px), y crea un `IntersectionObserver`. Cuando el
-elemento entra en pantalla, añade `is-visible` y **deja de observarlo**. La animación ocurre
-una sola vez por carga de página.
+`opacity: 0` y una transformación de 48 px), y crea un `IntersectionObserver` con
+`rootMargin: 0 0 -50px 0`. Cuando el elemento entra en pantalla, añade `is-visible` y
+**deja de observarlo**. La animación ocurre una sola vez por carga de página.
+
+Dos casos en los que **no hace nada**, y el contenido sale visible desde el principio:
+
+- **Al prerenderizar.** No hay pantalla ni observador. Si añadiera la clase `reveal` durante
+  la generación del HTML, cada sección quedaría horneada con opacidad cero y el sitio entero
+  saldría invisible.
+- **Con `prefers-reduced-motion: reduce`.** La directiva consulta la preferencia del
+  sistema con `prefiereMenosMovimiento()` (función exportada desde el mismo archivo) y no
+  añade ninguna clase. El bloque `@media (prefers-reduced-motion: reduce)` de `styles.scss`
+  remata el trabajo: acorta todas las animaciones y transiciones hasta desaparecer y deja
+  `.reveal` visible por si acaso. Por el mismo motivo, el carrusel de la sección Intro no
+  rota para quien tiene activada esa preferencia. Para un sitio de salud mental esto
+  importa: las animaciones de desplazamiento pueden provocar malestar a personas con
+  sensibilidad al movimiento, que es justamente parte del público.
 
 Las transiciones están en `styles.scss`, no en la directiva:
 
@@ -309,13 +285,10 @@ Las transiciones están en `styles.scss`, no en la directiva:
 Para escalonar una lista, calcula el retraso con el índice:
 
 ```html
-<div *ngFor="let s of services; let i = index" reveal [revealDelay]="i * 130">
+@for (s of services; track s; let i = $index) {
+  <article appReveal [revealDelay]="i * 150">…</article>
+}
 ```
-
-**Limitación importante:** la directiva no respeta `prefers-reduced-motion`. Para un sitio
-de salud mental es una omisión con peso: las animaciones de desplazamiento pueden provocar
-malestar a personas con trastornos vestibulares o sensibilidad al movimiento, que es
-justamente parte del público. Arreglarlo son unas pocas líneas de CSS (P-07).
 
 ## Puntos de quiebre (responsive)
 
@@ -335,8 +308,7 @@ aparecen en el sistema "oficial" son `768px` (en `styles.scss` y `_variables.scs
 `640px`.
 
 **Si añades estilos responsive nuevos, usa `768px` para el corte móvil y `1024px` para el
-de tableta**, salvo que tu composición exija otro. Consolidarlos todos está en las
-propuestas (P-11).
+de tableta**, salvo que tu composición exija otro. Consolidarlos es una tarea pendiente.
 
 ## Cómo añadir una sección nueva
 
@@ -347,13 +319,17 @@ propuestas (P-11).
    degradado de fondo del tono que toque según el ritmo claro-oscuro, `mi-shell` para el
    contenido, `mi-header` con insignia, título y subtítulo.
 4. Pon todos los textos en `assets/i18n/es.json` **y** `en.json`.
-5. Añade `reveal` a los bloques que deban aparecer con la animación.
+5. Añade `appReveal` a los bloques que deban aparecer con la animación.
 6. Impórtala en `home.ts` y añade la etiqueta en `home.html`, en la posición que le toque.
-7. Si debe estar en el menú, añade el enlace en **los dos** menús: `navbar.html` y
-   `hero-section.html`.
+   Si va por debajo de la primera pantalla, envuélvela en `@defer (hydrate on viewport)`
+   como las demás.
+7. Si debe estar en el menú, añade la entrada en `core/config/navigation.config.ts`
+   (`MENU_LINKS`) con su `fragment` y su clave `nav.*`. Las dos barras la recogen solas.
 8. Vigila el presupuesto de 10 kB por hoja de estilos de componente.
+9. Si la sección carga algo de fuera (un iframe, una imagen remota), la CSP lo bloqueará
+   hasta que lo autorices en `scripts/generate-csp.mjs`.
 
 ---
 
-**Siguiente:** [05 · Catálogo de componentes](./05-catalogo-de-componentes.md) — ficha de
+**Siguiente:** [05 · Catálogo de componentes](./05-catalogo-de-componentes.md): ficha de
 cada pieza.

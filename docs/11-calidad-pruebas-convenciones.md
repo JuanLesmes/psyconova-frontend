@@ -28,9 +28,13 @@ espera un `number`, el error salta al compilar, no en producción.
 función serverless las variables de entorno se leen como `process.env['RESEND_API_KEY']`
 con corchetes, no con punto. Es esa opción la que lo exige.
 
+`tsconfig.spec.json` sólo incluye `src/**/*.spec.ts`. Por eso las reglas de validación del
+formulario viven en `src/app/core/contact/` y no dentro de `netlify/functions/`: lo que se
+quede fuera de `src/` no se puede probar.
+
 ## Pruebas
 
-**Estado actual: 8 pruebas en 7 archivos.** Todas pasan, y tardan unos 26 segundos.
+**Estado actual: 119 pruebas en 10 archivos.** Todas pasan, y tardan unos 15 segundos.
 
 ```bash
 npm test                      # modo vigilancia
@@ -38,95 +42,53 @@ npx ng test --watch=false     # una vez y termina
 ```
 
 El sistema es **Vitest sobre jsdom**, a través del constructor `@angular/build:unit-test` de
-Angular 21. No hay Karma ni navegador real.
+Angular 21. No hay Karma ni navegador real. Los globales de Vitest (`describe`, `it`,
+`expect`, `vi`) están disponibles sin importar, aunque varios archivos los importan
+explícitamente.
 
 ### Qué se prueba hoy
 
-> **📊 GRÁFICO G-28 — Pirámide de pruebas: lo que hay y lo que falta**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** pirámide de pruebas clásica, con tres niveles, pero con el relleno indicando
-> qué está cubierto y qué no.
-> **Debe mostrar:** que la cobertura actual está mal repartida: no es que haya pocas
-> pruebas, es que las que hay no cubren nada de lo que tiene lógica.
-> **Niveles:**
-> - **Base (unitarias)** — dibuja la banda casi vacía. Dentro, en verde: `App` (2 pruebas,
->   con contenido real). En gris: 6 pruebas "should create" autogeneradas, tres de ellas
->   sobre componentes vacíos.
-> - **Medio (integración)** — vacío por completo.
-> - **Cima (extremo a extremo)** — vacío por completo.
-> **Al lado derecho, una lista en rojo etiquetada "sin ninguna prueba":**
-> `LanguageService` · `isValidTaleCode` / `normalizeCode` · `CtaSection.onSubmit` ·
-> `ContactService` · `RevealDirective` · la función serverless `contact.mts`.
-> **Anota:** "Las cuatro primeras son la lógica real del proyecto. Son también las más
-> fáciles de probar: funciones puras o clases sin dependencias del DOM."
-
-| Archivo | Pruebas | Valor real |
+| Archivo | Pruebas | Qué cubre |
 |---|---|---|
-| `app.spec.ts` | 2 | ✅ Comprueba que la app arranca y que la pantalla de carga se pinta |
-| `home.spec.ts` | 1 | ⚠️ Sólo "se puede crear" |
-| `about.spec.ts` | 1 | ❌ Sobre un componente vacío |
-| `services.spec.ts` | 1 | ❌ Sobre un componente vacío |
-| `contact.spec.ts` | 1 | ❌ Sobre un componente vacío |
-| `primary-button.spec.ts` | 1 | ❌ Sobre un componente vacío |
-| `section-title.spec.ts` | 1 | ❌ Sobre un componente vacío |
+| `app.spec.ts` | 5 | La app arranca y pinta la pantalla de carga; la pantalla se quita sola, dura menos de 1,5 s y no deja temporizadores sueltos |
+| `core/config/consent.spec.ts` | 11 | La tabla de decisión del consentimiento del mapa: sólo `'1'` es aceptado, sólo `'0'` rechazado, todo lo demás es "sin decidir"; la clave lleva versión |
+| `core/config/site.config.spec.ts` | 3 | El router y `PAGES` describen exactamente las mismas páginas (acepta `component` o `loadComponent`) |
+| `core/config/tales.config.spec.ts` | 21 | `isValidTaleCode()` con mayúsculas, tildes, espacios y variantes; lo que no debe abrir; `normalizeCode()`; la configuración de `TALE` |
+| `core/contact/contact-rules.spec.ts` | 30 | `validarConsulta()`: caso normal, trampa de bots (y que va primero), campos obligatorios, consentimiento; `esCorreoValido()` con direcciones legítimas y rotas; `recortar()`; `escaparHtml()` |
+| `core/services/language.service.spec.ts` | 11 | Resolución del idioma inicial (guardado → navegador → español), persistencia, `<html lang>`, almacenamiento bloqueado |
+| `core/services/seo.service.spec.ts` | 18 | `absoluteUrl()`, que ninguna página repita ruta ni título y todas tengan descripción útil, canonical único, `noindex`, datos estructurados que no sobreviven al cambiar de página |
+| `features/home/components/cta-section/cta-section.spec.ts` | 11 | Envío con y sin consentimiento, éxito, error sin fingir envío, doble envío, reintento; los tres estados del mapa con `localStorage` |
+| `features/home/pages/home/home.spec.ts` | 1 | La portada entera se monta |
+| `shared/directives/focus-trap.directive.spec.ts` | 8 | Foco al abrir, Tab y Mayús+Tab dan la vuelta, Escape avisa, el foco vuelve a su origen al cerrar |
 
-Seis de las ocho son plantillas autogeneradas por Angular CLI que comprueban que un
-componente se puede instanciar. **No detectarían ninguna regresión real.**
+Casi todas están escritas a mano y se nota: cada archivo abre con un comentario que explica
+qué protege y por qué importa (*"un mapa que carga sin permiso se ve igual de bien"*).
+La única prueba de plantilla es la de `Home`, que aun así tiene valor: monta las seis
+secciones a la vez.
 
-Sólo `app.spec.ts` está escrito a mano, y se nota: tiene un comentario explicando la decisión
-de no usar el cargador de traducciones (*"Sin loader: el pipe devuelve la clave, suficiente
-para montar el componente"*).
+### Lo que no se prueba
 
-### Lo que debería probarse
-
-Ordenado por relación entre valor y esfuerzo:
-
-**1. `isValidTaleCode()` y `normalizeCode()`** — Son funciones puras, sin dependencias. La
-prueba es trivial y cubre lógica de verdad:
-
-```ts
-import { isValidTaleCode, normalizeCode } from './tales.config';
-
-describe('isValidTaleCode', () => {
-  it('acepta la palabra exacta', () => {
-    expect(isValidTaleCode('manada')).toBe(true);
-  });
-
-  it('acepta variaciones de mayúsculas, tildes y espacios', () => {
-    expect(isValidTaleCode('  MANÁDA ')).toBe(true);
-    expect(isValidTaleCode('Las   Manadas')).toBe(true);
-  });
-
-  it('rechaza cualquier otra cosa', () => {
-    expect(isValidTaleCode('')).toBe(false);
-    expect(isValidTaleCode('lobo')).toBe(false);
-  });
-});
-```
-
-**2. `LanguageService`** — La cadena de decisión del idioma inicial (guardado → navegador →
-español) tiene varios caminos y ninguno está probado. Hay que simular `localStorage` y
-`navigator.language`, incluido el caso en que `localStorage` lanza excepción.
-
-**3. `CtaSection.onSubmit()`** — Con un `ContactService` simulado, comprobar que: no envía sin
-consentimiento, pasa a `sending` al enviar, pasa a `success` y limpia el formulario si el
-servicio responde bien, y **pasa a `error` sin limpiar nada si falla**. Ese último es el
-comportamiento más importante del sitio y hoy nada lo protege.
-
-**4. La función serverless** — Es una función que recibe un `Request` y devuelve un
-`Response`; se puede probar sin Netlify. Los casos clave: el campo trampa responde 200 sin
-enviar, faltan campos → 400, correo inválido → 400, sin consentimiento → 400, sin clave →
-500.
+- **La función serverless en sí** (`contact.mts`): el envoltorio HTTP, las variables de
+  entorno y la llamada a Resend. Las reglas que aplica sí están probadas. Se puede ejercitar
+  a mano con `netlify dev`; ver [07 · Formulario](./07-formulario-de-contacto.md#probar-en-local).
+- `IntroSection`, `StoriesSection`, `Navbar` (la lógica de scroll), `RevealDirective`,
+  `MenuBar` y `MenuOverlay` como componentes.
+- Los scripts de `scripts/`.
 
 ### Cómo escribir una prueba de componente
 
-El patrón está en `app.spec.ts`. Lo esencial es que **casi cualquier componente de este
-proyecto necesita al menos el servicio de traducción**, y muchos también el router:
+El patrón está en `cta-section.spec.ts` y `home.spec.ts`. Lo esencial es que **casi
+cualquier componente de este proyecto necesita al menos el servicio de traducción**, muchos
+también el router, y cualquiera que use `appReveal` necesita el sustituto de
+`IntersectionObserver`:
 
 ```ts
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
+import { instalarIntersectionObserverFalso } from '../../testing/intersection-observer.stub';
+
+instalarIntersectionObserverFalso();
 
 await TestBed.configureTestingModule({
   imports: [MiComponente],
@@ -138,17 +100,59 @@ await TestBed.configureTestingModule({
 ```
 
 Sin cargador de traducciones, el pipe `translate` devuelve la clave literal. Para casi
-cualquier prueba eso basta y evita tener que simular peticiones HTTP.
+cualquier prueba eso basta y evita tener que simular peticiones HTTP. Para el formulario,
+`provideHttpClientTesting()` y `HttpTestingController` permiten responder al `POST` a mano.
+
+Dos detalles que ahorran tiempo: `fixture.detectChanges()` y no `whenStable()` para que
+`ngOnInit` corra (lo explica `app.spec.ts`), y `vi.useFakeTimers()` para todo lo que tenga
+`setTimeout`.
 
 ### Lo que no hay
 
 - **No hay medición de cobertura.** Ni configurada ni en el flujo de trabajo.
 - **No hay pruebas de extremo a extremo** (Playwright, Cypress).
-- **No hay integración continua.** Nadie corre las pruebas automáticamente; Netlify sólo
-  compila. Una prueba rota puede llegar a producción sin que nada avise.
 
-Añadir un flujo de GitHub Actions que corra `npm run build` y `npx ng test --watch=false` en
-cada Pull Request es media hora de trabajo y cambia bastante las cosas. Es la propuesta P-12.
+## Linter y formato
+
+**angular-eslint** (`npm run lint`), con la configuración en `eslint.config.js`:
+
+- Para TypeScript: las reglas recomendadas de ESLint, de typescript-eslint (recomendadas y
+  estilísticas) y de angular-eslint.
+- Para las plantillas HTML: las reglas recomendadas y las de **accesibilidad** de
+  angular-eslint (`templateAccessibility`), que exigen `alt` en las imágenes, etiquetas en
+  los campos, roles válidos, etc.
+- Los selectores llevan prefijo `app`: los componentes como elemento en kebab-case
+  (`app-menu-bar`) y las directivas como atributo en camelCase (`appReveal`,
+  `appFocusTrap`).
+- Las variables y argumentos sin usar son error, salvo que empiecen por `_`.
+
+**Prettier** (`npm run format` para escribir, `npm run format:check` para comprobar)
+formatea `src/**/*.{ts,html,scss}`, `scripts/*.mjs` y `netlify/**/*.mts`. La
+configuración está en el `package.json`:
+
+```json
+"printWidth": 100,
+"singleQuote": true,
+"overrides": [{ "files": "*.html", "options": { "parser": "angular" } }]
+```
+
+Instala la extensión de Prettier y activa "Format on Save". No hay un hook de Git que lo
+imponga; la integración continua corre el linter, no el formateador.
+
+## Integración continua
+
+`.github/workflows/ci.yml` corre en cada push a `main` y en cada Pull Request, con Node 24
+y la aplicación como directorio de trabajo:
+
+1. `npm ci`
+2. `npm run lint`
+3. `npx ng test --watch=false`
+4. `npm run build`
+
+Si cualquiera falla, el Pull Request queda marcado en rojo. El README de la raíz muestra el
+badge con el estado de `main`. Netlify no espera a la CI: publica en cuanto llega el push,
+así que la CI avisa, pero no bloquea. La protección real sigue siendo no fusionar un PR en
+rojo.
 
 ## Estilo de código
 
@@ -158,13 +162,29 @@ cada Pull Request es media hora de trabajo y cambia bastante las cosas. Es la pr
 |---|---|---|
 | Archivos | kebab-case, **sin sufijo de tipo** | `hero-section.ts`, no `hero-section.component.ts` |
 | Clases de componente | PascalCase | `HeroSection`, `MainLayoutComponent` |
-| Selectores | prefijo `app-` | `app-hero-section` |
+| Selectores de componente | prefijo `app-`, kebab-case | `app-hero-section` |
+| Selectores de directiva | prefijo `app`, camelCase | `[appReveal]`, `[appFocusTrap]` |
 | Clases CSS | prefijo por sección + BEM parcial | `svc-card__title`, `hero-cover__brand` |
 | Claves de i18n | camelCase anidado por sección | `contact.form.firstName` |
-| Constantes de configuración | MAYÚSCULAS con guión bajo | `CONTACT_ENDPOINT`, `CRISIS_LINES` |
+| Constantes de configuración | MAYÚSCULAS con guión bajo | `CONTACT_ENDPOINT`, `MENU_LINKS` |
+| Signals | sustantivo, sin prefijo ni sufijo | `menuOpen`, `state`, `activeId` |
 
 El sufijo de las clases es inconsistente: hay `MainLayoutComponent` y `FooterComponent` pero
-también `Navbar` y `Home`. Sigue lo que haya en la carpeta donde estés trabajando.
+también `Navbar`, `Home` y `MenuBar`. Sigue lo que haya en la carpeta donde estés trabajando.
+
+### API de Angular que se usa
+
+- Estado en **signals** (`signal()`, `computed()`), leídas en la plantilla como función:
+  `menuOpen()`. Los objetos que `ngModel` escribe directamente (`form`, `code`) son la
+  excepción y son propiedades planas.
+- **`inject()`** para las dependencias, nunca inyección por constructor.
+- **`input()` / `output()`** en directivas y componentes compartidos; `input.required()`
+  cuando no tiene sentido un valor por defecto.
+- **`@if` / `@for` / `@defer`** en las plantillas. No hay `*ngIf`, `*ngFor` ni
+  `CommonModule`.
+- `standalone: true` no se escribe: es el valor por defecto.
+- Todo lo que toque `window`, `document`, `localStorage` o temporizadores va detrás de
+  `isPlatformBrowser(inject(PLATFORM_ID))`, porque el mismo código corre al prerenderizar.
 
 ### Idioma del código
 
@@ -176,10 +196,13 @@ también `Navbar` y `Home`. Sigue lo que haya en la carpeta donde estés trabaja
 | Clases CSS | Mensajes de commit |
 | Claves de traducción | Textos de la interfaz |
 | | Nombres de campos que se envían al servidor (`nombre`, `apellido`, `celular`) |
+| | Funciones y variables de la lógica de negocio más reciente (`validarConsulta`, `esNavegador`, `prefiereMenosMovimiento`) |
 
-Esa última fila es una excepción llamativa: la interfaz `ContactRequest` tiene los campos en
-español (`nombre`, `descripcion`) porque lo que viaja al correo se lee en español. Es
-deliberado y consistente en las tres capas (componente, servicio, función serverless).
+Las dos últimas filas son la excepción llamativa: la interfaz `ContactRequest` tiene los
+campos en español (`nombre`, `descripcion`) porque lo que viaja al correo se lee en español,
+y las piezas escritas más recientemente (reglas de contacto, consentimiento del mapa,
+scripts) usan nombres en español. No es del todo consistente con el resto; en cada archivo,
+sigue el idioma que ya tenga.
 
 ### Sobre los comentarios
 
@@ -188,13 +211,14 @@ Esta es la característica más distintiva del proyecto y conviene mantenerla.
 **Los comentarios aquí explican por qué, nunca qué.** Ejemplos reales:
 
 ```ts
-// Trampa para bots. Se responde 200 a propósito: si devolviéramos un error,
+// Cayó en la trampa. Se responde 200 a propósito: si devolviéramos un error,
 // el bot sabría que fue detectado y volvería a intentar de otra forma.
 ```
 
-```scss
-/* gradientUnits="userSpaceOnUse" fixes invisible lines on perfectly
-   horizontal or vertical paths (objectBoundingBox has zero dimension). */
+```html
+<!-- `gradientUnits="userSpaceOnUse"`: con el valor por defecto (objectBoundingBox)
+     una línea perfectamente horizontal o vertical tiene caja de cero alto o ancho
+     y el degradado no se pinta. -->
 ```
 
 ```ts
@@ -209,44 +233,12 @@ comentario, alguien "arreglaría" rompiendo algo.
 una vez de otra manera, escríbelo. Si el código sólo hace lo que dice, no lo comentes.
 
 Y hay varios avisos ⚠️ en el código (en `tales.config.ts`, en `contact.config.ts`, en las
-plantillas legales) que están escritos para que alguien no rompa algo importante por
-desconocimiento. **No los borres.**
-
-### Formato
-
-Prettier configurado en el `package.json`:
-
-```json
-"printWidth": 100,
-"singleQuote": true,
-"overrides": [{ "files": "*.html", "options": { "parser": "angular" } }]
-```
-
-Instala la extensión de Prettier y activa "Format on Save". **No hay nada que lo imponga**,
-así que es responsabilidad de cada quien.
+plantillas legales, en `netlify.toml`, en `generate-csp.mjs`) que están escritos para que
+alguien no rompa algo importante por desconocimiento. **No los borres.**
 
 ## Flujo de trabajo con Git
 
-> **📊 GRÁFICO G-27 — Flujo de trabajo con Git**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** diagrama de ramas de Git, horizontal.
-> **Debe mostrar:** el flujo recomendado, y en qué punto exacto el cambio se vuelve público.
-> **Contenido:**
-> - Línea `main` horizontal, con commits.
-> - Una rama `feature/mi-cambio` que sale de `main`, tiene dos o tres commits y vuelve.
-> - En el punto de salida: "`git checkout -b feature/…`".
-> - Sobre la rama: "commits pequeños, en español, con prefijo".
-> - En el punto de retorno: "Pull Request → **Netlify publica una vista previa con una URL
->   propia** → revisar ahí → fusionar".
-> - **Marca en rojo el punto de fusión con `main`** y la etiqueta: "**aquí sale al aire**.
->   No hay ambiente de pruebas ni aprobación manual: en 2-3 minutos está publicado."
-> **Añade abajo, tachado en rojo:** una flecha directa de "tu máquina" a `main` con la
-> etiqueta "no hagas esto".
-
-**Repositorio:** `github.com/Inti-Nova/psyconova-frontend`
-**Rama principal:** `main` — cada push publica el sitio.
-
-Hoy existe también `feature/landing-home-base`, del desarrollo inicial.
+**Rama principal:** `main`. Cada push publica el sitio.
 
 ### Flujo recomendado
 
@@ -257,16 +249,18 @@ git checkout -b feature/mi-cambio
 
 # … trabajar, con commits pequeños …
 
-npm run build                    # que compile
+npm run lint                     # que el linter pase
 npx ng test --watch=false        # que las pruebas pasen
+npm run build                    # que compile y prerenderice
 git push -u origin feature/mi-cambio
 ```
 
-Después, un Pull Request en GitHub. **Netlify publica automáticamente una vista previa de
-cada PR con su propia URL**: úsala para revisar el cambio de verdad, en un móvil, antes de
-fusionar. Es la herramienta más valiosa que el proyecto ya tiene y menos se aprovecha.
+Después, un Pull Request en GitHub. La integración continua corre las mismas tres cosas y
+**Netlify publica automáticamente una vista previa de cada PR con su propia URL**: úsala
+para revisar el cambio de verdad, en un móvil, antes de fusionar.
 
-**No trabajes directo en `main`.** No hay ambiente de pruebas: lo que entra sale al aire.
+**No trabajes directo en `main`.** No hay ambiente de pruebas: lo que entra sale al aire en
+dos o tres minutos.
 
 ### Mensajes de commit
 
@@ -275,7 +269,7 @@ El historial usa el estilo convencional, en español:
 ```
 fix: titulo del navegador como Psyconova
 chore: fijar Node 24 en Netlify, igual que el entorno de pruebas
-feat: enhance footer and team section with new styles and structure
+sec: Content Security Policy generada desde el HTML construido
 ```
 
 | Prefijo | Para qué |
@@ -286,9 +280,11 @@ feat: enhance footer and team section with new styles and structure
 | `refactor:` | Reorganización sin cambio de comportamiento |
 | `docs:` | Documentación |
 | `style:` | Sólo formato o estilos visuales |
+| `test:` | Pruebas |
+| `perf:`, `a11y:`, `sec:`, `priv:` | Rendimiento, accesibilidad, seguridad, privacidad |
 
-Los últimos commits están en español y los anteriores en inglés. **Sigue con el español**,
-que es lo más reciente y lo coherente con los comentarios del código.
+Los commits más antiguos están en inglés. **Sigue con el español**, que es lo coherente
+con los comentarios del código.
 
 ## Revisión de cambios
 
@@ -298,14 +294,20 @@ Qué mirar en un Pull Request de este proyecto en concreto:
 - [ ] ¿Se añadió alguna clave de i18n? ¿Está en `es.json` **y** en `en.json`?
 - [ ] ¿Hay texto escrito directo en una plantilla que debería estar en i18n?
 
-**Duplicación conocida**
-- [ ] Si cambió el menú: ¿se cambió en `navbar.html` **y** en `hero-section.html`?
+**Una sola fuente**
+- [ ] Si cambió el menú: ¿se cambió en `navigation.config.ts` y no en una plantilla?
 - [ ] Si cambió un dato de contacto: ¿se cambió en `contact.config.ts` y no en la plantilla?
+- [ ] Si se añadió una página: ¿está en `app.routes.ts` **y** en `PAGES`?
 
 **Formulario y datos**
-- [ ] ¿Se añadió un campo? ¿Pasa por `escapar()` en la función serverless?
+- [ ] ¿Se añadió un campo? ¿Pasa por `escaparHtml()` en `contact-rules.ts`?
 - [ ] ¿Sigue siendo imposible enviar sin marcar el consentimiento?
 - [ ] ¿Sigue siendo imposible que se muestre "enviado" si el envío falló?
+
+**Prerenderizado y seguridad**
+- [ ] ¿Algo nuevo toca `window`, `document` o temporizadores? ¿Está detrás de `isPlatformBrowser`?
+- [ ] ¿Se carga algún recurso externo? ¿Está autorizado en `generate-csp.mjs`? ¿Necesita consentimiento previo?
+- [ ] ¿El build sigue diciendo `Prerendered 4 static routes` (o el número nuevo)?
 
 **Estilos**
 - [ ] ¿Usa los colores reales de la paleta (ver [04](./04-sistema-de-diseno.md)) y no los
@@ -317,34 +319,29 @@ Qué mirar en un Pull Request de este proyecto en concreto:
 **Accesibilidad**
 - [ ] ¿Los elementos interactivos son `<button>` o `<a href>`, y no `<div (click)>`?
 - [ ] ¿Las imágenes tienen `alt`? ¿Lo decorativo tiene `aria-hidden="true"`?
-- [ ] ¿Se puede usar sólo con el teclado?
+- [ ] ¿Se puede usar sólo con el teclado? ¿Funciona con `prefers-reduced-motion`?
 
 **General**
-- [ ] ¿Compila? ¿Pasan las pruebas?
-- [ ] ¿Se revisó en móvil y en los dos idiomas?
+- [ ] ¿Lint en verde? ¿Compila? ¿Pasan las pruebas?
+- [ ] ¿Se revisó en la vista previa, en móvil y en los dos idiomas?
 - [ ] ¿Ninguna clave ni dato sensible en el código?
 
 ## Deuda técnica reconocida
 
-Recogida aquí para que nadie la descubra por sorpresa. El detalle y la priorización están en
-[PROPUESTAS.md](./PROPUESTAS.md).
+Recogida aquí para que nadie la descubra por sorpresa.
 
 | Deuda | Dónde | Peso |
 |---|---|---|
-| Rutas vacías accesibles públicamente | `features/{about,services,contact}/` | Alto |
 | Tokens de diseño que no coinciden con los colores usados | `_variables.scss` | Medio |
-| Menú duplicado entre navbar y hero | `navbar.html`, `hero-section.html` | Medio |
-| Ancla `#intro` inexistente en el menú | `navbar.html`, `hero-section.html` | Bajo |
-| Enlaces sin `href`, no accesibles por teclado | `navbar.html`, `hero-section.html` | Medio |
-| Sin `prefers-reduced-motion` | Todo el CSS | Medio |
 | Doce puntos de quiebre distintos | Todos los SCSS | Bajo |
-| Componentes vacíos que nadie usa | `shared/components/` | Bajo |
-| Pruebas sin valor real | 6 de los 7 `.spec.ts` | Medio |
-| Sin integración continua | — | Medio |
-| `ngIf`/`ngFor` en vez de `@if`/`@for` | Todas las plantillas | Bajo |
-| Hoja de estilos por encima del presupuesto | `cta-section.scss` | Bajo |
-| Favicon de 124 KB con `sizes` inválido | `index.html` | Bajo |
+| Hoja de estilos por encima del presupuesto de aviso | `cta-section.scss` | Bajo |
+| Contraste de `#0f8f84` sobre fondo claro por debajo de WCAG AA | Insignias de las secciones claras | Bajo |
+| `@HostListener('window:scroll')` sin limitación | `navbar.ts` | Bajo |
+| Sin límite de envíos ni captcha en el formulario | `contact.mts` | Medio |
+| Sin cobertura ni pruebas de extremo a extremo | | Medio |
+| El idioma no está en la URL (sólo se indexa el español) | Router | Medio |
+| Idioma de los identificadores mezclado (inglés y español) | Código reciente | Bajo |
 
 ---
 
-**Siguiente:** [12 · Runbook](./12-runbook.md) — recetas para las tareas más comunes.
+**Siguiente:** [12 · Runbook](./12-runbook.md): recetas para las tareas más comunes.

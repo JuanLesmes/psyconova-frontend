@@ -3,33 +3,25 @@
 ## Las dos carpetas de imágenes
 
 Este es el concepto que hay que entender antes de tocar cualquier imagen: **hay dos
-carpetas, y sólo una llega al navegador.**
+carpetas, y sólo una llega al navegador. Y sólo una está en Git.**
 
-| Carpeta | Qué contiene | Peso | ¿Se publica? |
-|---|---|---|---|
-| `design/source-images/` | Los originales pesados: PNG y JPEG del diseñador | **28 MB** | ❌ No |
-| `src/assets/images/` | Los WebP optimizados que genera el script | **1,1 MB** | ✅ Sí |
+| Carpeta | Qué contiene | Peso | ¿En Git? | ¿Se publica? |
+|---|---|---|---|---|
+| `design/source-images/` | Los originales pesados: PNG y JPEG del diseñador | **28 MB** | ❌ No (`.gitignore`) | ❌ No |
+| `src/assets/images/` | Los WebP optimizados que genera el script | **~1 MB** | ✅ Sí | ✅ Sí |
 
-Los originales están en el repositorio (se versionan, para no perderlos), pero Angular sólo
-publica `src/assets/`. Un visitante nunca descarga los 28 MB.
+La carpeta `design/` completa (`psyconova-frontend/design/`) está en `.gitignore`. Los
+originales viven en el disco de quien desarrolla; `npm run optimize:images` los lee de ahí
+para generar los WebP, y `scripts/generate-icons.mjs` lee
+`design/faviconPsyconova-original.png`. Lo que el repositorio versiona y Angular publica es
+sólo `src/assets/`. Un visitante nunca descarga los 28 MB, y quien clone el repositorio sin
+los originales puede compilar y trabajar igual: sólo no puede regenerar las imágenes.
 
-> **📊 GRÁFICO G-21 — Flujo de una imagen, del original al navegador**
-> **Va aquí:** justo debajo de este párrafo.
-> **Tipo:** diagrama de tubería (pipeline) horizontal, de izquierda a derecha.
-> **Debe mostrar:** los pasos por los que pasa una imagen, con el peso en cada punto.
-> **Cajas y flechas:**
-> 1. `design/source-images/team/laura.jpeg` — **3024 × 4032 px, ~1,2 MB**. Etiqueta debajo:
->    "el original. Se versiona en Git pero NO se publica."
-> 2. Flecha etiquetada `npm run optimize:images` → caja `scripts/optimize-images.mjs`, con
->    tres sub-pasos en vertical dentro: **recortar** (sólo si hay coordenadas definidas) →
->    **redimensionar** → **convertir a WebP**.
-> 3. `src/assets/images/team/laura.webp` — **520 × 680 px, ~25 KB**. Etiqueta: "esto sí se
->    publica."
-> 4. Flecha etiquetada `ng build` → caja `dist/…/assets/images/team/laura.webp`.
-> 5. `Navegador del visitante`.
-> **Anota el ahorro en grande sobre la tubería:** "28 MB → 1,1 MB (−96 %)".
-> **Añade una advertencia junto al paso 2:** "El script sobrescribe el destino. Si editas a
-> mano un archivo de `src/assets/images/`, la siguiente ejecución lo pisa."
+El flujo de una imagen: original en `design/source-images/team/laura.jpeg` (3024 × 4032 px,
+~1,2 MB) → `npm run optimize:images` (recortar si hay coordenadas, redimensionar, convertir
+a WebP) → `src/assets/images/team/laura.webp` (520 × 680 px, ~78 KB) → `ng build` lo copia
+a `dist/` → navegador. **El script sobrescribe el destino:** si editas a mano un archivo de
+`src/assets/images/`, la siguiente ejecución lo pisa.
 
 ## El script de optimización
 
@@ -50,7 +42,8 @@ imagen en pantalla**:
 | `branding` | `branding/` | ancho 400 px | 88 | El logo más grande se muestra a 130 px de alto (footer) |
 
 Lee `.png`, `.jpg` y `.jpeg`. Escribe siempre `.webp` con el mismo nombre base. Si una
-carpeta de origen no existe, la salta con un aviso en vez de fallar.
+carpeta de origen no existe (por ejemplo, en una máquina sin `design/`), la salta con un
+aviso en vez de fallar.
 
 Al terminar imprime una tabla con el ahorro de cada archivo y el total.
 
@@ -78,40 +71,18 @@ persona, se añade su entrada con sus coordenadas.
 
 ## Inventario de assets
 
-> **📊 GRÁFICO G-22 — Inventario visual de assets**
-> **Va aquí:** debajo de este párrafo, sustituyendo las tres tablas.
-> **Tipo:** hoja de contactos / mosaico de miniaturas agrupado por carpeta.
-> **Debe mostrar:** las 18 imágenes del sitio en miniatura, agrupadas en tres bloques
-> (`branding`, `intro-story`, `team`), cada una con su nombre de archivo debajo.
-> **Anota junto a cada miniatura de `branding` dónde se usa**, porque de los siete logos
-> **sólo uno se usa en todo el sitio**: `logoClaroConLetrasSinFondo.webp`, en el navbar, el
-> hero, el footer y la pantalla de carga. Marca los otros seis como "sin usar".
-> **Anota junto a las de `intro-story`** cuáles son del bucle (01, 02, 03) y cuáles de los
-> nodos (04 a 10), con el `id` del nodo al que corresponde cada una.
+### Branding: `src/assets/images/branding/` (34 KB)
 
-### Branding — `src/assets/images/branding/` (152 KB)
+Un solo archivo, `logoClaroConLetrasSinFondo.webp`, que se usa en la barra de menú (fija y
+sobre la portada), el footer y la pantalla de carga. Es también el logo de la ficha de
+negocio y la silueta que usa la imagen para redes.
 
-Siete variantes del logo. **Sólo una se usa:**
+Nota de nomenclatura: "Claro" se refiere al **logo**, no al fondo. El logo "claro" es el
+que se ve bien sobre fondos oscuros. Por eso el sitio, que tiene barra clara y footer
+oscuro, usa el mismo archivo en los dos: es un logo en tonos claros con transparencia. Las
+otras variantes del logo existen sólo como originales en `design/source-images/branding/`.
 
-| Archivo | ¿Se usa? |
-|---|---|
-| `logoClaroConLetrasSinFondo.webp` | ✅ Navbar, hero, footer y pantalla de carga |
-| `logoClaroConLetras.webp` | ❌ |
-| `logoClaroSinLetras.webp` | ❌ |
-| `logoOscuroConLetras.webp` | ❌ |
-| `logoOscuroConLetrasSinFondo.webp` | ❌ |
-| `logoOscuroSinLetras.webp` | ❌ |
-| `logoSinFondo.webp` | ❌ |
-
-Las seis sin usar pesan poco y tenerlas disponibles es cómodo. Pero conviene saber que
-**están ahí y se publican**.
-
-Nota de nomenclatura: "Claro" y "Oscuro" se refieren al **logo**, no al fondo. El logo
-"claro" es el que se ve bien sobre fondos oscuros. Por eso el sitio, que tiene navbar claro
-y footer oscuro, usa el mismo archivo en los dos: es un logo en tonos claros con
-transparencia.
-
-### Historia visual — `src/assets/images/intro-story/` (872 KB)
+### Historia visual: `src/assets/images/intro-story/` (872 KB)
 
 Diez imágenes generadas para la sección Intro. Son las más pesadas del sitio.
 
@@ -123,7 +94,7 @@ Diez imágenes generadas para la sección Intro. Son las más pesadas del sitio.
 | `02-gafas-puestas.webp` | Persona con las gafas de realidad virtual |
 | `03-transformacion.webp` | Escena de transformación |
 
-**Nodos** (aparecen al pasar el mouse por cada uno):
+**Nodos** (aparecen al señalar cada uno):
 
 | Archivo | Nodo | Metáfora |
 |---|---|---|
@@ -136,58 +107,75 @@ Diez imágenes generadas para la sección Intro. Son las más pesadas del sitio.
 | `08-bosque.webp` | `bienestar` | Calma y regulación emocional |
 
 Fíjate en que **la numeración de los archivos no coincide con el orden de los nodos**. Los
-números son el orden en que se generaron; la asignación a cada nodo está en el array `nodes`
+números son el orden en que se generaron; la asignación a cada nodo está en el array `NODES`
 de `intro-section.ts`.
 
-### Equipo — `src/assets/images/team/` (80 KB)
+### Equipo: `src/assets/images/team/` (80 KB)
 
-`laura.webp` — foto de la directora clínica, 520 × 680 px, con el recorte manual descrito
-arriba.
+`laura.webp`: la foto de la directora clínica, 520 × 680 px, con el recorte manual
+descrito arriba.
 
-### Iconos
+### Imagen para redes: `src/assets/images/social/` (33 KB)
 
-| Archivo | Peso | Nota |
+`psyconova-og.jpg`, 1200 × 630 px. Es la que muestran WhatsApp, LinkedIn y X al compartir
+el enlace; `SeoService` la declara como `og:image` con URL absoluta. La genera
+`node scripts/social-image.mjs` con el mismo degradado y los mismos anillos de la pantalla
+de carga, y el logo en blanco (toma el canal alfa del logo y lo usa como transparencia de un
+rectángulo blanco, que es lo que la pantalla de carga hace con un filtro CSS). Es JPEG y no
+WebP porque algunos lectores de enlaces todavía no leen WebP.
+
+### Iconos: `src/assets/icons/` (21 KB)
+
+| Archivo | Tamaño | Peso | Para qué |
+|---|---|---|---|
+| `favicon-32.png` | 32 × 32 | 1,7 KB | La pestaña del navegador y los marcadores |
+| `apple-touch-icon.png` | 180 × 180 | 9 KB | "Añadir a la pantalla de inicio" en iOS |
+| `icon-192.png` | 192 × 192 | 10 KB | Lo mismo en Android, y el que usan los buscadores para la ficha |
+
+Los genera `node scripts/generate-icons.mjs` desde `design/faviconPsyconova-original.png`
+con paleta indexada (un logo tiene pocos colores planos). No se genera el de 16 px: los
+navegadores reducen el de 32 sin que se note. `index.html` los declara con `?v=4` al final
+para forzar que el navegador descarte el que tenía en caché.
+
+`public/favicon.ico` (15 KB) es el de la plantilla de Angular; se publica pero no se
+referencia.
+
+### Fuentes: `src/assets/fonts/` (196 KB)
+
+| Archivo | Peso | Cuándo se descarga |
 |---|---|---|
-| `src/assets/icons/faviconPsyconova.png` | **124 KB** | ⚠️ Enorme para un favicon |
-| `public/favicon.ico` | 16 KB | El de la plantilla de Angular; no se referencia |
+| `arimo-latin.woff2` | 20 KB | Siempre (precargado) |
+| `roboto-latin.woff2` | 43 KB | Siempre (precargado) |
+| `arimo-latin-ext.woff2` | 97 KB | Sólo si aparece un carácter fuera del latín básico |
+| `roboto-latin-ext.woff2` | 29 KB | Ídem |
 
-El favicon se declara en `index.html` con `?v=3` al final para forzar que el navegador
-descarte el que tenía en caché:
-
-```html
-<link rel="icon" type="image/png" sizes="32x40" href="assets/icons/faviconPsyconova.png?v=3">
-```
-
-Dos cosas mal aquí: **124 KB para un icono de 32 px es unas cien veces más de lo necesario**
-(un PNG optimizado a ese tamaño pesa 1-2 KB), y `sizes="32x40"` no es un tamaño de favicon
-válido — los navegadores esperan cuadrados (16×16, 32×32, 180×180). Ninguna de las dos cosas
-rompe nada visible, pero las dos son fáciles de arreglar (P-10).
+Ver la sección "Fuentes" más abajo.
 
 ## Imágenes en el HTML
 
-De las diez etiquetas `<img>` del proyecto, **ninguna** tiene `loading="lazy"` ni atributos
-`width`/`height`. Los dos `loading="lazy"` que hay están en `<iframe>`, no en imágenes.
+Hay siete etiquetas `<img>` en el proyecto: las tres del portal de Intro, la foto del
+equipo, el logo del footer, el de la pantalla de carga y el de la barra de menú.
 
-Consecuencias:
-
-- Las diez imágenes de `intro-story` se descargan al cargar la página, aunque el visitante
-  no llegue nunca a esa sección. Son 872 KB, casi todo el peso del sitio.
-- Sin `width`/`height`, el navegador no reserva el espacio y el contenido "salta" cuando la
-  imagen carga. Es lo que Google mide como *Cumulative Layout Shift* y penaliza.
-
-Ambas cosas se arreglan con atributos, sin tocar lógica. Está en las propuestas (P-09).
+- **Todas menos la foto del equipo llevan `width` y `height`**, así el navegador reserva el
+  espacio y el contenido no salta cuando la imagen carga (lo que Google mide como
+  *Cumulative Layout Shift*). La foto del equipo, dentro de su marco de arco, no los lleva.
+- **Ninguna lleva `loading="lazy"`.** Los dos `loading="lazy"` del proyecto están en los
+  `<iframe>` (el cuento y el mapa). No hace tanta falta como parece: las diez imágenes de
+  `intro-story` no están todas en el DOM; el portal pinta con `@if` sólo la imagen actual
+  (y la anterior mientras se desvanece), así que las demás se descargan a medida que el
+  bucle avanza o se señala un nodo.
 
 Todas las imágenes **sí** tienen texto alternativo, y los de la sección Intro salen del
-sistema de traducción (`intro.nodes.<id>.alt`), así que están bien en los dos idiomas. Eso
-está bien hecho.
+sistema de traducción (`intro.nodes.<id>.alt`), así que están bien en los dos idiomas. Los
+logos que van dentro de un enlace con nombre accesible llevan `alt=""`.
 
 ## El cuento interactivo
 
-📁 `src/assets/cuentos/las-manadas.html` — 76 KB, 1195 líneas
+📁 `src/assets/cuentos/las-manadas.html`: 76 KB, 1195 líneas
 
 *Las Manadas*: la historia de Nilo, un lobito que vive entre dos cuevas cuando su manada
 cambia de forma. Está pensado para niños que atraviesan una separación, una familia que se
-recompone o la llegada de un hermano. Escrito y diseñado por Laura Lesmes.
+recompone o la llegada de un hermano. Escrito y diseñado por la directora clínica.
 
 **Es un archivo autónomo, no un componente de Angular.** Un solo HTML con su propio CSS,
 su propio JavaScript e ilustraciones en SVG dibujadas dentro del mismo archivo. No importa
@@ -209,66 +197,83 @@ bloqueado, una capa transparente encima intercepta los toques, pero la portada s
 viendo y animando debajo. Al escribir la palabra clave, la capa desaparece.
 
 **Cómo se actualiza:** se reemplaza el archivo. No hay que compilar nada del cuento ni tocar
-código de Angular. Ese fue justamente el motivo de no convertirlo en componente: *"así Laura
-puede actualizarla sin tocar el sitio"*.
+código de Angular. Ese es justamente el motivo de no convertirlo en componente: que se
+pueda actualizar sin tocar el sitio. Ojo con una cosa: el cuento tiene un script en línea y
+la Content Security Policy lo autoriza por su hash, que se recalcula en cada build. Basta
+con desplegar después de cambiarlo; no hay que tocar nada más.
 
 **Para añadir un segundo cuento** habría que cambiar `tales.config.ts`, que hoy asume uno
 solo (`TALE` es un objeto, no una lista), y `StoriesSection`, que muestra uno fijo. Es un
 cambio de una tarde, pero no es "sólo poner el archivo".
 
 ⚠️ Recuerda que **la palabra clave no protege de verdad** el cuento: cualquiera puede abrir
-`psyconova.com/assets/cuentos/las-manadas.html` directamente. Ver
+`psyconova.com/assets/cuentos/las-manadas.html` directamente. Lo que sí hace el sitio es
+dejar `/assets/cuentos/` fuera del índice de los buscadores en `robots.txt`, para que no
+aparezca en una búsqueda y llegue a un niño por casualidad, fuera de todo contexto. Ver
 [05 · Catálogo](./05-catalogo-de-componentes.md#talesconfigts).
 
 ## Cómo añadir una imagen nueva
 
 1. Deja el original (PNG o JPEG, a resolución completa) en la carpeta que corresponda de
-   `design/source-images/`.
+   `design/source-images/`, en tu disco.
 2. Si necesita un encuadre concreto (típicamente una foto de persona), añade sus
    coordenadas de recorte en `scripts/optimize-images.mjs`.
 3. Corre `npm run optimize:images`.
-4. Comprueba el resultado en `src/assets/images/`.
-5. Referéncialo desde el componente con la ruta `assets/images/…` (sin barra inicial).
+4. Comprueba el resultado en `src/assets/images/`. Ese WebP es lo que se versiona.
+5. Referéncialo desde el componente con la ruta `assets/images/…` (sin barra inicial) y
+   ponle `width` y `height`.
 6. Ponle un `alt` descriptivo. Si es contenido, tradúcelo en los dos archivos de idioma; si
    es decorativo, usa `alt=""`.
 
 Si la imagen va en una carpeta nueva, añade un trabajo al array `JOBS` del script con su
-tamaño y calidad.
+tamaño y calidad. Y guarda el original en algún sitio además de tu disco: al no estar en
+Git, si se pierde no hay forma de regenerar el WebP a otro tamaño.
 
 ## Fuentes
 
-Arimo y Roboto se cargan desde Google Fonts, con un `@import` en `styles.scss`:
+Arimo y Roboto se sirven **desde el propio dominio**: cuatro archivos woff2 en
+`src/assets/fonts/` y sus `@font-face` en `src/styles/_fonts.scss`, que `styles.scss`
+incluye con `@use`. Ninguna petición sale a `fonts.googleapis.com` ni a `fonts.gstatic.com`.
 
-```scss
-@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
-```
+Los dos archivos los escribe `scripts/download-fonts.mjs` (`npm run fonts:download`): pide
+el CSS a Google Fonts como un navegador moderno (para recibir woff2), descarga sólo los
+subconjuntos `latin` y `latin-ext`, y reescribe cada `@font-face` con la URL local,
+`font-display: swap` y el `unicode-range` original. Son fuentes variables: Roboto cubre de
+300 a 900 en una sola descarga, y Arimo de 400 a 700 (la propia fuente no llega más lejos).
 
-**No están alojadas en el proyecto.** Implicaciones:
+Por qué autoalojarlas, según el propio script:
 
-- Si Google Fonts no responde, el sitio cae a Arial. Se ve peor pero funciona.
-- Cargar fuentes desde Google implica que el navegador del visitante hace una petición a un
-  servidor de Google, que recibe su IP. En Europa eso ha sido objeto de sentencias por
-  RGPD; en Colombia el marco es distinto, pero si algún día PSYCONOVA atiende público
-  europeo, conviene alojar las fuentes en el propio sitio.
-- El `@import` dentro del CSS retrasa la carga. Con un `<link>` en `index.html` más
-  `preconnect` el texto aparecería antes.
+1. **Privacidad.** Con un `@import` a Google, Google recibía la IP de cada visitante nada
+   más abrir la página, antes de que nadie aceptara nada.
+2. **Rendimiento.** Un `@import` dentro del CSS encadena dos descargas y bloquea el pintado
+   mientras tanto. Aquí `index.html` precarga los dos archivos `latin`.
+3. **Salto de maquetación.** Con `swap` y fuentes precargadas, el texto casi no se recompone.
+
+Netlify sirve `/assets/fonts/*` con caché de un año (`immutable`). Los archivos no llevan
+hash en el nombre, así que si algún día se regeneran con otro diseño hay que renombrarlos,
+o quien ya los tenga verá los viejos durante un año.
 
 ## Peso total del sitio
 
+Valores aproximados de la portada, transferidos comprimidos:
+
 | Recurso | Peso transferido |
 |---|---|
-| JavaScript (`main.js`) | 113,6 KB |
-| CSS (`styles.css`) | 2,1 KB |
-| Imágenes (todas) | ~1,1 MB |
-| Cuento (sólo si se ve) | 76 KB |
-| Fuentes (Google) | ~50 KB |
+| HTML prerenderizado de la portada (con el CSS crítico incrustado) | ~117 KB sin comprimir |
+| JavaScript inicial | ~118 KB (421 KB sin comprimir) |
+| JavaScript diferido (cuentos, equipo, contacto, legales, 404) | Sólo cuando hace falta |
+| CSS global | ~1 KB |
+| Fuentes (`latin`) | ~63 KB |
+| Imágenes | ~1 MB en total, pero sólo la imagen visible del portal se pide al cargar |
+| Cuento (sólo si se ve la sección) | 76 KB |
 
-El código está muy bien: 115 KB para una aplicación de Angular es un resultado notable. **El
-peso está en las imágenes**, y ahí la mejora no es comprimir más (ya están optimizadas) sino
-no descargarlas todas de golpe. Con `loading="lazy"` en las de `intro-story`, la carga
-inicial bajaría de ~1,2 MB a unos 300 KB.
+El código está bien: 118 kB de JavaScript inicial para una aplicación de Angular es un
+resultado notable, y las secciones inferiores ni siquiera lo descargan hasta que entran en
+pantalla. **El peso está en las imágenes de la sección Intro**, que ya están optimizadas;
+lo que mantiene ligera la carga inicial es que no se descargan todas de golpe, sino a
+medida que el portal las muestra.
 
 ---
 
-**Siguiente:** [09 · Despliegue y operación](./09-despliegue-y-operacion.md) — cómo llega
+**Siguiente:** [09 · Despliegue y operación](./09-despliegue-y-operacion.md): cómo llega
 esto a internet.

@@ -1,33 +1,16 @@
 # 06 · Internacionalización
 
-El sitio está en español e inglés. El español es el idioma por defecto y el de respaldo.
+El sitio está en español e inglés. El español es el idioma por defecto, el de respaldo y
+el idioma con el que se prerenderizan todas las páginas.
 
 ## La regla
 
 **Todo texto que el visitante lee va en `assets/i18n/es.json` y `assets/i18n/en.json`.
 Nunca escrito directamente en una plantilla.**
 
-Hay tres excepciones, todas justificadas, y están al final de este documento.
+Hay cuatro excepciones, todas justificadas, y están al final de este documento.
 
 ## Cómo funciona
-
-> **📊 GRÁFICO G-16 — Cómo se resuelve un texto traducido**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** diagrama de flujo de una sola petición, de izquierda a derecha.
-> **Debe mostrar:** el recorrido completo desde que la plantilla pide un texto hasta que
-> aparece en pantalla.
-> **Cajas, en orden:**
-> 1. `Plantilla` — `{{ 'hero.subtitle' | translate }}`
-> 2. `TranslatePipe` — pregunta a `TranslateService` por la clave.
-> 3. `TranslateService` — ¿ya tengo cargado el diccionario del idioma activo?
->    - **No** → rama hacia abajo: `TranslateHttpLoader` descarga
->      `assets/i18n/es.json`. Ocurre **una sola vez por idioma y sesión**.
->    - **Sí** → sigue.
-> 4. `Diccionario` — busca `hero` → `subtitle` recorriendo el objeto anidado.
-> 5. `Pantalla` — "Innovación, sensibilidad y una presencia digital más humana."
-> **Añade una rama de error desde el paso 4:** si la clave no existe → intenta en el idioma
-> de respaldo (español) → si tampoco → **muestra la clave literal en pantalla**
-> (`hero.subtitle`). Dibújalo en rojo: es exactamente cómo se ve un error de traducción.
 
 El sistema es [`@ngx-translate`](https://github.com/ngx-translate/core). La configuración
 completa está en `app.config.ts`:
@@ -39,18 +22,29 @@ provideTranslateService({
     suffix: '.json',
   }),
   fallbackLang: 'es',
-  lang: toTranslateCode(resolveInitialLanguage()),
+  lang: toTranslateCode(DEFAULT_LANGUAGE),
 })
 ```
 
 - `prefix` + código de idioma + `suffix` forma la URL: `assets/i18n/es.json`.
-- `fallbackLang: 'es'` — si una clave falta en inglés, se usa la española.
-- `lang` — el idioma inicial se calcula **antes** de arrancar, para que el primer render ya
-  salga bien y no haya parpadeo.
+- `fallbackLang: 'es'`: si una clave falta en inglés, se usa la española.
+- `lang`: siempre español al arrancar. La configuración se construye también al
+  prerenderizar, donde no hay `localStorage` ni `navigator`; `LanguageService` cambia al
+  idioma guardado ya en el navegador, después de hidratar, para que el primer render
+  coincida con el HTML generado y no haya salto. Ver
+  [05 · Catálogo](./05-catalogo-de-componentes.md#languageservice).
+
+El recorrido de un texto: la plantilla pide `{{ 'hero.subtitle' | translate }}`; el pipe
+pregunta a `TranslateService`; si el diccionario del idioma activo no está cargado,
+`TranslateHttpLoader` lo descarga (una sola vez por idioma y sesión); se busca `hero` →
+`subtitle` en el objeto anidado; si la clave no existe, se intenta en el idioma de
+respaldo; y si tampoco, **se muestra la clave literal en pantalla**. Así es exactamente
+como se ve un error de traducción.
 
 Los archivos se descargan por HTTP en tiempo de ejecución, no se empaquetan en el
-JavaScript. Consecuencia práctica: **puedes corregir un texto en producción editando el JSON
-en `dist/` sin recompilar** (aunque lo correcto es hacerlo en el código y desplegar).
+JavaScript. El HTML prerenderizado ya trae los textos en español; el JSON se pide al
+hidratar (`provideHttpClient(withFetch())` existe porque el cargador también los pide
+durante la generación del HTML).
 
 ## Estructura de los archivos
 
@@ -58,19 +52,19 @@ Objetos anidados que reflejan las secciones del sitio:
 
 ```json
 {
-  "nav":      { "home": "Inicio", "services": "Servicios", … },
+  "nav":      { "home": "Inicio", "services": "Servicios", "skipToContent": "…", "menuLabel": "…", … },
   "loading":  { "tagline": "…" },
   "hero":     { "titleBefore": "…", "titleAccent": "…", … },
   "intro":    { "title": "…", "nodes": { "problema": { "tag": "…", … } } },
   "services": { "badge": "…", "cards": { "personal": { … } } },
-  "stories":  { "badge": "…", "tale": { … }, "gate": { … } },
-  "team":     { "badge": "…", "lead": { … }, "members": { … } },
+  "stories":  { "badge": "…", "tale": { … }, "gate": { … }, "unlocked": { … } },
+  "team":     { "badge": "…", "lead": { … }, "stats": { … } },
   "contact":  { "badge": "…", "crisis": { … }, "form": { … }, "map": { … } },
   "footer":   { "tagline": "…", … }
 }
 ```
 
-**Hoy los dos archivos tienen exactamente 155 claves cada uno y coinciden al cien por cien.**
+**Los dos archivos tienen exactamente 147 claves cada uno y coinciden al cien por cien.**
 Mantenlo así.
 
 Para comprobarlo en cualquier momento, desde `psyconova-frontend/`:
@@ -97,7 +91,7 @@ español.
 <img [alt]="'intro.loop.start' | translate">
 ```
 
-**Componiendo la clave a partir de datos** — es el patrón más usado del proyecto:
+**Componiendo la clave a partir de datos**: es el patrón más usado del proyecto:
 
 ```html
 <!-- s.key vale 'personal', 'professional' o 'selfKnowledge' -->
@@ -105,12 +99,13 @@ español.
 ```
 
 Así el TypeScript guarda sólo `key: 'personal'` y ningún texto. Lo usan
-`ServicesSection`, `TeamSection`, `IntroSection` y las líneas de crisis de `CtaSection`.
+`ServicesSection`, `TeamSection`, `IntroSection`, las líneas de crisis de `CtaSection` y
+las entradas del menú (`MENU_LINKS` guarda `key: 'nav.home'`).
 
 **Eligiendo entre dos claves según el estado:**
 
 ```html
-{{ (isSending ? 'contact.form.sending' : 'contact.form.submit') | translate }}
+{{ (isSending() ? 'contact.form.sending' : 'contact.form.submit') | translate }}
 ```
 
 **En TypeScript** (no se usa hoy, pero si lo necesitas):
@@ -169,24 +164,24 @@ Supongamos portugués:
    export const LANGUAGES = ['ES', 'EN', 'PT'] as const;
    ```
 
-Y ya. El tipo `Language` se deriva de esa constante, los dos selectores (`navbar` y `hero`)
-recorren `LANGUAGES` con `*ngFor`, y `toTranslateCode()` sólo pasa a minúsculas. **No hay
-que tocar ninguna plantilla.**
+Y ya. El tipo `Language` se deriva de esa constante, el selector de idioma (`MenuBar`, el
+mismo componente en la barra fija y en la portada) recorre `languages` con `@for`, y
+`toTranslateCode()` sólo pasa a minúsculas. **No hay que tocar ninguna plantilla.**
 
 Dos cosas a revisar después:
-- Los selectores muestran el código de dos letras. Con tres o más idiomas, la fila puede
+- El selector muestra el código de dos letras. Con tres o más idiomas, la fila puede
   quedar apretada en móvil.
-- Los documentos legales seguirían sólo en español (ver más abajo).
+- Los documentos legales y la página 404 seguirían sólo en español (ver más abajo).
 
-## Las tres excepciones
+## Las cuatro excepciones
 
-Hay texto visible que **no** está en los archivos de idioma. Las tres tienen motivo:
+Hay texto visible que **no** está en los archivos de idioma. Las cuatro tienen motivo:
 
-**1. Datos de contacto** — Teléfonos, correo, dirección, números de las líneas de crisis.
+**1. Datos de contacto.** Teléfonos, correo, dirección, números de las líneas de crisis.
 Están en `core/config/contact.config.ts`. Un número de teléfono es el mismo en cualquier
 idioma; tenerlo duplicado en dos archivos sólo crea la posibilidad de que diverjan.
 
-**2. Documentos legales** — La política de privacidad y los términos de uso tienen el texto
+**2. Documentos legales.** La política de privacidad y los términos de uso tienen el texto
 directamente en su plantilla. El motivo, del propio código:
 
 > *"Es un documento legal regido por la ley colombiana, así que su versión vinculante es la
@@ -195,50 +190,35 @@ directamente en su plantilla. El motivo, del propio código:
 Si algún día se traducen, la traducción debe llevar una nota de que la versión vinculante es
 la española.
 
-**3. El cuento interactivo** — `assets/cuentos/las-manadas.html` es un archivo autónomo con
+**3. El cuento interactivo.** `assets/cuentos/las-manadas.html` es un archivo autónomo con
 su propio HTML, CSS y JavaScript. Está sólo en español y no participa del sistema de
 traducción.
 
-> **📊 GRÁFICO G-17 — Decisión: ¿este texto va en i18n o en el código?**
-> **Va aquí:** al final de esta sección, como resumen práctico.
-> **Tipo:** árbol de decisión con preguntas de sí/no.
-> **Debe mostrar:** el camino para decidir dónde poner un texto nuevo.
-> **Estructura del árbol:**
-> - Pregunta raíz: **"¿El visitante lo lee en pantalla?"**
->   - No → `no hace falta traducirlo` (clases CSS, comentarios, nombres de variables).
->   - Sí → siguiente pregunta.
-> - **"¿Es un dato de contacto, una dirección o un número de teléfono?"**
->   - Sí → `core/config/contact.config.ts`.
->   - No → siguiente pregunta.
-> - **"¿Es un documento legal?"**
->   - Sí → `directo en la plantilla, sólo en español`.
->   - No → siguiente pregunta.
-> - **"¿Está dentro del cuento interactivo?"**
->   - Sí → `assets/cuentos/las-manadas.html`, sólo español.
->   - No → **`assets/i18n/es.json` Y `en.json`**. Destaca esta caja: es la respuesta en el
->     95 % de los casos.
+**4. La página 404.** Su texto (título, explicación, botones y aviso de crisis) va directo
+en `not-found.html`, sólo en español.
+
+En resumen, para decidir dónde va un texto nuevo: si el visitante no lo lee, no se traduce;
+si es un dato de contacto, `contact.config.ts`; si es un documento legal o la página 404,
+directo en la plantilla; si está dentro del cuento, en el propio archivo; y en cualquier
+otro caso, que es el 95 % de las veces, **en `es.json` y `en.json`**.
 
 ## Limitaciones actuales
 
 Cosas que hoy no hace el sistema y que conviene conocer:
 
 **El idioma no está en la URL.** Cambiar a inglés no cambia la dirección: sigue siendo
-`psyconova.com/`. Consecuencias: no se puede compartir un enlace en inglés, y Google sólo
-indexa la versión española porque es la que ve al rastrear. Resolverlo requiere rutas por
-idioma (`/es/`, `/en/`) más etiquetas `hreflang`. Está en las propuestas (P-05).
+`psyconova.com/`. Consecuencias: no se puede compartir un enlace en inglés, y los buscadores
+sólo indexan la versión española, que es la que se prerenderiza. Resolverlo requiere rutas
+por idioma (`/es/`, `/en/`) más etiquetas `hreflang`.
 
 **No hay plurales ni interpolación.** `ngx-translate` los soporta
 (`"Tienes {{n}} mensajes"`), pero el sitio no lo necesita hoy.
 
 **No hay comprobación automática de que los dos archivos coincidan.** Es responsabilidad de
-quien edita. El comando de arriba lo verifica en un segundo; sería fácil convertirlo en un
-paso del build.
-
-**Los textos del equipo oculto siguen ahí.** Bajo `team.members` hay tres perfiles con
-nombres de relleno ("Nombre del Líder", "Nombre del Asesor", "Nombre del Estratega"). No se
-muestran porque el bloque está comentado, pero están en los dos archivos de idioma.
+quien edita. El comando de arriba lo verifica en un segundo; sería fácil convertirlo en una
+prueba o en un paso de la integración continua.
 
 ---
 
-**Siguiente:** [07 · Formulario de contacto](./07-formulario-de-contacto.md) — el único
+**Siguiente:** [07 · Formulario de contacto](./07-formulario-de-contacto.md): el único
 flujo con servidor del proyecto.

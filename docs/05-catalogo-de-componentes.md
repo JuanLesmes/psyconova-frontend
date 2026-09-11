@@ -5,23 +5,32 @@ saber antes de tocarla.
 
 **Convención de nombres del proyecto:** los archivos no llevan sufijo (`home.ts`, no
 `home.component.ts`), pero las clases sí describen su tipo cuando hace falta
-(`MainLayoutComponent`, `FooterComponent`). No es del todo consistente — `Navbar` y `Home`
-no llevan sufijo — pero así está y conviene seguirlo.
+(`MainLayoutComponent`, `FooterComponent`). No es del todo consistente (`Navbar`, `Home`,
+`MenuBar` no llevan sufijo), pero así está y conviene seguirlo.
+
+**Convenciones de código comunes a todo el catálogo:** el estado de los componentes vive
+en signals (`signal()`, `computed()`); las dependencias se piden con `inject()`; las
+directivas declaran sus entradas y salidas con `input()` y `output()`; las plantillas usan
+`@if` y `@for` (no hay `*ngIf`, `*ngFor` ni `CommonModule`); y `standalone: true` no se
+escribe porque es el valor por defecto de Angular 21. Todo lo que toca `window`,
+`document` o temporizadores va detrás de una comprobación `isPlatformBrowser`, porque cada
+componente se ejecuta también al prerenderizar.
 
 ---
 
 # Núcleo
 
-## `App` — componente raíz
+## `App`: componente raíz
 
 📁 [`app.ts`](../psyconova-frontend/src/app/app.ts) · selector `app-root`
 
 Lo más simple del proyecto. Su plantilla completa son dos líneas: la pantalla de carga y el
 `router-outlet`.
 
-Lo único que hace en `ngOnInit`:
+Lo único que hace en `ngOnInit`, y sólo en el navegador:
 
 ```ts
+if (!this.esNavegador) return;
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
 ```
@@ -29,28 +38,34 @@ window.scrollTo(0, 0);
 Esto desactiva la restauración automática de scroll del navegador. Sin ello, al recargar la
 página el navegador te devolvería a la mitad del sitio, pero con la pantalla de carga
 encima, lo que se ve como un salto brusco al desaparecer. Con esto, cada carga empieza
-arriba.
+arriba. La guarda de plataforma existe porque `history` y `window` no existen al
+prerenderizar.
 
 Ese `window.scrollTo` es el que produce el aviso `Not implemented: Window's scrollTo()
 method` al correr las pruebas. Es inocuo.
 
-## `appConfig` — configuración global
+## `appConfig`: configuración global
 
 📁 [`app.config.ts`](../psyconova-frontend/src/app/app.config.ts)
 
-Los cinco providers de la aplicación:
+Los seis providers de la aplicación:
 
 | Provider | Para qué |
 |---|---|
 | `provideBrowserGlobalErrorListeners()` | Captura errores no manejados y los reporta a la consola |
 | `provideZoneChangeDetection({ eventCoalescing: true })` | Detección de cambios con `zone.js`, agrupando eventos seguidos |
 | `provideRouter(routes, withInMemoryScrolling(…))` | Rutas + scroll a anclas + volver arriba al cambiar de ruta |
-| `provideHttpClient()` | Necesario para cargar los archivos de traducción y enviar el formulario |
+| `provideHttpClient(withFetch())` | Cargar los archivos de traducción y enviar el formulario. `withFetch` porque al prerenderizar no existe `XMLHttpRequest` |
 | `provideTranslateService({…})` | Traducciones; carga `assets/i18n/<idioma>.json` |
+| `provideClientHydration(withEventReplay(), withIncrementalHydration())` | Hidratar el HTML prerenderizado, repetir los eventos previos y permitir `@defer (hydrate on …)` |
 
-El idioma inicial se resuelve **antes** de arrancar, llamando a `resolveInitialLanguage()`
-desde la propia configuración. Así el primer render ya sale en el idioma correcto y no se ve
-un parpadeo de español a inglés.
+El idioma inicial es **siempre español** (`toTranslateCode(DEFAULT_LANGUAGE)`), no la
+preferencia guardada: la configuración se construye también al prerenderizar, donde no
+hay `localStorage` ni `navigator`. `LanguageService` cambia al idioma guardado ya en el
+navegador, después de hidratar, para que el primer render coincida con el HTML generado.
+
+`app.config.server.ts` añade `provideServerRendering(withRoutes(serverRoutes))` para el
+prerenderizado; `app.routes.server.ts` marca todas las rutas como `Prerender`.
 
 ---
 
@@ -67,28 +82,41 @@ El único estado compartido del proyecto. Es la fuente de verdad del idioma acti
 | Miembro | Tipo | Qué es |
 |---|---|---|
 | `languages` | `readonly ['ES', 'EN']` | La lista de idiomas disponibles |
-| `active` | `Signal<Language>` | Señal de sólo lectura con el idioma actual |
+| `active` | `Signal<Language>` | Signal de sólo lectura con el idioma actual |
 | `use(language)` | método | Cambia el idioma |
 
-**Funciones sueltas exportadas** (están fuera de la clase porque `app.config.ts` las
-necesita antes de que exista el inyector):
+**Constantes y funciones sueltas exportadas** (están fuera de la clase porque
+`app.config.ts` y el prerenderizado las necesitan antes de que exista el inyector):
 
-- `resolveInitialLanguage()` — decide el idioma inicial.
-- `toTranslateCode(lang)` — convierte `'ES'` a `'es'`, que es el nombre del archivo.
+- `DEFAULT_LANGUAGE`: `'ES'`. El idioma con el que arranca todo y con el que se
+  prerenderiza.
+- `resolveInitialLanguage()`: decide el idioma preferido del visitante. Sólo tiene sentido
+  en el navegador.
+- `toTranslateCode(lang)`: convierte `'ES'` a `'es'`, que es el nombre del archivo.
 
-**Cómo decide el idioma inicial**, en orden:
+**Cómo decide el idioma**, en orden:
 
 1. Lo que haya en `localStorage` bajo `psyconova.language`.
 2. Los dos primeros caracteres de `navigator.language`, si son `ES` o `EN`.
 3. Español.
 
-Al cambiar el idioma hace tres cosas: actualiza la señal, llama a `translate.use(code)` y
-pone `document.documentElement.lang = code` (importante para lectores de pantalla y para los
-buscadores). Después intenta guardarlo en `localStorage`.
+**Por qué no lee la preferencia al construirse.** Con hidratación, lo primero que pinta el
+navegador tiene que coincidir con el HTML prerenderizado, que siempre viene en español. Si
+el servicio arrancara leyendo `localStorage`, alguien con el inglés guardado vería el primer
+render en inglés sobre un HTML en español: Angular detecta el desajuste, descarta lo
+prerenderizado y lo reconstruye entero. Así que arranca en español y, sólo en el navegador,
+llama a `use(preferido)` en el constructor.
+
+Al cambiar el idioma hace tres cosas: actualiza la signal, llama a `translate.use(code)` e
+intenta guardarlo en `localStorage`. Un `effect()` mantiene `document.documentElement.lang`
+a la par del idioma activo, también al prerenderizar (ahí `DOCUMENT` sí existe).
 
 **Todos los accesos a `localStorage` van en `try/catch`.** En modo privado o con el
 almacenamiento bloqueado, leer o escribir lanza una excepción. Sin persistencia el idioma
 sigue funcionando durante la sesión; simplemente no se recuerda.
+
+Está cubierto por `language.service.spec.ts`: resolución del idioma inicial, persistencia,
+`<html lang>` y almacenamiento bloqueado.
 
 ## `ContactService`
 
@@ -102,13 +130,39 @@ get isConfigured(): boolean
 ```
 
 El servicio **no sabe** a dónde envía: la URL está en `CONTACT_ENDPOINT`, en
-`core/config/contact.config.ts`. Esa separación es a propósito — si mañana se cambia de
+`core/config/contact.config.ts`. Esa separación es a propósito: si mañana se cambia de
 Netlify a un backend propio, se toca una constante y ni el servicio ni el componente se
 enteran.
 
 Si `CONTACT_ENDPOINT` está vacío, `send()` devuelve un error en vez de fingir que envió.
 Ese principio se repite en todo el flujo de contacto y es deliberado: **nunca se le dice al
 visitante que su consulta llegó si no llegó.**
+
+## `SeoService`
+
+📁 [`core/services/seo.service.ts`](../psyconova-frontend/src/app/core/services/seo.service.ts)
+
+Deja una página lista para buscadores y redes sociales con una sola llamada:
+
+```ts
+apply(page: PageSeo): void          // título, descripción, robots, canonical, Open Graph, Twitter Card
+setBusinessData(datos: object): void  // ficha del negocio (JSON-LD), sólo la portada
+```
+
+`apply()` pone **todo** a la vez. El motivo, del propio código: repartir el SEO entre
+`index.html`, las rutas y cada componente es como se llega al fallo más común, que todas las
+páginas declaren el mismo canonical. Aquí, si una página llama a `apply()`, está completa;
+si no, le falta todo.
+
+Detalles que conviene conocer:
+
+- El canonical es un `<link>`, no un `<meta>`, así que el servicio `Meta` de Angular no lo
+  cubre; se reutiliza el mismo elemento en vez de añadir uno por navegación.
+- `apply()` retira los datos estructurados en cada página. Sólo la portada los pone después.
+  Sin ese borrado, al navegar de la portada a los términos sin recargar, la ficha de negocio
+  se quedaría pegada al documento.
+- Las etiquetas Open Graph sólo sirven porque el sitio se prerenderiza: WhatsApp, LinkedIn
+  y Facebook no ejecutan JavaScript.
 
 ## `contact.config.ts`
 
@@ -127,6 +181,9 @@ visitante que su consulta llegó si no llegó.**
 | `LOCATION` | Calle, edificio, ciudad, consulta para Google, nivel de zoom |
 | `MAP_CONSENT_KEY` | Clave de `localStorage` del consentimiento del mapa |
 
+De `CONTACT_INFO` y `LOCATION` salen también la ficha de negocio que pone `Home` y el
+destino por defecto de la función serverless: el correo no está escrito dos veces.
+
 ⚠️ **Sobre `CRISIS_LINES`, lee el comentario del archivo antes de tocar nada.** Los números
 (106, 192, 123) están verificados contra minsalud.gov.co y saludcapital.gov.co en agosto de
 2026. *Un número equivocado en una línea de crisis es peor que no tener ninguna.* Si hay que
@@ -135,6 +192,68 @@ cambiarlos, confírmalo primero con la fuente oficial.
 `MAP_CONSENT_KEY` termina en `.v1` por un motivo: si el texto del aviso de consentimiento
 cambia de forma sustancial, hay que subir la versión (`.v2`) para volver a pedir permiso a
 quienes ya lo habían dado sobre un texto distinto.
+
+## `map-consent.ts`
+
+📁 [`core/config/map-consent.ts`](../psyconova-frontend/src/app/core/config/map-consent.ts)
+
+La decisión del visitante sobre el mapa de Google, aislada de Angular para poder probarla:
+
+```ts
+type MapConsent = boolean | null;   // null: no ha decidido · true: aceptó · false: rechazó
+
+interpretarConsentimientoMapa(guardado: string | null): MapConsent
+leerConsentimientoMapa(): MapConsent
+guardarConsentimientoMapa(decision: boolean): void
+olvidarConsentimientoMapa(): void
+```
+
+Son tres estados y no dos porque "dijo que no" es distinto de "nunca se le preguntó": con un
+booleano habría que volver a preguntar en cada visita a quien ya rechazó. Sólo `'1'` cuenta
+como aceptado y sólo `'0'` como rechazado; cualquier otra cosa guardada se trata como "sin
+decidir", **nunca como aceptado**, porque eso cargaría Google sin permiso y nadie lo notaría.
+
+`consent.spec.ts` prueba la función real de interpretación con la tabla de valores.
+
+## `navigation.config.ts`
+
+📁 [`core/config/navigation.config.ts`](../psyconova-frontend/src/app/core/config/navigation.config.ts)
+
+Las entradas del menú principal, en una sola lista:
+
+```ts
+export const MENU_LINKS = [
+  { fragment: 'home', key: 'nav.home' },
+  { fragment: 'nosotros', key: 'nav.what' },
+  { fragment: 'services', key: 'nav.services' },
+  { fragment: 'equipo', key: 'nav.about' },
+  { fragment: 'contact', key: 'nav.contact' },
+] as const;
+```
+
+La barra fija y la barra de la portada abren el mismo `MenuOverlay`, que recorre esta lista.
+Añadir o quitar una sección del menú se hace aquí y en los dos archivos de idioma.
+
+## `site.config.ts`
+
+📁 [`core/config/site.config.ts`](../psyconova-frontend/src/app/core/config/site.config.ts)
+
+El dominio, el nombre del sitio, la imagen para redes y los metadatos de cada página:
+
+| Constante | Contenido |
+|---|---|
+| `SITE` | `url` (sin barra final), `name`, `locale`, imagen social y sus medidas |
+| `PAGES` | `home`, `privacy`, `terms`, `notFound`: título, descripción, ruta y, si aplica, `noindex` |
+| `absoluteUrl(path)` | Convierte una ruta interna en URL absoluta |
+
+De `PAGES` salen tres cosas a la vez: los metadatos que aplica cada componente, las URLs
+del sitemap (sólo las indexables) y la lista que la prueba `site.config.spec.ts` compara
+con el router. Añadir una página aquí la mete en las tres.
+
+**Por qué el dominio vive aquí y en ningún otro lado:** normalmente acaba copiado en
+`index.html`, en el sitemap y en `robots.txt`, y al cambiarlo alguno se queda atrás. Aquí
+es la única copia; `scripts/generate-seo-files.mjs` importa este mismo módulo en el
+`prebuild`.
 
 ## `tales.config.ts`
 
@@ -153,16 +272,29 @@ export const TALE = {
 Cualquiera puede abrir las herramientas de desarrollo y leer las claves, o pedir el archivo
 directamente por su URL. El propio archivo lo advierte.
 
-Sirve para lo que probablemente se busca — que el cuento se entregue en consulta y no quede
-suelto para cualquiera que pase — pero no para proteger algo que de verdad no pueda verse.
+Sirve para lo que probablemente se busca (que el cuento se entregue en consulta y no quede
+suelto para cualquiera que pase) pero no para proteger algo que de verdad no pueda verse.
 Si hiciera falta control real, el camino es una función serverless que valide la clave en el
-servidor.
+servidor. Lo que sí se hace es dejar `/assets/cuentos/` fuera del índice de los buscadores
+en `robots.txt`.
 
 `normalizeCode()` prepara lo que escribe el usuario antes de comparar: quita espacios
 sobrantes, pasa a minúsculas, elimina tildes (`NFD` + `\p{Diacritic}`) y colapsa espacios
 múltiples. Así, escribir `"Manáda"` o `"  las   manadas "` funciona igual. El comentario
 explica por qué se usa `\p{Diacritic}` y no un rango de caracteres: *"un rango de
 combinantes son símbolos invisibles en el código, imposibles de revisar"*.
+
+`tales.config.spec.ts` cubre `isValidTaleCode()` y `normalizeCode()`.
+
+## `contact-rules.ts`
+
+📁 [`core/contact/contact-rules.ts`](../psyconova-frontend/src/app/core/contact/contact-rules.ts)
+
+Las reglas de validación de una consulta, puras y sin dependencias: `LIMITES`,
+`recortar()`, `escaparHtml()`, `esCorreoValido()` y `validarConsulta()`. Viven en `src/` y
+no dentro de la función serverless porque el corredor de pruebas sólo mira `src/**`
+(`tsconfig.spec.json`); la función las importa desde `netlify/functions/contact.mts`.
+Están documentadas en [07 · Formulario de contacto](./07-formulario-de-contacto.md).
 
 ---
 
@@ -177,64 +309,53 @@ Envuelve todas las rutas. Su plantilla completa:
 ```html
 <div class="site-frame">
   <div class="site-frame__border"></div>
+  <a class="skip-link" href="#contenido">{{ 'nav.skipToContent' | translate }}</a>
   <app-navbar></app-navbar>
-  <main class="main-layout"><router-outlet></router-outlet></main>
+  <main class="main-layout" id="contenido" tabindex="-1"><router-outlet></router-outlet></main>
   <app-footer></app-footer>
 </div>
 ```
 
 Sin lógica. El `site-frame__border` es el borde turquesa fijo descrito en
-[04 · Sistema de diseño](./04-sistema-de-diseno.md#formas-recurrentes).
+[04 · Sistema de diseño](./04-sistema-de-diseno.md#formas-recurrentes). El enlace de salto
+es lo primero que encuentra quien navega con teclado o lector de pantalla y le permite ir
+directo al contenido sin tabular por el menú; `tabindex="-1"` en `<main>` permite llevarle
+el foco.
 
 ## `Navbar`
 
 📁 [`layout/components/navbar/`](../psyconova-frontend/src/app/layout/components/navbar/)
 
-Barra fija superior. Contiene el botón de menú, el logo y el selector `ES / EN`.
-
-> **📊 GRÁFICO G-13 — Estados del navbar según el scroll**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** diagrama de estados, o tres viñetas de la ventana del navegador en posiciones
-> distintas de scroll.
-> **Debe mostrar:** cuándo se ve la barra y cuándo no. La lógica está en `onWindowScroll()`.
-> **Estados que hay que representar:**
-> - **A — Dentro del hero** (`heroRect.bottom > 0`): barra **oculta**. El hero pinta su
->   propio menú, así que se verían duplicados.
-> - **B — Pasado el hero, bajando** (`scrollY > último + 4`): barra **oculta**. Se aparta
->   para dejar leer.
-> - **C — Pasado el hero, subiendo** (`scrollY < último - 4`): barra **visible**. El usuario
->   busca navegar.
-> - **D — Menú abierto**: barra **visible siempre**, sin importar el scroll.
-> **Anota el umbral de 4 px** con la nota: "evita que el temblor natural del dedo en un
-> móvil haga parpadear la barra".
-> **Estilo:** dibuja las transiciones entre estados con flechas etiquetadas por la
-> condición.
+Barra fija superior. Pinta un `MenuBar` (botón de menú, logo, selector `ES / EN`) y un
+`MenuOverlay` con `menuId="menu-principal"`.
 
 **Estado:**
 
-| Propiedad | Qué guarda |
-|---|---|
-| `menuOpen` | Si el menú a pantalla completa está abierto |
-| `isNavbarVisible` | Si la barra se muestra |
-| `lastScrollY` | Posición anterior, para saber la dirección |
+| Propiedad | Tipo | Qué guarda |
+|---|---|---|
+| `menuOpen` | `signal(false)` | Si el menú a pantalla completa está abierto |
+| `visible` | `signal(false)` | Si la barra se muestra |
+| `lastScrollY` | número privado | Posición anterior, para saber la dirección |
 
-**La lógica de `onWindowScroll()`**, en orden de prioridad:
+**La lógica de `actualizarVisibilidad()`**, en orden de prioridad:
 
 1. Si el menú está abierto → visible, siempre.
-2. Si no encuentra el elemento `#home` (es decir, no estamos en la portada) → visible.
-3. Si el hero todavía se ve en pantalla → **oculta**.
+2. Si no encuentra el elemento `#home` (es decir, no estamos en la portada) → visible: en
+   las páginas legales y el 404 es la única navegación.
+3. Si el hero todavía se ve en pantalla → **oculta**. La portada ya trae su propia barra.
 4. Bajando más de 4 px → oculta. Subiendo más de 4 px → visible.
 
-El margen de 4 px evita que el temblor del scroll en móvil haga parpadear la barra.
+El margen de 4 px evita que el temblor del scroll en móvil haga parpadear la barra. La
+visibilidad se calcula también en `ngOnInit` (sólo en el navegador): en una página sin hero
+nadie dispara el scroll hasta que el visitante se mueve, y la barra quedaría invisible al
+entrar.
 
-`scrollTo(id)` cierra el menú y espera 80 ms antes de desplazarse, para que la animación de
-cierre del menú no compita con el scroll.
+Cuando está oculta, el `<header>` lleva el atributo `inert` y `MenuBar` recibe
+`collapsed`: la barra sale del orden de tabulación y no recibe clics. `visibility: hidden`
+va en la transición para que la ocultación se desvanezca en vez de cortarse.
 
-⚠️ **Problemas conocidos:**
-- `@HostListener('window:scroll')` se ejecuta en cada evento de scroll sin limitación. Con
-  `zone.js` activo, eso dispara detección de cambios muy a menudo.
-- El enlace "¿Qué es PSYCONOVA?" es un `<a>` sin `href`: no es accesible por teclado.
-- El enlace "Nosotros" apunta a `fragment="intro"`, un ancla que no existe.
+⚠️ `@HostListener('window:scroll')` se ejecuta en cada evento de scroll sin limitación. Con
+`zone.js` activo, eso dispara detección de cambios muy a menudo.
 
 ## `FooterComponent`
 
@@ -243,12 +364,9 @@ cierre del menú no compita con el scroll.
 Pie de página sobre fondo oscuro. Tres columnas (marca, navegación, contacto), un separador
 y una barra inferior con el copyright y los enlaces legales.
 
-Lo único que tiene de lógica es `readonly contactInfo = CONTACT_INFO`, para mostrar el
-correo desde la configuración central.
-
-⚠️ El enlace de navegación del footer apunta a `fragment="nosotros"` — que **sí** es el ancla
-correcta. O sea: el footer navega bien y el navbar no. Al arreglar el navbar, copia lo que
-hace el footer.
+Lo único que tiene de lógica es `readonly contactInfo = { ...CONTACT_INFO }`, para mostrar
+el correo desde la configuración central. Sus enlaces de navegación son
+`routerLink="/" fragment="…"` con las mismas anclas del menú.
 
 ---
 
@@ -260,10 +378,11 @@ hace el footer.
 
 La primera pantalla: ocupa el alto completo de la ventana menos el borde del sitio.
 
-**Contiene una copia del navbar.** Su propia barra superior (logo, botón de menú, selector
-de idioma) y su propio menú a pantalla completa. Es duplicación deliberada, explicada en
-[03 · Arquitectura](./03-arquitectura.md#decisiones-técnicas-que-conviene-entender): sobre
-el fondo claro del hero, la barra fija translúcida se vería mal.
+**Lleva su propia barra de menú.** Sobre el fondo claro del hero, la barra fija translúcida
+se vería mal, así que `Navbar` se oculta mientras el hero está en pantalla y el hero pinta
+un `MenuBar` en su franja superior (`.hero-cover__topbar`, de 90 px, igual que la barra
+fija) más un `MenuOverlay` con `menuId="menu-portada"`. Su único estado es
+`menuOpen = signal(false)`.
 
 Los dos comparten `LanguageService`, así que cambiar el idioma en cualquiera de los dos se
 refleja en el otro de inmediato.
@@ -278,59 +397,56 @@ El título se compone de tres claves de traducción para poder resaltar una pala
 
 Resultado: "Una nueva **mirada** para la salud mental."
 
-⚠️ Si tocas el menú del navbar, **tienes que tocar también el del hero**. Están duplicados y
-nada avisa si divergen.
+El botón de flecha del pie del hero (`scrollTo('nosotros')`) cierra el menú y espera 80 ms
+antes de desplazarse, para que la animación de cierre no compita con el scroll.
 
 ## `IntroSection`
 
 📁 [`features/home/components/intro-section/`](../psyconova-frontend/src/app/features/home/components/intro-section/) · `#nosotros`
 
-La pieza más compleja del sitio: la "constelación" o "sinapsis".
+La pieza más compleja del sitio: la "constelación" o "sinapsis". Dos capas con unidades
+distintas: un SVG (`viewBox="0 0 1000 760"`) con las líneas y los puntos, que usa
+`lineX`/`lineY`, y siete botones HTML posicionados en porcentaje (`x`/`y`). La conversión
+es `lineX = x × 10` y `lineY = y × 7,6`; si mueves un nodo, tienes que actualizar los cuatro
+números a mano.
 
-> **📊 GRÁFICO G-14 — Anatomía de la constelación de la sección Intro**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** diagrama técnico anotado de la composición, con dos sistemas de coordenadas
-> superpuestos.
-> **Debe mostrar:** cómo conviven dos capas que usan unidades distintas:
-> - **Capa SVG** (`viewBox="0 0 1000 760"`): las líneas y los puntos. Usa `lineX`/`lineY` en
->   coordenadas del viewBox.
-> - **Capa HTML** (posicionamiento absoluto en %): los siete botones de nodo. Usan `x`/`y`
->   en porcentaje.
-> **Anota la conversión, que es la clave del componente:**
-> `lineX = x × 10` y `lineY = y × 7.6` (porque el viewBox mide 1000 × 760).
-> **Dibuja los siete nodos en sus posiciones reales**, con su `id` y su porcentaje:
-> `problema` (23 %, 21 %) · `que-es` (50 %, 10 %) · `tecnologia` (77 %, 21 %) ·
-> `exploracion` (13 %, 50 %) · `acceso` (87 %, 50 %) · `impacto` (26 %, 83 %) ·
-> `bienestar` (74 %, 83 %).
-> **Marca el centro** en (500, 380) del SVG, que es el portal con la imagen.
-> **Añade una nota de advertencia:** "si mueves un nodo, tienes que actualizar los cuatro
-> números a mano. No hay nada que los mantenga sincronizados."
+**Estado**, todo en signals:
+
+| Signal | Qué guarda |
+|---|---|
+| `activeId` | `id` del nodo señalado, o `null` |
+| `currentLoopIndex` | Índice de la imagen actual del bucle |
+| `previousLoopIndex` | Índice de la imagen anterior mientras se desvanece, o `null` |
+| `activeNode`, `currentLoopImage`, `previousLoopImage` | `computed()` derivados de los anteriores; son lo que lee la plantilla |
 
 **Dos comportamientos a la vez:**
 
 **1. Bucle de imágenes en reposo.** Cuando nadie interactúa, el portal central rota tres
 imágenes cada 3200 ms con un fundido cruzado. Para el fundido mantiene a la vez la imagen
-anterior y la actual, y borra la anterior a los 980 ms (la transición dura menos).
+anterior y la actual, y borra la anterior a los 980 ms (la transición dura menos). Con
+`prefers-reduced-motion` el bucle no arranca y el centro se queda en la primera imagen.
 
-**2. Nodos interactivos.** Siete botones alrededor del centro. Al pasar el mouse o enfocar
-uno: se ilumina su línea al centro, aparecen dos pulsos viajeros, y el portal central cambia
-a la imagen de ese nodo. El bucle se pausa mientras haya un nodo activo
-(`if (this.activeId) return;` dentro del intervalo).
+**2. Nodos interactivos.** Siete botones alrededor del centro. Al pasar el mouse, enfocar
+con el teclado o tocar uno: se ilumina su línea al centro, aparecen dos pulsos viajeros, y
+el portal central cambia a la imagen de ese nodo. El bucle se pausa mientras haya un nodo
+activo (`if (this.activeId()) return;` dentro del intervalo).
 
 Al salir del nodo, `clearActiveDelayed()` espera **110 ms** antes de volver al bucle. Sin
-esa espera, mover el mouse de un nodo a otro produciría un parpadeo del portal.
+esa espera, mover el mouse de un nodo a otro produciría un parpadeo del portal. Salir del
+escenario entero (`mouseleave` en `.synapse-stage`) limpia el nodo de inmediato.
 
 **Los tres temporizadores** (`loopIntervalId`, `cleanupTimeoutId`, `clearDelayId`) se
-limpian en `ngOnDestroy`. Está bien hecho; si añades otro, acuérdate de limpiarlo también.
+limpian en `ngOnDestroy`. Si añades otro, acuérdate de limpiarlo también. Ninguno corre al
+prerenderizar: el HTML generado sale con la primera imagen del ciclo, que es con la que
+arranca el navegador, así que no hay desajuste al hidratar.
 
 **Sobre el SVG:** el degradado usa `gradientUnits="userSpaceOnUse"` y el comentario del
-código explica por qué — con el valor por defecto (`objectBoundingBox`), una línea
+código explica por qué: con el valor por defecto (`objectBoundingBox`), una línea
 perfectamente horizontal o vertical tiene una dimensión de cero y el degradado no se ve.
 Las líneas en reposo usan color sólido por el mismo motivo.
 
-⚠️ **Este componente es de escritorio.** Toda la interacción está pensada para mouse
-(`mouseenter`, `mouseleave`). En móvil hay `(click)` pero no hay forma de cerrar el nodo
-activo salvo tocando otro.
+Las imágenes del portal llevan `width="672" height="840"` para que el navegador reserve el
+espacio antes de que carguen.
 
 ## `ServicesSection`
 
@@ -354,41 +470,24 @@ services: Service[] = [
 Los textos se resuelven por composición de clave: `'services.cards.' + s.key + '.title'`.
 Ese patrón se repite en varias secciones y es lo que mantiene el TypeScript libre de texto.
 
-🔒 **Bloque desactivado:** la galería "Entornos VR" (cuatro entornos: costa, submarino,
-bosque, montaña) está comentada en el HTML y en el TypeScript, a la espera de imágenes. El
-comentario deja la instrucción para reactivarla: *"Al reactivarlo, mover los `label` a
-assets/i18n/*.json bajo `services.environments`"*.
-
 ## `StoriesSection`
 
 📁 [`features/home/components/stories-section/`](../psyconova-frontend/src/app/features/home/components/stories-section/) · `#cuentos`
 
 Fondo oscuro. Presenta el cuento *Las Manadas* y lo desbloquea con una palabra clave.
 
-> **📊 GRÁFICO G-15 — Estados del componente de cuentos**
-> **Va aquí:** debajo de este párrafo.
-> **Tipo:** diagrama de dos estados con las transiciones entre ellos.
-> **Debe mostrar:**
-> - **Estado BLOQUEADO** (`unlocked = false`): el `<iframe>` con la portada del cuento **sí
->   está cargado y animándose**, pero encima tiene una capa (`.tale__veil`) que intercepta
->   todos los toques, con una insignia de candado. A la derecha, el formulario de la palabra
->   clave.
-> - **Estado DESBLOQUEADO** (`unlocked = true`): la capa desaparece; el iframe se vuelve
->   interactivo. El formulario se sustituye por un botón "Abrir el cuento" que abre el
->   archivo en una pestaña nueva.
-> - **Transición**: escribir la palabra clave → `submitCode()` → `isValidTaleCode()`.
->   Si falla, aparece el mensaje de error y **no** cambia de estado.
-> **Anota en grande:** "Al recargar la página vuelve al estado bloqueado. El desbloqueo dura
-> sólo la visita: no se guarda en ninguna parte, y es a propósito."
-
-**Estado:** `unlocked`, `code`, `wrongCode`. Nada más.
+**Estado:** `unlocked`, `code`, `wrongCode`. Son propiedades planas, no signals, porque
+`ngModel` escribe en `code` directamente. Nada más.
 
 El detalle bonito del diseño: mientras está bloqueado, **la portada del cuento se ve y se
-anima**; lo que hay encima es una capa transparente que intercepta los toques. Así el
-visitante entiende qué es lo que está bloqueado.
+anima** dentro del `<iframe>` (con `loading="lazy"` y `allow="fullscreen"`); lo que hay
+encima es una capa transparente (`.tale__veil`) que intercepta los toques. Así el visitante
+entiende qué es lo que está bloqueado. Al desbloquear, la capa desaparece y el formulario se
+sustituye por un botón que abre el archivo en una pestaña nueva.
 
 El desbloqueo **no se persiste**, y el comentario del código insiste en que es a propósito:
-al recargar vuelve a pedirse la palabra.
+al recargar vuelve a pedirse la palabra. Un código incorrecto muestra el error sin cambiar
+de estado; `clearError()` lo quita en cuanto la persona corrige lo que escribió.
 
 `taleFrameUrl` pasa por `DomSanitizer.bypassSecurityTrustResourceUrl()` porque Angular
 bloquea las URL de `[src]` en un iframe. Aquí es seguro: la URL es una constante del propio
@@ -402,20 +501,25 @@ Fondo claro. Perfil de la directora clínica: foto en marco de arco, nombre, cre
 biografía, siete especialidades como etiquetas y su formación académica.
 
 El TypeScript sólo guarda la foto y las claves de las especialidades. Todo el texto está en
-i18n bajo `team.lead`.
+i18n bajo `team.lead`. No hay más perfiles: cualquier ampliación del equipo se haría como
+sección nueva.
 
-🔒 **Bloque oculto:** la sección "Equipo interdisciplinario" con tres perfiles (tecnología,
-legal, marketing) está comentada. **Sus textos siguen en los archivos de idioma** bajo
-`team.members`, con nombres de relleno como "Nombre del Líder". Si algún día se activa sin
-reemplazarlos, esos nombres saldrían publicados.
-
-## `CtaSection` — la sección de contacto
+## `CtaSection`: la sección de contacto
 
 📁 [`features/home/components/cta-section/`](../psyconova-frontend/src/app/features/home/components/cta-section/) · `#contact`
 
-La sección más grande del proyecto (796 líneas de SCSS, la que dispara el aviso de
+La sección más grande del proyecto (838 líneas de SCSS, la que dispara el aviso de
 presupuesto). Contiene cuatro cosas: el aviso de crisis, el formulario, las tarjetas de
 información y el mapa.
+
+**Estado:**
+
+| Miembro | Tipo | Qué guarda |
+|---|---|---|
+| `state` | `signal<SubmitState>` | `idle`, `sending`, `success` o `error` |
+| `isSending`, `submitted`, `hasError` | `computed()` | Derivados de `state`, para la plantilla |
+| `mapConsent` | `signal<MapConsent>` | `null`, `true` o `false`; arranca con `leerConsentimientoMapa()` |
+| `form` | objeto plano | Los campos del formulario. No es signal porque `ngModel` escribe en él directamente |
 
 Está documentada por completo en [07 · Formulario de contacto](./07-formulario-de-contacto.md).
 Lo esencial:
@@ -424,8 +528,14 @@ Lo esencial:
 - **El botón de envío está deshabilitado hasta marcar el consentimiento.**
 - **Nunca se finge un envío exitoso**: si falla, se muestra el error con el correo como
   alternativa.
-- **El mapa no se carga hasta que el visitante lo autoriza.** El `<iframe>` ni siquiera
-  existe en el DOM antes de eso, así que ninguna petición sale a Google.
+- **El mapa no se carga hasta que el visitante lo autoriza.** Los tres estados del mapa
+  (pregunta, rechazado, aceptado) van en una sola cadena `@if / @else if / @else`, y el
+  `<iframe>` sólo existe en la última rama, así que ninguna petición sale a Google antes.
+  Aceptar y rechazar son dos botones del mismo peso; quien rechaza no vuelve a ser
+  preguntado, y puede cambiar de idea con `resetMapConsent()`.
+
+`cta-section.spec.ts` cubre el envío con y sin consentimiento, el éxito, el error sin fingir
+envío, el doble envío y los tres estados del mapa con `localStorage`.
 
 ---
 
@@ -439,40 +549,102 @@ Pantalla de carga sobre fondo oscuro: tres anillos girando, el logo, el lema y u
 progreso.
 
 ```ts
-ngOnInit(): void {
-  this.hideTimer = setTimeout(() => {
-    this.hiding = true;
-    this.removeTimer = setTimeout(() => { this.visible = false; }, 700);
-  }, 2400);
-}
+private static readonly ESPERA_MS = 900;   // cuánto se queda antes de empezar a irse
+private static readonly SALIDA_MS = 400;   // debe coincidir con la transición de .ls en el SCSS
 ```
 
-⚠️ **Los tiempos son fijos y no miden nada.** No espera a las traducciones, ni a las
-imágenes, ni a nada. Son 2400 ms de espera más 700 ms de desvanecido, siempre, incluso si el
-sitio ya está listo en 300 ms. Es la primera impresión del visitante y son tres segundos en
-los que no puede hacer nada. Ver la propuesta P-02.
+**Los tiempos son fijos y no miden nada**, y por eso son cortos. El comentario del código
+recoge la medición de Lighthouse que justifica el valor: una espera de 2400 ms cuesta 18
+puntos de rendimiento en móvil (79 frente a 97 sin pantalla). Como el sitio se
+prerenderiza, el contenido ya está escrito cuando llega el visitante: una espera larga
+taparía un sitio terminado. 900 ms deja ver el logo y la animación sin bloquear la
+lectura, y si se sube hay que contar con que la nota baja en la misma medida.
 
-Lleva `aria-hidden="true"` para que los lectores de pantalla no la anuncien, pero eso no
-resuelve que tape el contenido.
+Los temporizadores sólo corren en el navegador: al prerenderizar, Angular espera a que la
+aplicación quede en reposo antes de escribir el HTML, y esa espera se sumaría a cada página
+generada sin aportar nada. `visible` arranca en `true` en los dos lados, así que lo
+prerenderizado y lo primero que pinta el navegador coinciden.
+
+Lleva `aria-hidden="true"` para que los lectores de pantalla no la anuncien. `app.spec.ts`
+comprueba que se quita sola, que dura menos de 1,5 s y que no deja temporizadores sueltos.
+
+## `MenuBar`
+
+📁 [`shared/components/menu-bar/`](../psyconova-frontend/src/app/shared/components/menu-bar/) · selector `app-menu-bar`
+
+La barra superior del sitio: botón hamburguesa, logo y selector de idioma. La usan dos
+contenedores, `Navbar` (fija) y `HeroSection` (sobre la portada); el contenedor decide dónde
+está la barra y cuánto mide, y `MenuBar` ocupa el alto y centra los tres controles.
+
+| Entrada / salida | Tipo | Para qué |
+|---|---|---|
+| `open` | `input.required<boolean>()` | El panel está abierto; mientras tanto el botón se oculta |
+| `menuId` | `input.required<string>()` | `id` del panel que abre el botón, para `aria-controls` |
+| `collapsed` | `input(false)` | Oculta la barra entera: sale del orden de tabulación y no recibe clics |
+| `toggled` | `output<void>()` | Se emite al pulsar el botón; el contenedor cambia su `menuOpen` |
+
+El botón lleva `aria-expanded` y `aria-controls`; el logo es un enlace a `#home` con su
+nombre accesible (`nav.goHome`), por lo que la imagen queda decorativa (`alt=""`). El
+selector recorre `languageService.languages` con `@for` y marca el activo con
+`aria-pressed`.
+
+## `MenuOverlay`
+
+📁 [`shared/components/menu-overlay/`](../psyconova-frontend/src/app/shared/components/menu-overlay/) · selector `app-menu-overlay`
+
+El panel del menú a pantalla completa, con las entradas de `MENU_LINKS`.
+
+| Entrada / salida | Tipo | Para qué |
+|---|---|---|
+| `open` | `input.required<boolean>()` | Abierto o cerrado |
+| `menuId` | `input.required<string>()` | Tiene que coincidir con el `aria-controls` del botón que lo abre |
+| `closed` | `output<void>()` | Se emite al pulsar Escape, el botón de volver o cualquier enlace |
+
+Es un `role="dialog"` con `aria-modal="true"`, y eso es una promesa: quien usa lector de
+pantalla entiende que lo de detrás no existe mientras esté abierto. `appFocusTrap` la
+cumple. Cerrado usa `visibility: hidden`, así que sus enlaces quedan fuera del orden de
+tabulación y nadie tabula hacia un menú invisible.
 
 ## `RevealDirective`
 
-📁 [`shared/directives/reveal.directive.ts`](../psyconova-frontend/src/app/shared/directives/reveal.directive.ts)
+📁 [`shared/directives/reveal.directive.ts`](../psyconova-frontend/src/app/shared/directives/reveal.directive.ts) · selector `[appReveal]`
 
 Documentada en [04 · Sistema de diseño](./04-sistema-de-diseno.md#la-animación-de-aparición-reveal).
+Entradas `revealType`, `revealDelay` y `revealThreshold`; no hace nada al prerenderizar ni
+con movimiento reducido. Exporta `prefiereMenosMovimiento()`.
 
-## `PrimaryButton` y `SectionTitle`
+## `FocusTrapDirective`
 
-📁 `shared/components/primary-button/` y `shared/components/section-title/`
+📁 [`shared/directives/focus-trap.directive.ts`](../psyconova-frontend/src/app/shared/directives/focus-trap.directive.ts) · selector `[appFocusTrap]`
 
-**Están vacíos y nadie los usa.** Son restos de la generación inicial con Angular CLI: la
-clase no tiene nada, el HTML dice `primary-button works!` y el SCSS está vacío. Cada uno
-tiene además un archivo de pruebas que sólo comprueba que el componente se puede crear —
-esos son 2 de los 8 tests del proyecto.
+Encierra el foco dentro de un panel mientras está abierto.
 
-Dos caminos válidos: borrarlos, o implementarlos de verdad extrayendo los botones e
-insignias que hoy están duplicados en cada sección. Lo que no tiene sentido es dejarlos
-así.
+| Entrada / salida | Tipo | Para qué |
+|---|---|---|
+| `appFocusTrap` | `input.required<boolean>()` | El panel está abierto |
+| `escapePressed` | `output<void>()` | Se emite al pulsar Escape, para que el componente cierre |
+
+Cumple las tres partes de la promesa del diálogo: al abrir, el foco entra en el panel (con
+60 ms de espera, porque el panel se muestra con una transición de `visibility`); mientras
+está abierto, Tab y Mayús+Tab dan la vuelta dentro; al cerrar, el foco vuelve al elemento
+que lo abrió, pero sólo si sigue dentro del panel (si el usuario ya lo movió, arrastrarlo
+de vuelta sería peor).
+
+La lista de elementos enfocables se recalcula en cada pulsación y descarta los ocultos por
+CSS mirando `getComputedStyle`, no `offsetParent`, porque jsdom no calcula la maquetación.
+`escapePressed` es una salida y no una entrada llamada `onEscape` porque Angular prohíbe
+enlazar propiedades que empiecen por `on`.
+
+`focus-trap.directive.spec.ts` cubre los ocho comportamientos con teclado.
+
+## Sustituto de `IntersectionObserver` para las pruebas
+
+📁 [`testing/intersection-observer.stub.ts`](../psyconova-frontend/src/app/testing/intersection-observer.stub.ts)
+
+`instalarIntersectionObserverFalso()` define un `IntersectionObserver` vacío en
+`globalThis`. jsdom no lo trae y `RevealDirective` lo usa en cada sección: sin él, montar
+cualquier componente con `appReveal` revienta antes de probar nada. Lo llaman `home.spec.ts`
+y `cta-section.spec.ts`.
 
 ---
 
@@ -482,46 +654,51 @@ así.
 
 📁 [`features/home/pages/home/`](../psyconova-frontend/src/app/features/home/pages/home/)
 
-Cero lógica. Su plantilla completa son seis etiquetas:
+Su plantilla son seis etiquetas, las tres últimas diferidas:
 
 ```html
-<app-hero-section></app-hero-section>
-<app-intro-section></app-intro-section>
-<app-services-section></app-services-section>
-<app-stories-section></app-stories-section>
-<app-team-section></app-team-section>
-<app-cta-section></app-cta-section>
+<app-hero-section />
+<app-intro-section />
+<app-services-section />
+@defer (hydrate on viewport) { <app-stories-section /> }
+@defer (hydrate on viewport) { <app-team-section /> }
+@defer (hydrate on viewport) { <app-cta-section /> }
 ```
 
 **Para reordenar las secciones del sitio, este es el único archivo que hay que tocar.**
+
+En `ngOnInit` aplica `PAGES.home` con `SeoService` y pone la ficha de negocio
+(`MedicalBusiness`, JSON-LD) con los datos de `contact.config.ts`, para que si cambia la
+dirección cambie también en la ficha.
 
 ## `PrivacyPolicy` y `TermsOfUse`
 
 📁 [`features/legal/pages/`](../psyconova-frontend/src/app/features/legal/pages/)
 
-Documentos legales. El texto va **directo en la plantilla**, no en i18n, y el comentario del
-código explica por qué: es un documento regido por la ley colombiana, su versión vinculante
-es la española, y traducirlo crearía dos textos que podrían decir cosas distintas.
+Documentos legales, cargados bajo demanda. El texto va **directo en la plantilla**, no en
+i18n, y el comentario del código explica por qué: es un documento regido por la ley
+colombiana, su versión vinculante es la española, y traducirlo crearía dos textos que
+podrían decir cosas distintas. Cada uno aplica sus metadatos con `SeoService`.
 
 Los dos comparten `../../legal.scss`.
 
-⚠️ **Los dos llevan un aviso visible de "Documento en revisión"**, con la instrucción en un
-comentario del HTML: *"quitar este bloque cuando la abogada valide el texto"*. Mientras el
-aviso siga ahí, el documento no es definitivo. Ver [10 · Privacidad y legal](./10-privacidad-y-legal.md).
+⚠️ **Los dos llevan un aviso visible de "Documento en revisión"** (el bloque
+`.legal__draft`), con un comentario en el HTML que indica quitarlo cuando el texto quede
+validado jurídicamente. Mientras el aviso siga ahí, el documento no es definitivo. Ver
+[10 · Privacidad y legal](./10-privacidad-y-legal.md).
 
-## `About`, `Services`, `Contact`
+## `NotFound`
 
-📁 `features/{about,services,contact}/pages/`
+📁 [`features/not-found/`](../psyconova-frontend/src/app/features/not-found/) · rutas `/404` y `**`
 
-**Vacías.** Muestran `about works!`, `services works!` y `contact works!`. Sus SCSS están en
-0 bytes. Son accesibles escribiendo la URL: `psyconova.com/services` muestra hoy una página
-rota.
+Página de error, cargada bajo demanda. Muestra el código, dos botones (ir al inicio,
+escribirnos) y el mismo aviso de crisis de la sección de contacto: alguien puede llegar
+aquí desde un enlace roto en un momento malo, y esta pantalla no puede ser un callejón sin
+salida. Aplica `PAGES.notFound`, marcada `noindex`, que la deja fuera del sitemap.
 
-Tres opciones, todas mejores que dejarlo así: quitarlas de `app.routes.ts`, hacer que
-redirijan al ancla correspondiente de la portada, o construirlas de verdad. Ver la propuesta
-P-03.
+Su texto está escrito directamente en la plantilla, sólo en español.
 
 ---
 
-**Siguiente:** [06 · Internacionalización](./06-internacionalizacion.md) — cómo funcionan
+**Siguiente:** [06 · Internacionalización](./06-internacionalizacion.md): cómo funcionan
 los idiomas.
