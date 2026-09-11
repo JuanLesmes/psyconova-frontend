@@ -135,7 +135,6 @@
     "title": "The clinical perspective<br>behind PSYCONOVA",
     "subtitle": "Every immersive experience is born from clinical practice: technology supports the process, professional judgement guides it.",
     "availability": "Available for consultations",
-    "label": "Interdisciplinary team",
     "lead": {
       "name": "Laura Valentina Lesmes Castañeda",
       "role": "Founder & Clinical Director",
@@ -160,26 +159,6 @@
       "therapy": "Pioneer in therapy",
       "human": "Human approach",
       "experience": "Years of experience"
-    },
-    "members": {
-      "tech": {
-        "name": "Team Lead's Name",
-        "role": "Head of Technology",
-        "area": "Technology",
-        "bio": "Responsible for the technical architecture, the development of the VR environments and the integration of the platform with clinical protocols."
-      },
-      "legal": {
-        "name": "Advisor's Name",
-        "role": "Legal Advisor",
-        "area": "Legal",
-        "bio": "Ensures regulatory compliance in data protection, clinical privacy and the legal framework for using technology in mental health."
-      },
-      "marketing": {
-        "name": "Strategist's Name",
-        "role": "Marketing Strategist",
-        "area": "Marketing",
-        "bio": "Defines the brand voice, the communication strategy and the channels that connect PSYCONOVA with the people who need it most."
-      }
     }
   },
   "contact": {

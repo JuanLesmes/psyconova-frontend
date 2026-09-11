@@ -135,7 +135,6 @@
     "title": "La mirada clínica<br>detrás de PSYCONOVA",
     "subtitle": "Cada experiencia inmersiva nace de la práctica clínica: la tecnología acompaña el proceso, el criterio profesional lo guía.",
     "availability": "Disponible para consultas",
-    "label": "Equipo interdisciplinario",
     "lead": {
       "name": "Laura Valentina Lesmes Castañeda",
       "role": "Fundadora & Directora Clínica",
@@ -160,26 +159,6 @@
       "therapy": "Pionera en terapia",
       "human": "Enfoque humano",
       "experience": "Años de experiencia"
-    },
-    "members": {
-      "tech": {
-        "name": "Nombre del Líder",
-        "role": "Líder de Tecnología",
-        "area": "Tecnología",
-        "bio": "Responsable de la arquitectura técnica, el desarrollo de los entornos VR y la integración de la plataforma con los protocolos clínicos."
-      },
-      "legal": {
-        "name": "Nombre del Asesor",
-        "role": "Asesor Legal",
-        "area": "Legal",
-        "bio": "Garantiza el cumplimiento normativo en protección de datos, privacidad clínica y el marco legal para el uso de tecnología en salud mental."
-      },
-      "marketing": {
-        "name": "Nombre del Estratega",
-        "role": "Estratega de Marketing",
-        "area": "Marketing",
-        "bio": "Define la voz de marca, la estrategia de comunicación y los canales para conectar a PSYCONOVA con las personas que más lo necesitan."
-      }
     }
   },
   "contact": {

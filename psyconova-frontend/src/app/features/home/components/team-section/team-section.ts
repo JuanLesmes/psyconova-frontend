@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
@@ -13,17 +13,9 @@ interface Lead {
   specialties: string[];
 }
 
-// --- Oculto temporalmente junto con el bloque "Equipo interdisciplinario" del template ---
-// interface TeamMember {
-//   key: string;
-//   photo: string;
-//   accent: 'teal' | 'purple' | 'indigo';
-// }
-
 @Component({
   selector: 'app-team-section',
-  standalone: true,
-  imports: [CommonModule, RevealDirective, TranslatePipe],
+  imports: [RevealDirective, TranslatePipe],
   templateUrl: './team-section.html',
   styleUrl: './team-section.scss',
 })
@@ -41,12 +33,4 @@ export class TeamSection {
       'team.lead.specialties.cyberpsychology',
     ],
   };
-
-  // --- Oculto temporalmente: ver bloque "Equipo interdisciplinario" comentado en team-section.html ---
-  // Los textos de cada integrante siguen en assets/i18n/*.json bajo `team.members`.
-  // team: TeamMember[] = [
-  //   { key: 'tech', photo: '', accent: 'teal' },
-  //   { key: 'legal', photo: '', accent: 'purple' },
-  //   { key: 'marketing', photo: '', accent: 'indigo' },
-  // ];
 }

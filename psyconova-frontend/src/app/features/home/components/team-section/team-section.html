@@ -1,8 +1,7 @@
 <section class="team" id="equipo">
   <div class="team-shell">
-
-    <!-- ── Header ────────────────────────────────────── -->
-    <div class="team-header" reveal revealType="up">
+    <!-- ── Encabezado ────────────────────────────────── -->
+    <div class="team-header" appReveal revealType="up">
       <span class="team-badge">{{ 'team.badge' | translate }}</span>
       <h2 class="team-title" [innerHTML]="'team.title' | translate"></h2>
       <p class="team-subtitle">
@@ -10,34 +9,37 @@
       </p>
     </div>
 
-    <!-- ── Lead card (Psicóloga) ─────────────────────── -->
-    <div class="team-lead" reveal revealType="up" [revealDelay]="100">
-
-      <!-- Decorative corner lines -->
+    <!-- ── Tarjeta principal ─────────────────────────── -->
+    <div class="team-lead" appReveal revealType="up" [revealDelay]="100">
+      <!-- Esquinas decorativas -->
       <div class="team-lead__corner team-lead__corner--tl" aria-hidden="true"></div>
       <div class="team-lead__corner team-lead__corner--br" aria-hidden="true"></div>
 
-      <!-- Photo -->
+      <!-- Foto -->
       <div class="team-lead__photo-wrap">
         <div class="team-lead__arch">
-          <div class="team-lead__photo" *ngIf="lead.photo">
-            <img [src]="lead.photo" [alt]="'team.lead.name' | translate" />
-          </div>
-          <div class="team-lead__photo-placeholder" *ngIf="!lead.photo">
-            <svg viewBox="0 0 80 80" aria-hidden="true">
-              <circle cx="40" cy="30" r="18" />
-              <ellipse cx="40" cy="72" rx="28" ry="20" />
-            </svg>
-          </div>
+          @if (lead.photo) {
+            <div class="team-lead__photo">
+              <img [src]="lead.photo" [alt]="'team.lead.name' | translate" />
+            </div>
+          }
+          @if (!lead.photo) {
+            <div class="team-lead__photo-placeholder">
+              <svg viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="30" r="18" />
+                <ellipse cx="40" cy="72" rx="28" ry="20" />
+              </svg>
+            </div>
+          }
         </div>
-        <!-- Floating badge -->
+        <!-- Insignia flotante -->
         <div class="team-lead__badge">
           <span class="team-lead__badge-dot"></span>
           {{ 'team.availability' | translate }}
         </div>
       </div>
 
-      <!-- Content -->
+      <!-- Contenido -->
       <div class="team-lead__content">
         <div class="team-lead__meta">
           <span class="team-lead__role">{{ 'team.lead.role' | translate }}</span>
@@ -57,13 +59,12 @@
         </div>
 
         <div class="team-lead__specialties">
-          <span
-            class="team-lead__chip"
-            *ngFor="let s of lead.specialties"
-          >{{ s | translate }}</span>
+          @for (s of lead.specialties; track s) {
+            <span class="team-lead__chip">{{ s | translate }}</span>
+          }
         </div>
 
-        <!-- Decorative stat strip -->
+        <!-- Franja decorativa de cifras -->
         <div class="team-lead__stats">
           <div class="team-lead__stat">
             <span class="team-lead__stat-num">VR</span>
@@ -81,60 +82,6 @@
           </div>
         </div>
       </div>
-
     </div>
-
-    <!-- ============================================================
-         BLOQUE "EQUIPO INTERDISCIPLINARIO" — OCULTO TEMPORALMENTE
-         Incluye el separador y las tres tarjetas del equipo.
-         Al reactivarlo, descomentar también:
-           - team-section.ts   -> interface TeamMember + propiedad `team`
-           - team-section.scss -> bloques "Separator label" y "Team cards"
-         Los textos siguen en assets/i18n/*.json (team.label, team.members).
-         ============================================================ -->
-    <!--
-    <div class="team-label" reveal revealType="fade">
-      <div class="team-label__line"></div>
-      <span>{{ 'team.label' | translate }}</span>
-      <div class="team-label__line"></div>
-    </div>
-
-    <div class="team-grid">
-      <article
-        class="team-card"
-        *ngFor="let member of team; let i = index"
-        [attr.data-accent]="member.accent"
-        reveal
-        revealType="up"
-        [revealDelay]="i * 130"
-      >
-        <div class="team-card__top-line"></div>
-
-        <div class="team-card__photo-wrap">
-          <div class="team-card__photo" *ngIf="member.photo">
-            <img
-              [src]="member.photo"
-              [alt]="'team.members.' + member.key + '.name' | translate"
-            />
-          </div>
-          <div class="team-card__photo-placeholder" *ngIf="!member.photo">
-            <svg viewBox="0 0 60 60" aria-hidden="true">
-              <circle cx="30" cy="22" r="13" />
-              <ellipse cx="30" cy="54" rx="21" ry="15" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="team-card__info">
-          <span class="team-card__area">{{ 'team.members.' + member.key + '.area' | translate }}</span>
-          <h4 class="team-card__name">{{ 'team.members.' + member.key + '.name' | translate }}</h4>
-          <span class="team-card__role">{{ 'team.members.' + member.key + '.role' | translate }}</span>
-          <p class="team-card__bio">{{ 'team.members.' + member.key + '.bio' | translate }}</p>
-        </div>
-
-      </article>
-    </div>
-    -->
-
   </div>
 </section>

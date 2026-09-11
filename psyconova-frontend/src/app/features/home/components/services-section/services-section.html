@@ -1,8 +1,7 @@
 <section class="svc" id="services">
   <div class="svc-shell">
-
-    <!-- ── Header ───────────────────────────────────── -->
-    <div class="svc-header" reveal>
+    <!-- ── Encabezado ───────────────────────────────── -->
+    <div class="svc-header" appReveal>
       <div class="svc-header__left">
         <span class="svc-badge">{{ 'services.badge' | translate }}</span>
         <h2 class="svc-title" [innerHTML]="'services.title' | translate"></h2>
@@ -14,86 +13,40 @@
       </div>
     </div>
 
-    <!-- ── Feature pills ─────────────────────────────── -->
+    <!-- ── Píldoras de características ───────────────── -->
     <ul class="svc-features">
-      <li
-        class="svc-feature"
-        *ngFor="let f of features; let i = index"
-        reveal
-        [revealDelay]="i * 100"
-      >
-        <span class="svc-feature__num">0{{ i + 1 }}</span>
-        <p class="svc-feature__text">{{ f | translate }}</p>
-      </li>
+      @for (f of features; track f; let i = $index) {
+        <li class="svc-feature" appReveal [revealDelay]="i * 100">
+          <span class="svc-feature__num">0{{ i + 1 }}</span>
+          <p class="svc-feature__text">{{ f | translate }}</p>
+        </li>
+      }
     </ul>
 
-    <!-- ── Service cards ─────────────────────────────── -->
+    <!-- ── Tarjetas de servicios ─────────────────────── -->
     <div class="svc-cards">
-      <article
-        class="svc-card"
-        *ngFor="let s of services; let i = index"
-        [attr.data-accent]="s.accent"
-        reveal
-        revealType="up"
-        [revealDelay]="i * 150"
-      >
-        <span class="svc-card__bg-num" aria-hidden="true">{{ s.num }}</span>
-        <div class="svc-card__body">
-          <span class="svc-card__label">{{ 'services.cards.' + s.key + '.label' | translate }}</span>
-          <h3 class="svc-card__title">{{ 'services.cards.' + s.key + '.title' | translate }}</h3>
-          <p class="svc-card__desc">{{ 'services.cards.' + s.key + '.desc' | translate }}</p>
-        </div>
-        <div class="svc-card__footer">
-          <span class="svc-card__num">{{ s.num }}</span>
-          <div class="svc-card__line"></div>
-        </div>
-      </article>
-    </div>
-
-    <!-- ============================================================
-         SECCIÓN "ENTORNOS VR" — DESACTIVADA TEMPORALMENTE
-         Se deja comentada para poder reactivarla cuando se requiera.
-         Al reactivarla, descomentar también:
-           - services-section.ts  -> interface VrEnv + propiedad `environments`
-           - services-section.scss -> bloque "VR Gallery" y sus media queries
-         ============================================================ -->
-    <!--
-    <div class="svc-gallery">
-      <div class="svc-gallery__header" reveal revealType="fade">
-        <h3 class="svc-gallery__title">Entornos VR</h3>
-        <p class="svc-gallery__sub">
-          Escenarios diseñados para inducir calma, asombro y presencia plena.
-        </p>
-      </div>
-
-      <div class="svc-gallery__grid">
-        <div
-          class="svc-env"
-          *ngFor="let env of environments; let i = index"
-          reveal
-          revealType="scale"
-          [revealDelay]="i * 120"
+      @for (s of services; track s; let i = $index) {
+        <article
+          class="svc-card"
+          [attr.data-accent]="s.accent"
+          appReveal
+          revealType="up"
+          [revealDelay]="i * 150"
         >
-          <div class="svc-env__frame">
-            <img
-              *ngIf="env.img"
-              class="svc-env__img"
-              [src]="env.img"
-              [alt]="env.label"
-            />
-            <div class="svc-env__placeholder" *ngIf="!env.img">
-              <span class="svc-env__placeholder-icon">◎</span>
-              <span class="svc-env__placeholder-text">Imagen próximamente</span>
-            </div>
+          <span class="svc-card__bg-num" aria-hidden="true">{{ s.num }}</span>
+          <div class="svc-card__body">
+            <span class="svc-card__label">{{
+              'services.cards.' + s.key + '.label' | translate
+            }}</span>
+            <h3 class="svc-card__title">{{ 'services.cards.' + s.key + '.title' | translate }}</h3>
+            <p class="svc-card__desc">{{ 'services.cards.' + s.key + '.desc' | translate }}</p>
           </div>
-          <div class="svc-env__meta">
-            <span class="svc-env__num">{{ env.num }}</span>
-            <span class="svc-env__label">{{ env.label }}</span>
+          <div class="svc-card__footer">
+            <span class="svc-card__num">{{ s.num }}</span>
+            <div class="svc-card__line"></div>
           </div>
-        </div>
-      </div>
+        </article>
+      }
     </div>
-    -->
-
   </div>
 </section>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
@@ -13,17 +13,9 @@ interface Service {
   accent: 'teal' | 'purple' | 'indigo';
 }
 
-// --- Desactivado temporalmente junto con la sección "Entornos VR" del template ---
-// interface VrEnv {
-//   num: string;
-//   label: string;
-//   img: string;
-// }
-
 @Component({
   selector: 'app-services-section',
-  standalone: true,
-  imports: [CommonModule, RevealDirective, TranslatePipe],
+  imports: [RevealDirective, TranslatePipe],
   templateUrl: './services-section.html',
   styleUrl: './services-section.scss',
 })
@@ -40,13 +32,4 @@ export class ServicesSection {
     { num: '02', key: 'professional', accent: 'purple' },
     { num: '03', key: 'selfKnowledge', accent: 'indigo' },
   ];
-
-  // --- Desactivado temporalmente: ver bloque "Entornos VR" comentado en services-section.html ---
-  // Al reactivarlo, mover los `label` a assets/i18n/*.json bajo `services.environments`.
-  // environments: VrEnv[] = [
-  //     { num: '01', label: 'Costa y playa', img: '' },
-  //     { num: '02', label: 'Mundo submarino', img: '' },
-  //     { num: '03', label: 'Bosque y naturaleza', img: '' },
-  //     { num: '04', label: 'Paisaje montañoso', img: '' },
-  // ];
 }
