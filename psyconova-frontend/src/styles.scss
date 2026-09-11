@@ -1,10 +1,10 @@
 @use './styles/variables';
 @use './styles/reset';
 
-// Las fuentes se sirven desde este mismo dominio. Antes había aquí un
-// @import a fonts.googleapis.com que Google recibía —con la IP del visitante—
-// antes de que nadie aceptara nada, y que además encadenaba dos descargas
-// bloqueando el pintado. Ver scripts/download-fonts.mjs.
+// Las fuentes se sirven desde este mismo dominio: ninguna petición sale a
+// Google al cargar la página, y no hay un @import que encadene descargas
+// antes del primer pintado. Los archivos y la hoja que los declara los
+// genera `npm run fonts:download`.
 @use './styles/fonts';
 
 html,
@@ -111,4 +111,26 @@ body {
   opacity: 1;
   transform: none;
   filter: none;
+}
+
+/* ── Movimiento reducido ────────────────────────────── */
+
+/* Quien lo pide en su sistema no recibe animaciones: las secciones aparecen
+   sin desplazarse, el carrusel de la intro no rota (ver intro-section.ts) y
+   las transiciones se acortan hasta desaparecer. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
