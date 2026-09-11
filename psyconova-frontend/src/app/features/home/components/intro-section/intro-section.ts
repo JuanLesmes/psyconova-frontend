@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 
@@ -114,11 +114,25 @@ export class IntroSection implements OnInit, OnDestroy {
     }
   ];
 
+  /**
+   * El carrusel de imágenes usa `window.setInterval`, que no existe al
+   * prerenderizar. Y aunque existiera no pintaría nada: el HTML se escribe
+   * una sola vez, así que animarlo en el servidor no tendría sentido.
+   *
+   * El HTML generado sale con la primera imagen del ciclo, que es justo con
+   * la que arranca el navegador. Coinciden, y por eso no hay desajuste al
+   * hidratar.
+   */
+  private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
+
   ngOnInit(): void {
+    if (!this.esNavegador) return;
     this.startImageLoop();
   }
 
   ngOnDestroy(): void {
+    if (!this.esNavegador) return;
+
     this.stopImageLoop();
 
     if (this.cleanupTimeoutId) window.clearTimeout(this.cleanupTimeoutId);

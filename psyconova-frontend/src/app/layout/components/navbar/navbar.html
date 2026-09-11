@@ -2,12 +2,14 @@
   class="navbar"
   [class.navbar--menu-open]="menuOpen"
   [class.navbar--hidden]="!isNavbarVisible"
+  [attr.inert]="isNavbarVisible ? null : ''"
 >
   <button
     class="navbar__toggle"
     type="button"
-    [attr.aria-label]="'nav.openMenu' | translate"
+    [attr.aria-label]="(menuOpen ? 'nav.closeMenu' : 'nav.openMenu') | translate"
     [attr.aria-expanded]="menuOpen"
+    aria-controls="menu-principal"
     (click)="toggleMenu()"
   >
     <span></span>
@@ -24,7 +26,9 @@
   >
     <img
       src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
-      alt="PSYCONOVA"
+      width="400"
+      height="400"
+      alt=""
       class="navbar__brand-image"
     >
   </a>
@@ -35,6 +39,8 @@
       type="button"
       class="navbar__language"
       [class.is-active]="activeLanguage() === language"
+      [attr.aria-pressed]="activeLanguage() === language"
+      [attr.lang]="language.toLowerCase()"
       (click)="setLanguage(language)"
     >
       {{ language }}
@@ -42,21 +48,41 @@
   </div>
 </header>
 
-<div class="menu-overlay" [class.is-open]="menuOpen">
+<!--
+  El menú a pantalla completa.
+
+  `role="dialog"` con `aria-modal` es una promesa: quien usa lector de
+  pantalla entiende que lo de detrás no existe mientras esto esté abierto.
+  focusTrap la cumple — el foco entra al abrir, da la vuelta dentro, vuelve
+  a su origen al cerrar, y Escape cierra.
+
+  Cerrado usa `visibility: hidden` en el CSS, así que sus enlaces quedan
+  fuera del orden de tabulación y nadie tabula hacia un menú invisible.
+-->
+<div
+  class="menu-overlay"
+  [class.is-open]="menuOpen"
+  id="menu-principal"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'nav.menuLabel' | translate"
+  [focusTrap]="menuOpen"
+  (escape)="closeMenu()"
+>
   <button
     class="menu-overlay__back"
     type="button"
     [attr.aria-label]="'nav.closeMenu' | translate"
     (click)="closeMenu()"
   >
-    ←
+    <span aria-hidden="true">←</span>
   </button>
 
   <nav class="menu-overlay__nav">
     <a routerLink="/" fragment="home" (click)="closeMenu()">{{ 'nav.home' | translate }}</a>
-    <a (click)="scrollTo('nosotros')">{{ 'nav.what' | translate }}</a>
+    <a routerLink="/" fragment="nosotros" (click)="closeMenu()">{{ 'nav.what' | translate }}</a>
     <a routerLink="/" fragment="services" (click)="closeMenu()">{{ 'nav.services' | translate }}</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
+    <a routerLink="/" fragment="equipo" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
     <a routerLink="/" fragment="contact" (click)="closeMenu()">{{ 'nav.contact' | translate }}</a>
   </nav>
 </div>

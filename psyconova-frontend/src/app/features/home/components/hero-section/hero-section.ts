@@ -3,11 +3,12 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Language, LanguageService } from '../../../../core/services/language.service';
+import { FocusTrapDirective } from '../../../../shared/directives/focus-trap.directive';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink, TranslatePipe, FocusTrapDirective],
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.scss',
 })

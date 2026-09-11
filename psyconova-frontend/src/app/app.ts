@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { LoadingScreen } from './shared/components/loading-screen/loading-screen';
 
@@ -10,7 +11,13 @@ import { LoadingScreen } from './shared/components/loading-screen/loading-screen
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
+  private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
+
   ngOnInit(): void {
+    // `history` y `window` no existen al prerenderizar: sin esta guarda, la
+    // generación del HTML falla antes de escribir una sola página.
+    if (!this.esNavegador) return;
+
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }

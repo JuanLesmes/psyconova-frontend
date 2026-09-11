@@ -10,8 +10,11 @@
     radial-gradient(ellipse at 30% 30%, rgba(114, 223, 209, 0.12) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 70%, rgba(200, 178, 247, 0.14) 0%, transparent 50%),
     linear-gradient(145deg, #0d1340 0%, #19206d 50%, #0a0826 100%);
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 0.4s debe coincidir con SALIDA_MS en loading-screen.ts: si el CSS durara
+     más, la pantalla se quitaría del DOM a mitad del desvanecido y se vería
+     un corte seco. */
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ls--hiding {
@@ -35,7 +38,7 @@
   position: absolute;
   border-radius: 50%;
   border: 1px solid rgba(114, 223, 209, 0.5);
-  animation: ringExpand 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  animation: ringExpand 1.3s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 
 .ls-ring--1 {
@@ -48,14 +51,14 @@
   width: 200px;
   height: 200px;
   border-color: rgba(200, 178, 247, 0.4);
-  animation-delay: 0.8s;
+  animation-delay: 0.3s;
 }
 
 .ls-ring--3 {
   width: 200px;
   height: 200px;
   border-color: rgba(123, 105, 231, 0.3);
-  animation-delay: 1.6s;
+  animation-delay: 0.6s;
 }
 
 @keyframes ringExpand {
@@ -76,7 +79,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  animation: logoReveal 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  animation: logoReveal 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.05s both;
 }
 
 .ls-logo {
@@ -124,7 +127,7 @@
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #72dfd1, #c8b2f7, #7b69e7);
-  animation: progressFill 2.4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  animation: progressFill 0.9s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
 
 @keyframes progressFill {

@@ -1,9 +1,23 @@
 <div class="site-frame">
   <div class="site-frame__border"></div>
 
+  <!--
+    Enlace de salto.
+
+    Es lo primero que encuentra quien navega con teclado o lector de pantalla,
+    y le permite saltarse la barra para ir directo al contenido. Sin él hay que
+    tabular por el menú entero en cada página.
+
+    OJO al ocultarlo: NO puede usar `display: none` ni `visibility: hidden`.
+    Eso lo saca del orden de tabulación y deja de servir para lo único que
+    existe. Se posiciona fuera de pantalla y vuelve con :focus — ver
+    .skip-link en main-layout.scss.
+  -->
+  <a class="skip-link" href="#contenido">{{ 'nav.skipToContent' | translate }}</a>
+
   <app-navbar></app-navbar>
 
-  <main class="main-layout">
+  <main class="main-layout" id="contenido" tabindex="-1">
     <router-outlet></router-outlet>
   </main>
 

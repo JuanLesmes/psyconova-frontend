@@ -20,12 +20,127 @@
   directory = "netlify/functions/"
   node_bundler = "esbuild"
 
-# La app es una SPA: cualquier ruta debe servir index.html para que el router
-# de Angular la resuelva. Sin esto, recargar /contact devuelve un 404.
+# Qué pasa con una dirección que no existe.
 #
-# Las funciones se sirven antes que los redirects, así que
-# /.netlify/functions/contact no queda atrapado por esta regla.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# El sitio se prerenderiza (outputMode: "static" en angular.json), así que
+# cada ruta real ya tiene su propio archivo generado:
+#
+#   /                        -> index.html
+#   /politica-de-privacidad  -> politica-de-privacidad/index.html
+#   /terminos-de-uso         -> terminos-de-uso/index.html
+#
+# Como no queda ninguna ruta que dependa del router para resolverse, ya no
+# hace falta la regla que servía index.html para todo. Antes cualquier
+# dirección inventada devolvía la portada con código 200: para un buscador,
+# infinitas páginas duplicadas de la portada compitiendo entre sí.
+#
+# Netlify sirve automáticamente el archivo 404.html de la raíz, con código
+# 404 de verdad, para lo que no encuentre. Ese archivo lo genera el postbuild
+# a partir de la ruta /404 prerenderizada.
+#
+# Si algún día se añade una ruta que NO se prerenderice, habrá que declararla
+# aquí explícitamente; una regla comodín volvería a tapar los 404.
+#
+# Las funciones se resuelven antes que los redirects, así que
+# /.netlify/functions/contact no queda afectado.
+
+# ─────────────────────────────────────────────────────────────────────────
+# CABECERAS DE SEGURIDAD
+#
+# Van aquí y no en el HTML porque varias sólo funcionan como cabecera real:
+# un <meta> equivalente lo ignora el navegador.
+#
+# La CSP NO está aquí a propósito. Se añade en el paso siguiente, después de
+# inventariar exactamente qué carga el sitio y de pasar por modo informe:
+# escrita a ciegas es la forma más fácil de romper algo en silencio.
+# ─────────────────────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    # Impide que el navegador adivine el tipo de un archivo por su contenido.
+    # Sin esto, un archivo subido como texto pero con aspecto de script podría
+    # acabar ejecutándose.
+    X-Content-Type-Options = "nosniff"
+
+    # Nadie puede meter este sitio dentro de un iframe ajeno. Evita el
+    # clickjacking: superponer una página falsa sobre el formulario real para
+    # que alguien envíe sus datos creyendo que los manda a otra parte.
+    #
+    # No afecta a los iframes que el sitio incrusta (el mapa y el cuento):
+    # esta cabecera habla de quién puede enmarcarnos, no de a quién enmarcamos.
+    X-Frame-Options = "SAMEORIGIN"
+
+    # Al salir del sitio sólo se envía el dominio, nunca la ruta completa.
+    # Importa aquí más que en otros sitios: una URL como
+    # /politica-de-privacidad no dice nada, pero el patrón de navegación de
+    # alguien que consulta una web de salud mental sí es un dato sensible.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # El sitio no pide ninguna de estas capacidades — se comprobó en el código,
+    # no hay una sola llamada a navigator.geolocation ni a mediaDevices.
+    # Declararlas vacías impide que un script inyectado las pida en nuestro
+    # nombre, y que el mapa de Google intente pedir la ubicación.
+    #
+    # `fullscreen` NO se restringe: el cuento lo usa con allow="fullscreen".
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), midi=(), serial=()"
+
+    # Aísla la pestaña de cualquier ventana que la haya abierto. Sin esto, una
+    # página que abra la nuestra conserva una referencia con la que puede
+    # manipularla.
+    Cross-Origin-Opener-Policy = "same-origin"
+
+    # HTTPS obligatorio durante un año, subdominios incluidos.
+    #
+    # OJO, esto es difícil de revertir: el navegador lo recuerda hasta que
+    # caduca, aunque se quite la cabecera. Con `includeSubDomains`, cualquier
+    # subdominio futuro tendrá que servir HTTPS o será inalcanzable. Hoy no hay
+    # ninguno con servidor web —send.psyconova.com sólo tiene registros de
+    # correo— y Netlify da certificado a todo lo que se le añada.
+    #
+    # Para dar marcha atrás: poner max-age=0, desplegar, y esperar a que los
+    # navegadores que ya lo vieron vuelvan a pasar por el sitio.
+    #
+    # NO lleva `preload`. Eso mete el dominio en una lista que traen los
+    # navegadores de fábrica, y salir de ahí tarda meses.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# ── Caché ────────────────────────────────────────────────────────────────
+#
+# Angular pone un hash en el nombre de cada JS y CSS, así que un archivo con
+# ese nombre nunca cambia de contenido: si cambia, cambia el nombre. Se puede
+# guardar para siempre sin riesgo de servir algo viejo.
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Las fuentes no llevan hash, pero su contenido no cambia: si algún día se
+# regeneran con scripts/download-fonts.mjs y cambia el diseño, hay que
+# renombrarlas o quien ya las tenga verá la vieja durante un año.
+[[headers]]
+  for = "/assets/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Las imágenes tampoco llevan hash y sí se reemplazan de vez en cuando —la
+# foto de la psicóloga, las ilustraciones—. Una semana es suficiente para no
+# volver a pedirlas en cada visita, y corto para que un cambio se vea pronto.
+[[headers]]
+  for = "/assets/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# El HTML se revalida siempre. Es lo que apunta a los JS con hash: si se
+# guardara, el navegador seguiría pidiendo una versión que ya no existe.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

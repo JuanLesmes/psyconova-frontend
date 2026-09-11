@@ -36,10 +36,14 @@
   transition: opacity 0.25s ease;
 }
 
+/* `visibility: hidden` además de la opacidad: sin ella estos tres controles
+   siguen recibiendo el foco al tabular mientras el menú está abierto por
+   encima, y el foco desaparece detrás del panel. */
 .hero-cover__topbar--hidden .hero-cover__toggle,
 .hero-cover__topbar--hidden .hero-cover__brand,
 .hero-cover__topbar--hidden .hero-cover__languages {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 

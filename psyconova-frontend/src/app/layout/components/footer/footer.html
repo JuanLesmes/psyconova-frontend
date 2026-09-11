@@ -13,6 +13,8 @@
         <img
           class="footer__logo"
           src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
+          width="400"
+          height="400"
           alt="PSYCONOVA"
         />
         <p class="footer__tagline">
@@ -22,7 +24,7 @@
 
       <!-- Navigation -->
       <div class="footer__col">
-        <h4 class="footer__col-title">{{ 'footer.navTitle' | translate }}</h4>
+        <h2 class="footer__col-title">{{ 'footer.navTitle' | translate }}</h2>
         <ul class="footer__links">
           <li><a routerLink="/" fragment="home">{{ 'nav.home' | translate }}</a></li>
           <li><a routerLink="/" fragment="nosotros">{{ 'nav.what' | translate }}</a></li>
@@ -33,7 +35,7 @@
 
       <!-- Contact -->
       <div class="footer__col">
-        <h4 class="footer__col-title">{{ 'footer.contactTitle' | translate }}</h4>
+        <h2 class="footer__col-title">{{ 'footer.contactTitle' | translate }}</h2>
         <ul class="footer__links">
           <li>
             <a [href]="'mailto:' + contactInfo.email">{{ contactInfo.email }}</a>

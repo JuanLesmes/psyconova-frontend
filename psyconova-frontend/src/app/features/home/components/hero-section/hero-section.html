@@ -3,8 +3,9 @@
     <button
       class="hero-cover__toggle"
       type="button"
-      [attr.aria-label]="'nav.openMenu' | translate"
+      [attr.aria-label]="(menuOpen ? 'nav.closeMenu' : 'nav.openMenu') | translate"
       [attr.aria-expanded]="menuOpen"
+      aria-controls="menu-portada"
       (click)="toggleMenu()"
     >
       <span></span>
@@ -20,6 +21,8 @@
     >
       <img
         src="assets/images/branding/logoClaroConLetrasSinFondo.webp"
+        width="400"
+        height="400"
         alt="PSYCONOVA"
         class="hero-cover__brand-image"
       >
@@ -31,6 +34,8 @@
         type="button"
         class="hero-cover__language"
         [class.is-active]="activeLanguage() === language"
+        [attr.aria-pressed]="activeLanguage() === language"
+        [attr.lang]="language.toLowerCase()"
         (click)="setLanguage(language)"
       >
         {{ language }}
@@ -58,7 +63,16 @@
   ></button>
 </section>
 
-<div class="hero-menu-overlay" [class.is-open]="menuOpen">
+<div
+  class="hero-menu-overlay"
+  [class.is-open]="menuOpen"
+  id="menu-portada"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'nav.menuLabel' | translate"
+  [focusTrap]="menuOpen"
+  (escape)="closeMenu()"
+>
   <button
     class="hero-menu-overlay__back"
     type="button"
@@ -70,9 +84,9 @@
 
   <nav class="hero-menu-overlay__nav">
     <a routerLink="/" fragment="home" (click)="closeMenu()">{{ 'nav.home' | translate }}</a>
-    <a (click)="scrollTo('nosotros')">{{ 'nav.what' | translate }}</a>
+    <a routerLink="/" fragment="nosotros" (click)="closeMenu()">{{ 'nav.what' | translate }}</a>
     <a routerLink="/" fragment="services" (click)="closeMenu()">{{ 'nav.services' | translate }}</a>
-    <a routerLink="/" fragment="intro" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
+    <a routerLink="/" fragment="equipo" (click)="closeMenu()">{{ 'nav.about' | translate }}</a>
     <a routerLink="/" fragment="contact" (click)="closeMenu()">{{ 'nav.contact' | translate }}</a>
   </nav>
 </div>
