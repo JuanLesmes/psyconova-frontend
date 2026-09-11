@@ -5,38 +5,30 @@ import {
   type ConsultaCruda,
   type ConsultaValida,
 } from '../../src/app/core/contact/contact-rules';
+import { CONTACT_INFO } from '../../src/app/core/config/contact.config';
 
 /**
  * Recibe las consultas del formulario de contacto y las reenvía por correo.
- *
- * La clave de Resend vive en las variables de entorno de Netlify y nunca llega
- * al navegador: ese es el motivo de que exista esta función en vez de enviar
- * directamente desde el front.
- *
- * Las reglas de validación NO están aquí, sino en src/app/core/contact/
- * contact-rules.ts, para que el corredor de pruebas pueda alcanzarlas. Este
- * archivo se queda con lo que sí depende del entorno: la petición HTTP, las
- * variables de entorno y la llamada a Resend.
- *
- * Variables de entorno (Netlify → Site configuration → Environment variables):
- *   RESEND_API_KEY      obligatoria. Se crea en resend.com/api-keys
- *   CONTACT_TO_EMAIL    destino de las consultas
- *   CONTACT_FROM_EMAIL  remitente. Requiere dominio verificado en Resend
+ * Existe porque la clave de Resend vive en las variables de entorno de Netlify
+ * y nunca llega al navegador. Las reglas de validación están en
+ * src/app/core/contact/contact-rules.ts, donde el corredor de pruebas las
+ * alcanza; aquí queda lo que depende del entorno (petición HTTP, variables y
+ * llamada a Resend). Variables (Netlify → Site configuration → Environment
+ * variables): RESEND_API_KEY (obligatoria, se crea en resend.com/api-keys),
+ * CONTACT_TO_EMAIL (destino) y CONTACT_FROM_EMAIL (remitente con dominio verificado).
  */
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const MAX_BODY_BYTES = 20_000;
 
-const DEFAULT_TO = 'laura.lesmes@psyconova.com';
+/** Destino por defecto: el mismo correo público de contact.config, para que no diverjan. */
+const DEFAULT_TO = CONTACT_INFO.email;
 
 /**
- * Remitente por defecto. Usa el subdominio verificado en Resend.
- *
- * Antes apuntaba a onboarding@resend.dev, el remitente de pruebas, que sólo
- * permite enviar al correo del titular de la cuenta. Si la variable de entorno
- * no llegaba a la función, el envío fallaba con un 403 confuso que parecía un
- * problema de dominio sin verificar. Con el dominio ya verificado, éste es el
- * valor correcto y la variable sólo hace falta para cambiarlo.
+ * Remitente por defecto: el subdominio verificado en Resend. Con el remitente
+ * de pruebas (onboarding@resend.dev) sólo se puede enviar al correo del
+ * titular de la cuenta, y si la variable de entorno no llega a la función el
+ * envío falla con un 403 que parece un dominio sin verificar.
  */
 const DEFAULT_FROM = 'PSYCONOVA <hola@send.psyconova.com>';
 
