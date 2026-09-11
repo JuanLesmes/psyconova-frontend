@@ -1,38 +1,17 @@
 /**
  * Descarga las fuentes de Google y genera el CSS local que las declara.
  *
- * ── Por que autoalojarlas ──
- *
- * Con el @import a fonts.googleapis.com pasaban tres cosas malas:
- *
- * 1. PRIVACIDAD. Google recibia la IP de cada visitante nada mas abrir la
- *    pagina, antes de que nadie aceptara nada — justo mientras el sitio le
- *    pide permiso para cargar el mapa. Era la unica transferencia a terceros
- *    sin consentimiento que quedaba.
- *
- * 2. RENDIMIENTO. Un @import dentro del CSS encadena dos descargas: el
- *    navegador baja la hoja, la analiza, encuentra el @import y solo entonces
- *    pide la segunda. Y bloquea el pintado mientras tanto.
- *
- * 3. SALTO DE MAQUETACION. La fuente llega despues del primer pintado y el
- *    texto se recompone con otras metricas. Es la causa mas comun de CLS.
- *
- * ── Por que fuentes variables ──
- *
- * El CSS del sitio usa pesos 800 y 900 en 38 sitios, pero el @import solo
- * pedia hasta el 700: el navegador los estaba falsificando engordando el 700.
- * Un archivo variable cubre todo el rango en una sola descarga, asi que el
- * 900 de Roboto pasa a ser real.
- *
- * (Arimo solo llega a 700 por diseno de la propia fuente. Donde se pida 800
- * seguira sintetizandose, pero eso ya no depende de como se cargue.)
- *
- * Ejecutar con:  node scripts/download-fonts.mjs
+ * Se autoalojan por privacidad (un @import a fonts.googleapis.com le daria a
+ * Google la IP de cada visitante sin consentimiento), por rendimiento (el
+ * @import encadena dos descargas y bloquea el pintado) y para evitar el salto
+ * de maquetacion al llegar la fuente tras el primer pintado. Se piden
+ * variables porque el CSS usa pesos 800 y 900: asi el 900 de Roboto es real y
+ * no sintetizado (Arimo llega a 700 por diseno). Ejecutar: npm run fonts:download
  */
 import { writeFile, mkdir } from 'node:fs/promises';
 
-const DESTINO_FUENTES = 'psyconova-frontend/src/assets/fonts';
-const DESTINO_CSS = 'psyconova-frontend/src/styles/_fonts.scss';
+const DESTINO_FUENTES = 'src/assets/fonts';
+const DESTINO_CSS = 'src/styles/_fonts.scss';
 
 /**
  * Solo latin y latin-ext.
@@ -74,7 +53,7 @@ await mkdir(DESTINO_FUENTES, { recursive: true });
 const salida = [
   '// ARCHIVO GENERADO — no editar a mano.',
   '// Lo escribe scripts/download-fonts.mjs a partir de la respuesta de Google Fonts.',
-  '// Para regenerarlo:  node scripts/download-fonts.mjs',
+  '// Para regenerarlo:  npm run fonts:download',
   '//',
   '// Las fuentes viven en src/assets/fonts/ y se sirven desde el propio dominio:',
   '// ninguna peticion sale a fonts.googleapis.com ni a fonts.gstatic.com.',

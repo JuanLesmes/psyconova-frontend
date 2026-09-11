@@ -1,33 +1,24 @@
 /**
  * Genera los iconos del sitio a partir del logo original.
  *
- * ── Por que hacia falta ──
- *
- * El favicon era un PNG de 500x500 y 121 kB, declarado en el HTML como
- * `sizes="32x40"`. Se descargaba entero en cada visita para pintarse en una
- * pestana de 16 pixeles: era el segundo archivo mas pesado de la portada,
- * por delante de la foto de la psicologa y de las fuentes.
- *
- * Ninguna compresion del servidor lo arregla, porque un PNG ya viene
- * comprimido. La unica solucion es no mandar 500x500 para pintar 16.
+ * Un PNG de 500x500 declarado como favicon se descarga entero en cada visita
+ * para pintarse en una pestana de 16 pixeles, y ninguna compresion del
+ * servidor lo arregla porque un PNG ya viene comprimido. La unica solucion es
+ * no mandar 500x500 para pintar 16.
  *
  * Ejecutar con:  node scripts/generate-icons.mjs
  */
 import sharp from 'sharp';
 import { mkdir, stat } from 'node:fs/promises';
 
-const ORIGEN = 'src/assets/icons/faviconPsyconova.png';
+const ORIGEN = 'design/faviconPsyconova-original.png';
 const DESTINO = 'src/assets/icons';
 
 /**
- * Tres tamanos, cada uno con su motivo:
- *
- *   32   la pestana del navegador y los marcadores. Es el que se pide siempre.
- *   180  el icono de "anadir a la pantalla de inicio" en iOS.
- *   192  el mismo caso en Android, y el que usan los buscadores para la ficha.
- *
- * No se genera el de 16: los navegadores reducen el de 32 sin que se note, y
- * un archivo menos es una peticion menos.
+ * Tres tamanos: 32 para la pestana y los marcadores (el que se pide siempre),
+ * 180 para "anadir a la pantalla de inicio" en iOS y 192 para lo mismo en
+ * Android y para la ficha de los buscadores. No hay 16: los navegadores
+ * reducen el de 32 sin que se note, y un archivo menos es una peticion menos.
  */
 const TAMANOS = [
   [32, 'favicon-32.png'],
